@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@codemirror/lang-html": "^6.4.9",
+    "@uiw/react-codemirror": "^4.23.7",
     "axios": "^1.7.9",
     "cookie": "^1.0.2",
     "js-cookie": "^3.0.5",

@@ -42,20 +42,6 @@ const RootNavbar: FC<Props> = ({
       onClick: () => console.log("Clicked to visit My Profile"),
     },
     {
-      label: "My Jobs",
-      icon: (
-        <FaBell color={COLORS.primary80} size={20} style={{ marginRight: 5 }} />
-      ),
-      onClick: () => console.log("Clicked to view My Saved Jobs !"),
-    },
-    {
-      label: "My Resume",
-      icon: (
-        <FaLock color={COLORS.primary80} size={20} style={{ marginRight: 5 }} />
-      ),
-      onClick: () => console.log("Clicked to View My Resume"),
-    },
-    {
       label: "Settings",
       icon: (
         <FaEnvelope
@@ -70,7 +56,7 @@ const RootNavbar: FC<Props> = ({
 
   const handleMenuItemClick = (itemLabel: string) => {
     if (itemLabel?.toLowerCase()?.trim() === "my profile") {
-      router.push("/profile");
+      router.push("/admin");
     } else {
       toast.success(`Clicked Item: ${itemLabel}`);
     }
