@@ -3,14 +3,12 @@
 import Image from "next/image";
 import React, { useState, useRef, useEffect, ReactNode } from "react";
 import { LiaSignOutAltSolid } from "react-icons/lia";
-import jobSeekers from "../../images/jobSeekers.png";
 import { useRouter } from "next/navigation";
-import UnauthorizedCard from "../card/UnauthorizedCard";
 import { COLORS } from "@/app/_utils/COLORS";
 import axios from "axios";
 import AppURL from "@/app/_restApi/AppURL";
 import Cookies from "js-cookie";
-import toast from "react-hot-toast";
+import LoginForm from "../Form/LoginForm";
 
 interface MenuItem {
   icon: ReactNode;
@@ -30,7 +28,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({
   onClick,
 }) => {
   const router = useRouter();
-
+  const [isLoginModalView, setIsLoginModalView] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -91,12 +89,21 @@ const PopupMenu: React.FC<PopupMenuProps> = ({
           withCredentials: true, // Ensure the request sends cookies
         }
       );
-
+      handleClose();
       // Redirect to the login page
-      router.push("/login");
+      router.push("/");
     } catch (err) {
       console.error("Logout error:", err);
     }
+  };
+
+  const handleCloseLoginModal = () => {
+    setIsLoginModalView(false);
+  };
+
+  const handleLoginSuccess = () => {
+    setIsLoginModalView(false); // Close LoginForm
+    router.push("/"); // Navigate to the homepage or other appropriate route
   };
 
   return (
@@ -112,7 +119,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({
             ? isOpen
               ? setIsOpen(false)
               : setIsOpen(true)
-            : toast.error("Please login first !");
+            : setIsLoginModalView(true);
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -171,8 +178,61 @@ const PopupMenu: React.FC<PopupMenuProps> = ({
           </button>
         </div>
       )}
+
+      {isLoginModalView && (
+        <LoginForm
+          onClose={handleCloseLoginModal}
+          onSuccess={handleLoginSuccess}
+        />
+      )}
     </div>
   );
 };
 
 export default PopupMenu;
+
+/*
+
+const PopupMenu: React.FC<PopupMenuProps> = ({
+  menuItems,
+  proImg,
+  onClick,
+}) => {
+  const router = useRouter();
+  const [isLoginModalView, setIsLoginModalView] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLDivElement>(null);
+
+  const handleCloseLoginModal = () => {
+    setIsLoginModalView(false);
+  };
+
+  const handleLoginSuccess = () => {
+    setIsLoginModalView(false); // Close LoginForm
+    router.push("/"); // Navigate to the homepage or other appropriate route
+  };
+
+  return (
+    <div className="relative border-2 border-primary85 rounded-full border-3 shadow-lg" ref={buttonRef}>
+      <div
+        className="relative w-10 h-10 md:w-8 md:h-8 cursor-pointer rounded-full overflow-hidden"
+        onClick={() => {
+          menuItems && menuItems.length > 0
+            ? setIsOpen(!isOpen)
+            : setIsLoginModalView(true);
+        }}
+      >
+        <Image src={proImg} alt="Profile" className="object-cover rounded-full transition-transform duration-300 ease-in-out border" />
+      </div>
+
+      {isLoginModalView && (
+        <LoginForm onClose={handleCloseLoginModal} onSuccess={handleLoginSuccess} />
+      )}
+    </div>
+  );
+};
+
+
+
+*/
