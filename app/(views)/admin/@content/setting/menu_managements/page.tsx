@@ -112,17 +112,6 @@ const MenuManagements: FC<Props> = (props) => {
   };
 
   const handleModalSubmit = async (updatedMenu: any) => {
-    // const menuInfo = {
-    //   banglaName: newMenu.banglaName?.trim(),
-    //   englishName: newMenu.englishName?.trim(),
-    //   url: newMenu.url ? newMenu.url?.trim() : null,
-    //   // roleId: newMenu.roleId?.toString(),
-    //   // accessibleRole: newMenu?.accessibleRole,
-    //   parentLayerId: newMenu.parentLayerId?.toString(),
-    //   htmlIcon: newMenu.htmlIcon?.toString(),
-    //   userId: decodeUserId,
-    // };
-
     const menuInfo = {
       selfLayerId: updatedMenu.selfLayerId,
       banglaName: updatedMenu.banglaName?.trim(),
@@ -133,8 +122,6 @@ const MenuManagements: FC<Props> = (props) => {
       htmlIcon: updatedMenu.htmlIcon?.toString(),
       userId: decodeUserId,
     };
-
-    console.log("menuInfo: ", JSON.stringify(menuInfo, null, 2));
 
     const response = await fetch(
       `${AppURL.menuApi}?id=${updatedMenu?.menuId}`,
