@@ -10,6 +10,7 @@ import { COLORS } from "@/app/_utils/COLORS";
 import axios from "axios";
 import AppURL from "@/app/_restApi/AppURL";
 import Cookies from "js-cookie";
+import toast from "react-hot-toast";
 
 interface MenuItem {
   icon: ReactNode;
@@ -105,7 +106,14 @@ const PopupMenu: React.FC<PopupMenuProps> = ({
     >
       <div
         className="relative w-10 h-10 md:w-8 md:h-8 cursor-pointer rounded-full overflow-hidden"
-        onClick={isOpen ? handleClose : handleOpen}
+        // onClick={isOpen ? handleClose : handleOpen}
+        onClick={() => {
+          menuItems && menuItems?.length > 0
+            ? isOpen
+              ? setIsOpen(false)
+              : setIsOpen(true)
+            : toast.error("Please login first !");
+        }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -130,51 +138,37 @@ const PopupMenu: React.FC<PopupMenuProps> = ({
           style={{ width: "300px", ...menuPosition }}
           ref={menuRef}
         >
-          {menuItems && menuItems?.length > 0 ? (
-            <>
-              {menuItems.map((item: any, index: number) => {
-                const isLastItem = menuItems && index === menuItems?.length - 1;
-                return (
-                  <button
-                    key={index}
-                    onClick={() => {
-                      onClick(item.label);
-                      handleClose();
-                    }}
-                    className={`flex items-center text-md w-full px-4 py-4 text-left text-gray-700 hover:bg-primary96 z-[1000] ${
-                      !isLastItem ? "border-b" : ""
-                    } `}
-                  >
-                    {item.icon}
-                    <span className="ml-2 text-black font-workSans">
-                      {item.label}
-                    </span>
-                  </button>
-                );
-              })}
+          {menuItems.map((item: any, index: number) => {
+            const isLastItem = menuItems && index === menuItems?.length - 1;
+            return (
               <button
-                onClick={handleLogout}
-                className="flex w-full bg-errorLight95 hover:bg-errorLight85 h-full items-center justify-center py-2 rounded-b-md"
+                key={index}
+                onClick={() => {
+                  onClick(item.label);
+                  handleClose();
+                }}
+                className={`flex items-center text-md w-full px-4 py-4 text-left text-gray-700 hover:bg-primary96 z-[1000] ${
+                  !isLastItem ? "border-b" : ""
+                } `}
               >
-                <LiaSignOutAltSolid
-                  color={COLORS.errorColor}
-                  size={20}
-                  style={{ marginRight: 5 }}
-                />
-                <span className="text-red-400">Logout</span>
+                {item.icon}
+                <span className="ml-2 text-black font-workSans">
+                  {item.label}
+                </span>
               </button>
-            </>
-          ) : (
-            <div className="px-2">
-              <UnauthorizedCard
-                imgSrc={jobSeekers}
-                title="Job Seekers"
-                jobDescription="Find your convient jobs !"
-                signInOnClick={() => router.push("/login")}
-                createAccountsOnClick={() => router.push("/registration")}
-              />
-            </div>
-          )}
+            );
+          })}
+          <button
+            onClick={handleLogout}
+            className="flex w-full bg-errorLight95 hover:bg-errorLight85 h-full items-center justify-center py-2 rounded-b-md"
+          >
+            <LiaSignOutAltSolid
+              color={COLORS.errorColor}
+              size={20}
+              style={{ marginRight: 5 }}
+            />
+            <span className="text-red-400">Logout</span>
+          </button>
         </div>
       )}
     </div>

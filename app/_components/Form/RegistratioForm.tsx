@@ -8,12 +8,11 @@ import "react-phone-number-input/style.css";
 import axios from "axios";
 import VerticalSingleInput from "../inputField/VerticalSingleInput";
 import AppURL from "@/app/_restApi/AppURL";
+import toast from "react-hot-toast";
 
 interface Props {}
 
 const RegistrationForm: FC<Props> = () => {
-  const [error, setError] = useState("");
-
   const [passwords, setPasswords] = useState({
     password: "",
     confirmPassword: "",
@@ -118,22 +117,25 @@ const RegistrationForm: FC<Props> = () => {
       if (res.status === 201) {
         router.push("/login");
       } else {
-        setError("Registration failed.");
+        toast.error("Failed to registration !");
       }
     } catch (error: any) {
-      setError(error.message);
+      if (error?.status === 409) {
+        toast.error("Email / Phone already exists !");
+      } else {
+        toast.error("Failed to registration !");
+      }
     }
   };
 
   return (
     <>
-      <div className="text-xl text-red-500 text-center">{error && error}</div>
       <form
         onSubmit={submitFunc}
         className="flex w-full md:w-9/12 flex-col bg-primary96 shadow-sm justify-center gap-y-4 border border-primary80 rounded-2xl p-4"
       >
         <div className="flex flex-col">
-          <h1 className="text-center text-black text-3xl my-4 font-arima">
+          <h1 className="text-center text-black text-3xl my-4 font-workSans">
             Registration Form
           </h1>
 
