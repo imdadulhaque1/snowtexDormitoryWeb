@@ -69,25 +69,6 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     }
   }, [menuReload]);
 
-  // const retrieveToken = async () => {
-  //   try {
-  //     const response = await fetch(AppURL.retrieveCookieToken, {
-  //       credentials: "include", // Include cookies in the request
-  //     });
-
-  //     const data = await response.json();
-  //     if (response.ok) {
-  //       setGetToken(data.token);
-  //     } else {
-  //       console.error("Error retrieving token:", data.message);
-  //       // return data.message;
-  //     }
-  //   } catch (error: any) {
-  //     console.error("Fetch failed:", error);
-  //     // return error?.message;
-  //   }
-  // };
-
   useEffect(() => {
     const fetchAndDecodeToken = async () => {
       const token = await retrieveToken();
@@ -116,38 +97,9 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     }
   }, [decodeToken?.token, decodeToken?.userId]);
 
-  // const getMenuDataFunc = async (token: any, userId: any) => {
-  //   try {
-  //     const fetchUserBasedMenus =
-  //       await `${AppURL.userBasedMenuApi}?userId=${userId}`;
-
-  //     console.log("fetchUserBasedMenus: ", fetchUserBasedMenus);
-
-  //     const { data } = await axios.get(fetchUserBasedMenus, {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-
-  //     const convertedMenuItems: any = convertedMenu(data?.data?.menuData);
-
-  //     console.log(
-  //       "convertedMenuItems: ",
-  //       JSON.stringify(convertedMenuItems, null, 2)
-  //     );
-
-  //     setMenuItem(convertedMenuItems);
-  //   } catch (error: any) {
-  //     console.log("Error to fetch user based menus: ", error.message);
-  //   }
-  // };
-
   const getMenuDataFunc = async (token: string, userId: string) => {
     try {
       const fetchUserBasedMenus = `${AppURL.userBasedMenuApi}?userId=${userId}`;
-
-      console.log("fetchUserBasedMenus: ", fetchUserBasedMenus);
 
       const { data } = await axios.get(fetchUserBasedMenus, {
         headers: {
@@ -164,15 +116,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
         return;
       }
 
-      console.log("Menus Data: ", JSON.stringify(data.data.menus, null, 2));
-
-      const convertedMenuItems = convertedMenu(data.data.menus);
-
-      console.log(
-        "convertedMenuItems: ",
-        JSON.stringify(convertedMenuItems, null, 2)
-      );
-
+      const convertedMenuItems: any = convertedMenu(data.data.menus);
       setMenuItem(convertedMenuItems);
     } catch (error: any) {
       console.error("Error to fetch user-based menus: ", error.message);
@@ -238,6 +182,8 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
       ))}
     </ul>
   );
+
+  console.log("menus Items: ", JSON.stringify(menuItem, null, 2));
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -306,43 +252,3 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
 };
 
 export default Sidebar;
-
-/*
-
-  const getMenuDataFunc = async (token: any, userId: any) => {
-    try {
-      const fetchUserBasedMenus =
-        await `${AppURL.userBasedMenuApi}?userId=${userId}`;
-
-      console.log("fetchUserBasedMenus: ", fetchUserBasedMenus);
-
-      const { data } = await axios.get(fetchUserBasedMenus, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const convertedMenuItems: any = convertedMenu(data?.data?.menuData);
-
-      console.log(
-        "convertedMenuItems: ",
-        JSON.stringify(convertedMenuItems, null, 2)
-      );
-
-      setMenuItem(convertedMenuItems);
-    } catch (error: any) {
-      console.log("Error to fetch user based menus: ", error.message);
-    }
-  };
-
-
-  Here I am facing an error as mentioned below,
-  Error to fetch user based menus:  TypeError: menuList is not iterable
-
-
-
-
-
-
-*/

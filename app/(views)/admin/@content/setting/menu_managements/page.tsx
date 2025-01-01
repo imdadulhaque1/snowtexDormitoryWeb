@@ -5,11 +5,19 @@ import { FaEdit, FaTrash } from "react-icons/fa";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useAppContext } from "@/app/_stateManagements/contextApi";
-import { decodeToken } from "@/app/_utils/handler/decodeToken";
 import AppURL from "@/app/_restApi/AppURL";
 import { convertedMenu } from "@/app/_utils/handler/ConvertedMenu";
+import retrieveToken from "@/app/_utils/handler/retrieveToken";
+import jwtDecode from "jsonwebtoken";
 
 interface Props {}
+interface tokenInterface {
+  userId: string;
+  name: string;
+  email: string;
+  token: string;
+  expireDate: Date | null;
+}
 
 const MenuManagements: FC<Props> = (props) => {
   const { menuReload, setIsMenuReload } = useAppContext();
@@ -26,39 +34,45 @@ const MenuManagements: FC<Props> = (props) => {
     roleBasedUser: [],
   });
 
-  const decodeUserId = retrieveData?.token
-    ? decodeToken(retrieveData?.token)
-    : null;
-
-  const retrieveToken = async () => {
-    try {
-      const response = await fetch(AppURL.retrieveCookieToken, {
-        credentials: "include", // Include cookies in the request
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        setRetrieeveData((prev) => ({ ...prev, token: data.token }));
-      } else {
-        console.log("Error retrieving token:", data.message);
-        // return data.message;
-      }
-    } catch (error: any) {
-      console.log("Fetch failed:", error);
-      // return error?.message;
-    }
-  };
+  const [decodeToken, setDecodeToken] = useState<tokenInterface>({
+    userId: "",
+    name: "",
+    email: "",
+    token: "",
+    expireDate: null,
+  });
 
   useEffect(() => {
-    if (!retrieveData?.token) {
-      retrieveToken();
-    }
-    if (retrieveData?.token) {
-      getMenuDataFunc(decodeUserId, retrieveData?.token);
-    }
-  }, [retrieveData?.token]);
+    const fetchAndDecodeToken = async () => {
+      const token = await retrieveToken();
 
-  const getMenuDataFunc = async (userId?: any, token?: any) => {
+      if (token) {
+        try {
+          const decoded: any = jwtDecode.decode(token);
+
+          setDecodeToken({
+            userId: decoded?.userId,
+            name: decoded?.name,
+            email: decoded?.email,
+            token: token,
+            expireDate: decoded?.exp,
+          });
+        } catch (error) {
+          console.error("Error decoding token:", error);
+        }
+      }
+    };
+
+    fetchAndDecodeToken();
+
+    if (decodeToken?.token && decodeToken?.userId) {
+      getMenuDataFunc(decodeToken?.token, decodeToken?.userId);
+    }
+  }, [decodeToken?.token, decodeToken?.userId]);
+
+  const getMenuDataFunc = async (token: string, userId: any) => {
+    console.log(`${AppURL.userBasedMenuApi}?userId=${userId}`);
+
     try {
       const fetchUserBasedMenus =
         await `${AppURL.userBasedMenuApi}?userId=${userId}`;
@@ -70,7 +84,12 @@ const MenuManagements: FC<Props> = (props) => {
         },
       });
 
-      const convertedMenuItems: any = convertedMenu(data?.data?.menuData);
+      console.log(
+        "data?.data?.menus: ",
+        JSON.stringify(data?.data?.menus, null, 2)
+      );
+
+      const convertedMenuItems: any = convertedMenu(data?.data?.menus);
       setMenuItem(convertedMenuItems);
     } catch (error: any) {
       console.log("Error Occured to fetch menu Data: ", error?.message);
@@ -88,13 +107,13 @@ const MenuManagements: FC<Props> = (props) => {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${retrieveData?.token}`,
+          Authorization: `Bearer ${decodeToken?.token}`,
         },
         body: JSON.stringify({ userId }),
       });
 
       if (res?.ok) {
-        getMenuDataFunc(decodeUserId, retrieveData?.token);
+        getMenuDataFunc(decodeToken?.token, decodeToken?.userId);
         setIsMenuReload(true);
         toast.success("Menu successfully deleted !");
       } else {
@@ -120,7 +139,7 @@ const MenuManagements: FC<Props> = (props) => {
 
       parentLayerId: updatedMenu.parentLayerId?.toString(),
       htmlIcon: updatedMenu.htmlIcon?.toString(),
-      userId: decodeUserId,
+      userId: decodeToken?.token,
     };
 
     const response = await fetch(
@@ -138,7 +157,7 @@ const MenuManagements: FC<Props> = (props) => {
     if (response.ok) {
       toast.success("Menu successfully updated !");
       setIsMenuReload(true);
-      getMenuDataFunc(decodeUserId, retrieveData?.token);
+      getMenuDataFunc(decodeToken?.token, decodeToken?.userId);
       handleModalClose();
     } else {
       const errorText = await response.json();
