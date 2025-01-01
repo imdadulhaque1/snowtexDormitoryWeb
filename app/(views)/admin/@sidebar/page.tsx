@@ -9,6 +9,8 @@ import { useAppContext } from "@/app/_stateManagements/contextApi";
 import AppURL from "@/app/_restApi/AppURL";
 import { convertedMenu } from "@/app/_utils/handler/ConvertedMenu";
 import Image from "next/image";
+import retrieveToken from "@/app/_utils/handler/retrieveToken";
+import jwtDecode from "jsonwebtoken";
 
 type MenuItem = {
   englishName: string;
@@ -37,69 +39,143 @@ const getLayerColor = (level: number) => {
 interface SidebarProps {
   children?: ReactNode;
 }
+type DecodeToken = {
+  userId: string;
+  name: string;
+  email: string;
+  token: string;
+  expireDate: Date | null;
+};
 
 const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   const { menuReload, setIsMenuReload } = useAppContext();
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
   const [menuItem, setMenuItem] = useState([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
-  const [getToken, setGetToken] = useState("");
+
+  const [decodeToken, setDecodeToken] = useState<DecodeToken>({
+    userId: "",
+    name: "",
+    email: "",
+    token: "",
+    expireDate: null,
+  });
 
   useEffect(() => {
-    getMenuDataFunc();
-  }, []);
-
-  useEffect(() => {
-    if (menuReload) {
-      getMenuDataFunc().finally(() => {
+    if (menuReload && decodeToken?.token && decodeToken?.userId) {
+      getMenuDataFunc(decodeToken?.token, decodeToken?.userId).finally(() => {
         setIsMenuReload(false);
       });
     }
   }, [menuReload]);
 
-  const retrieveToken = async () => {
-    try {
-      const response = await fetch(AppURL.retrieveCookieToken, {
-        credentials: "include", // Include cookies in the request
-      });
+  // const retrieveToken = async () => {
+  //   try {
+  //     const response = await fetch(AppURL.retrieveCookieToken, {
+  //       credentials: "include", // Include cookies in the request
+  //     });
 
-      const data = await response.json();
-      if (response.ok) {
-        setGetToken(data.token);
-      } else {
-        console.error("Error retrieving token:", data.message);
-        // return data.message;
-      }
-    } catch (error: any) {
-      console.error("Fetch failed:", error);
-      // return error?.message;
-    }
-  };
+  //     const data = await response.json();
+  //     if (response.ok) {
+  //       setGetToken(data.token);
+  //     } else {
+  //       console.error("Error retrieving token:", data.message);
+  //       // return data.message;
+  //     }
+  //   } catch (error: any) {
+  //     console.error("Fetch failed:", error);
+  //     // return error?.message;
+  //   }
+  // };
 
   useEffect(() => {
-    retrieveToken();
+    const fetchAndDecodeToken = async () => {
+      const token = await retrieveToken();
 
-    if (getToken) {
-      getMenuDataFunc(1);
+      if (token) {
+        try {
+          const decoded: any = jwtDecode.decode(token);
+
+          setDecodeToken({
+            userId: decoded?.userId,
+            name: decoded?.name,
+            email: decoded?.email,
+            token: token,
+            expireDate: decoded?.exp,
+          });
+        } catch (error) {
+          console.error("Error decoding token:", error);
+        }
+      }
+    };
+
+    fetchAndDecodeToken();
+
+    if (decodeToken?.token && decodeToken?.userId) {
+      getMenuDataFunc(decodeToken?.token, decodeToken?.userId);
     }
-    // Fetch roles and menu data only if the token is available
-  }, [getToken]);
+  }, [decodeToken?.token, decodeToken?.userId]);
 
-  const getMenuDataFunc = async (userId?: any) => {
+  // const getMenuDataFunc = async (token: any, userId: any) => {
+  //   try {
+  //     const fetchUserBasedMenus =
+  //       await `${AppURL.userBasedMenuApi}?userId=${userId}`;
+
+  //     console.log("fetchUserBasedMenus: ", fetchUserBasedMenus);
+
+  //     const { data } = await axios.get(fetchUserBasedMenus, {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+
+  //     const convertedMenuItems: any = convertedMenu(data?.data?.menuData);
+
+  //     console.log(
+  //       "convertedMenuItems: ",
+  //       JSON.stringify(convertedMenuItems, null, 2)
+  //     );
+
+  //     setMenuItem(convertedMenuItems);
+  //   } catch (error: any) {
+  //     console.log("Error to fetch user based menus: ", error.message);
+  //   }
+  // };
+
+  const getMenuDataFunc = async (token: string, userId: string) => {
     try {
-      const fetchUserBasedMenus =
-        await `${AppURL.userBasedMenuApi}?userId=${userId}`;
+      const fetchUserBasedMenus = `${AppURL.userBasedMenuApi}?userId=${userId}`;
+
+      console.log("fetchUserBasedMenus: ", fetchUserBasedMenus);
 
       const { data } = await axios.get(fetchUserBasedMenus, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${getToken}`,
+          Authorization: `Bearer ${token}`,
         },
       });
-      const convertedMenuItems: any = convertedMenu(data?.data?.menuData);
+
+      if (!data?.data?.menus || !Array.isArray(data.data.menus)) {
+        console.error(
+          "menuData is not an array or is missing:",
+          data?.data?.menus
+        );
+        return;
+      }
+
+      console.log("Menus Data: ", JSON.stringify(data.data.menus, null, 2));
+
+      const convertedMenuItems = convertedMenu(data.data.menus);
+
+      console.log(
+        "convertedMenuItems: ",
+        JSON.stringify(convertedMenuItems, null, 2)
+      );
+
       setMenuItem(convertedMenuItems);
     } catch (error: any) {
-      console.log("Error to fetch user based menus: ", error.message);
+      console.error("Error to fetch user-based menus: ", error.message);
     }
   };
 
@@ -230,3 +306,43 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
 };
 
 export default Sidebar;
+
+/*
+
+  const getMenuDataFunc = async (token: any, userId: any) => {
+    try {
+      const fetchUserBasedMenus =
+        await `${AppURL.userBasedMenuApi}?userId=${userId}`;
+
+      console.log("fetchUserBasedMenus: ", fetchUserBasedMenus);
+
+      const { data } = await axios.get(fetchUserBasedMenus, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const convertedMenuItems: any = convertedMenu(data?.data?.menuData);
+
+      console.log(
+        "convertedMenuItems: ",
+        JSON.stringify(convertedMenuItems, null, 2)
+      );
+
+      setMenuItem(convertedMenuItems);
+    } catch (error: any) {
+      console.log("Error to fetch user based menus: ", error.message);
+    }
+  };
+
+
+  Here I am facing an error as mentioned below,
+  Error to fetch user based menus:  TypeError: menuList is not iterable
+
+
+
+
+
+
+*/

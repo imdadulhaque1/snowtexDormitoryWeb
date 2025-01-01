@@ -79,7 +79,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({
   const handleLogout = async () => {
     try {
       // Clear the token from browser cookies
-      Cookies.remove("token", { path: "/" });
+      Cookies.remove("authToken", { path: "/" });
 
       // Also clear the token from the server-side response cookie
       await axios.post(
@@ -190,49 +190,3 @@ const PopupMenu: React.FC<PopupMenuProps> = ({
 };
 
 export default PopupMenu;
-
-/*
-
-const PopupMenu: React.FC<PopupMenuProps> = ({
-  menuItems,
-  proImg,
-  onClick,
-}) => {
-  const router = useRouter();
-  const [isLoginModalView, setIsLoginModalView] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLDivElement>(null);
-
-  const handleCloseLoginModal = () => {
-    setIsLoginModalView(false);
-  };
-
-  const handleLoginSuccess = () => {
-    setIsLoginModalView(false); // Close LoginForm
-    router.push("/"); // Navigate to the homepage or other appropriate route
-  };
-
-  return (
-    <div className="relative border-2 border-primary85 rounded-full border-3 shadow-lg" ref={buttonRef}>
-      <div
-        className="relative w-10 h-10 md:w-8 md:h-8 cursor-pointer rounded-full overflow-hidden"
-        onClick={() => {
-          menuItems && menuItems.length > 0
-            ? setIsOpen(!isOpen)
-            : setIsLoginModalView(true);
-        }}
-      >
-        <Image src={proImg} alt="Profile" className="object-cover rounded-full transition-transform duration-300 ease-in-out border" />
-      </div>
-
-      {isLoginModalView && (
-        <LoginForm onClose={handleCloseLoginModal} onSuccess={handleLoginSuccess} />
-      )}
-    </div>
-  );
-};
-
-
-
-*/

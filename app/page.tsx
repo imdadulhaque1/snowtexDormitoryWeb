@@ -1,21 +1,21 @@
-import React, { FC } from "react";
+import React from "react";
 import RootNavbar from "./_components/home/RootNavbar";
-import { retrieveTokenForSSR } from "./_utils/handler/retrieveTokenForSSR";
+import { cookies } from "next/headers";
 import { isTokenExpired } from "./_utils/handler/getCurrentDate";
 
-interface Props {}
+const DormitoryPage = async () => {
+  // Access cookies on the server
+  const cookieStore = await cookies();
+  const aspToken: any = await (cookieStore.get("authToken")?.value || null);
 
-const DormitoryPage: FC<Props> = async (props) => {
-  const token = await retrieveTokenForSSR();
+  // Check token validity
+  const isExpired = await (aspToken ? isTokenExpired(aspToken) : true);
 
-  console.log("Token: ", token);
-
-  const isExpired = token ? isTokenExpired(token) : true;
   return (
-    <div className=" fixed h-screen w-screen  bg-white">
-      <RootNavbar isAuthenticateUser={!isExpired} passingAuthToken={token} />
+    <div className="fixed h-screen w-screen bg-white">
+      <RootNavbar isAuthenticateUser={!isExpired} passingAuthToken={aspToken} />
       <h1 className="text-zinc-500 font-sans text-center text-2xl">
-        Welcome to Snowtex Dormitory !
+        Welcome to Snowtex Dormitory!
       </h1>
     </div>
   );
