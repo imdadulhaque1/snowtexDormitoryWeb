@@ -5,9 +5,12 @@ import UserMultiSelector from "@/app/_components/checkbox/UserMultiSelector";
 import AppURL from "@/app/_restApi/AppURL";
 import { convertedMenu } from "@/app/_utils/handler/ConvertedMenu";
 import { decodeToken } from "@/app/_utils/handler/decodeToken";
+import retrieveToken from "@/app/_utils/handler/retrieveToken";
+import { tokenInterface } from "@/interface/admin/decodeToken/TokenInterface";
 import axios from "axios";
 import React, { FC, useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import jwtDecode from "jsonwebtoken";
 
 interface Props {}
 
@@ -31,41 +34,43 @@ const MenuPermission: FC<Props> = (props) => {
     roleBasedUser: [],
   });
 
-  const decodeUserId = retrieveData?.token
-    ? decodeToken(retrieveData?.token)
-    : null;
-
-  const retrieveToken = async () => {
-    try {
-      const response = await fetch(AppURL.retrieveCookieToken, {
-        credentials: "include", // Include cookies in the request
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        setRetrieeveData((prev) => ({ ...prev, token: data.token }));
-        getRolesFunc(data.token);
-
-        getAllUsersFunc(data.token);
-        setHasToken(true);
-      } else {
-        console.error("Error retrieving token:", data.message);
-        // return data.message;
-      }
-    } catch (error: any) {
-      console.error("Fetch failed:", error);
-      // return error?.message;
-    }
-  };
+  const [decodeToken, setDecodeToken] = useState<tokenInterface>({
+    userId: "",
+    name: "",
+    email: "",
+    token: "",
+    expireDate: null,
+  });
 
   useEffect(() => {
-    if (!retrieveData?.token && !hasToken) {
-      retrieveToken();
+    const fetchAndDecodeToken = async () => {
+      const token = await retrieveToken();
+
+      if (token) {
+        try {
+          const decoded: any = jwtDecode.decode(token);
+
+          setDecodeToken({
+            userId: decoded?.userId,
+            name: decoded?.name,
+            email: decoded?.email,
+            token: token,
+            expireDate: decoded?.exp,
+          });
+        } catch (error) {
+          console.error("Error decoding token:", error);
+        }
+      }
+    };
+
+    fetchAndDecodeToken();
+
+    if (decodeToken?.token && decodeToken?.userId) {
+      getMenuDataFunc(decodeToken?.token, decodeToken?.userId);
+      getRolesFunc(decodeToken?.token);
+      getAllUser();
     }
-    if (retrieveData?.token) {
-      getMenuDataFunc(decodeUserId, retrieveData?.token);
-    }
-  }, [retrieveData?.token, !hasToken]);
+  }, [decodeToken?.token, decodeToken?.userId]);
 
   const getRolesFunc = async (token: string) => {
     try {
@@ -89,7 +94,7 @@ const MenuPermission: FC<Props> = (props) => {
     }
   };
 
-  const getMenuDataFunc = async (userId?: any, token?: string) => {
+  const getMenuDataFunc = async (token: string, userId?: any) => {
     try {
       const fetchUserBasedMenus =
         await `${AppURL.userBasedMenuApi}?userId=${userId}`;
@@ -101,30 +106,11 @@ const MenuPermission: FC<Props> = (props) => {
         },
       });
 
-      const convertedMenuItems: any = convertedMenu(data?.data?.menuData);
+      const convertedMenuItems: any = convertedMenu(data?.data?.menus);
 
       setRetrieeveData((prev: any) => ({ ...prev, menus: convertedMenuItems }));
     } catch (error: any) {
       console.log("Error to fetch menu data: " + error.message);
-    }
-  };
-
-  const getAllUsersFunc = async (token?: string) => {
-    try {
-      const fetchUsers = await AppURL.getUsersApi;
-      // const fetchUserBasedMenus =
-      //   await `${AppURL.getUsersApi}?id=${userId}`;
-
-      const { data } = await axios.get(fetchUsers, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      setRetrieeveData((prev: any) => ({ ...prev, users: data?.users }));
-    } catch (error: any) {
-      console.log("Error to fetch users data: " + error.message);
     }
   };
 
@@ -153,7 +139,7 @@ const MenuPermission: FC<Props> = (props) => {
     const roleBasedMenuData = {
       roleId: roleBasedMenuSelectedItems.role,
       menuIds: roleBasedMenuSelectedItems.menus,
-      userId: decodeUserId,
+      userId: decodeToken?.userId,
     };
 
     try {
@@ -163,7 +149,7 @@ const MenuPermission: FC<Props> = (props) => {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${retrieveData?.token}`,
+            Authorization: `Bearer ${decodeToken?.token}`,
           },
         }
       );
@@ -189,7 +175,7 @@ const MenuPermission: FC<Props> = (props) => {
     const roleBasedUserData = {
       roleId: roleBasedUserPermission.role,
       userIds: roleBasedUserPermission.userIds,
-      userId: decodeUserId,
+      userId: decodeToken?.userId,
     };
 
     try {
@@ -199,7 +185,7 @@ const MenuPermission: FC<Props> = (props) => {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${retrieveData?.token}`,
+            Authorization: `Bearer ${decodeToken?.token}`,
           },
         }
       );
@@ -224,22 +210,23 @@ const MenuPermission: FC<Props> = (props) => {
   };
 
   const getRoleBasedMenu = async (roleId: any) => {
-    const roleBasedMenuApi = roleId
-      ? `${AppURL.roleBasedMenuApi}?roleId=${roleId}`
-      : AppURL.roleBasedMenuApi;
+    await setRetrieeveData((prev) => ({
+      ...prev,
+      roleBasedMenu: [],
+    }));
 
     try {
-      const { data } = await axios.get(roleBasedMenuApi, {
+      const { data } = await axios.get(`${AppURL.roleBasedMenuApi}/${roleId}`, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${retrieveData?.token}`,
+          Authorization: `Bearer ${decodeToken?.token}`,
         },
       });
 
       if (data.status === 200) {
         setRetrieeveData((prev) => ({
           ...prev,
-          roleBasedMenu: data?.data[0]?.menuData,
+          roleBasedMenu: data?.menus,
         }));
       } else {
         console.log("No Menu found for this role!");
@@ -248,30 +235,59 @@ const MenuPermission: FC<Props> = (props) => {
       console.log("Error to fetch role based menu: " + error.message);
     }
   };
-  const getRoleBasedUser = async (roleId: any) => {
-    const roleBasedUserApi = roleId
-      ? `${AppURL.roleBasedUserApi}?roleId=${roleId}`
-      : AppURL.roleBasedUserApi;
 
+  const getAllUser = async () => {
     try {
-      const { data } = await axios.get(roleBasedUserApi, {
+      const { data } = await axios.get(AppURL.roleBasedUserApi, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${retrieveData?.token}`,
+          Authorization: `Bearer ${decodeToken?.token}`,
         },
       });
+
       if (data.status === 200) {
         setRetrieeveData((prev) => ({
           ...prev,
-          roleBasedUser: data?.data[0]?.userData,
+          users: data?.users,
         }));
       } else {
-        console.log("No user found for this role!");
+        console.log(data.message || "No user found for this role!");
       }
     } catch (error: any) {
-      console.log("Error to fetch role based user: " + error.message);
+      console.log("Error fetching role-based user: " + error.message);
     }
   };
+  const getRoleBasedUser = async (roleId: any) => {
+    await setRetrieeveData((prev) => ({
+      ...prev,
+      roleBasedUser: [],
+    }));
+    try {
+      const { data } = await axios.get(`${AppURL.roleBasedUserApi}/${roleId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${decodeToken?.token}`,
+        },
+      });
+      console.log("API Response: ", JSON.stringify(data?.users, null, 2));
+
+      if (data.status === 200) {
+        setRetrieeveData((prev) => ({
+          ...prev,
+          roleBasedUser: data?.users,
+        }));
+      } else {
+        console.log(data.message || "No user found for this role!");
+      }
+    } catch (error: any) {
+      console.log("Error fetching role-based user: " + error.message);
+    }
+  };
+
+  console.log(
+    "Role based User: ",
+    JSON.stringify(retrieveData?.roleBasedUser, null, 2)
+  );
 
   return (
     <div className="flex flex-col  md:flex-row h-screen py-5 bg-gradient-to-b from-primary to-primary90 ">
@@ -296,7 +312,7 @@ const MenuPermission: FC<Props> = (props) => {
                     value={role.roleId}
                     checked={roleBasedMenuSelectedItems.role === role.roleId}
                     onChange={async () => {
-                      await (retrieveData?.token &&
+                      await (decodeToken?.token &&
                         getRoleBasedMenu(role.roleId));
                       await setRoleBasedMenuSelectedItems((prevState: any) => ({
                         ...prevState,

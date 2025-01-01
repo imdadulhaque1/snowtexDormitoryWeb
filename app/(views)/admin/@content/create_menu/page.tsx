@@ -5,12 +5,20 @@ import VerticalSingleInput from "@/app/_components/inputField/VerticalSingleInpu
 import SearchableDropdown from "@/app/_components/SearchableDropdown";
 import AppURL from "@/app/_restApi/AppURL";
 import { useAppContext } from "@/app/_stateManagements/contextApi";
-import { decodeToken } from "@/app/_utils/handler/decodeToken";
+import retrieveToken from "@/app/_utils/handler/retrieveToken";
 import axios from "axios";
 import React, { FC, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import jwtDecode from "jsonwebtoken";
 
 interface Props {}
+interface tokenInterface {
+  userId: string;
+  name: string;
+  email: string;
+  token: string;
+  expireDate: Date | null;
+}
 
 const CreateMenuPage: FC<Props> = (props) => {
   const { menuReload, setIsMenuReload } = useAppContext();
@@ -36,36 +44,43 @@ const CreateMenuPage: FC<Props> = (props) => {
     parentLayerId: null,
     htmlIcon: "",
   });
-  const decodeUserId = getToken ? decodeToken(getToken) : null;
 
-  const retrieveToken = async () => {
-    try {
-      const response = await fetch(AppURL.retrieveCookieToken, {
-        credentials: "include", // Include cookies in the request
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        setGetToken(data.token);
-      } else {
-        console.error("Error retrieving token:", data.message);
-        // return data.message;
-      }
-    } catch (error: any) {
-      console.error("Fetch failed:", error);
-      // return error?.message;
-    }
-  };
+  const [decodeToken, setDecodeToken] = useState<tokenInterface>({
+    userId: "",
+    name: "",
+    email: "",
+    token: "",
+    expireDate: null,
+  });
 
   useEffect(() => {
-    retrieveToken();
+    const fetchAndDecodeToken = async () => {
+      const token = await retrieveToken();
 
-    if (getToken) {
+      if (token) {
+        try {
+          const decoded: any = jwtDecode.decode(token);
+
+          setDecodeToken({
+            userId: decoded?.userId,
+            name: decoded?.name,
+            email: decoded?.email,
+            token: token,
+            expireDate: decoded?.exp,
+          });
+        } catch (error) {
+          console.error("Error decoding token:", error);
+        }
+      }
+    };
+
+    fetchAndDecodeToken();
+
+    if (decodeToken?.token && decodeToken?.userId) {
       getRolesFunc();
-      getMenuDataFunc(1);
+      getMenuDataFunc(decodeToken?.token, decodeToken?.userId);
     }
-    // Fetch roles and menu data only if the token is available
-  }, [getToken]);
+  }, [decodeToken?.token, decodeToken?.userId]);
 
   const getRolesFunc = async () => {
     try {
@@ -88,21 +103,19 @@ const CreateMenuPage: FC<Props> = (props) => {
     }
   };
 
-  const getMenuDataFunc = async (userId?: any) => {
+  const getMenuDataFunc = async (token: string, userId: any) => {
     try {
-      // const response = await fetch("/api/admin/create_menu");
-
       const fetchUserBasedMenus =
         await `${AppURL.userBasedMenuApi}?userId=${userId}`;
 
       const { data } = await axios.get(fetchUserBasedMenus, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${getToken}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
-      const convertedMenu = data?.data?.menuData.map(
+      const convertedMenu = data?.data?.menus.map(
         ({ menuId, englishName }: any) => ({
           value: menuId,
           label: englishName,
@@ -130,16 +143,14 @@ const CreateMenuPage: FC<Props> = (props) => {
     }));
   };
 
-  const onSubmitFunc = async (newMenu: any) => {
+  const onSubmitFunc = async (newMenu: any, token: string) => {
     const menuInfo = {
       banglaName: newMenu.banglaName?.trim(),
       englishName: newMenu.englishName?.trim(),
-      url: newMenu.url ? newMenu.url?.trim() : null,
-      // roleId: newMenu.roleId?.toString(),
-      // accessibleRole: newMenu?.accessibleRole,
+      url: newMenu.url ? newMenu.url?.trim() : "",
       parentLayerId: newMenu.parentLayerId?.toString(),
       htmlIcon: newMenu.htmlIcon?.toString(),
-      userId: decodeUserId,
+      createdBy: decodeToken?.userId,
     };
 
     console.log("Submitted Menu: ", JSON.stringify(menuInfo, null, 2));
@@ -149,7 +160,7 @@ const CreateMenuPage: FC<Props> = (props) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${getToken}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(menuInfo),
       });
@@ -159,7 +170,7 @@ const CreateMenuPage: FC<Props> = (props) => {
       if (response.ok) {
         toast.success("Menu has been created !");
         setIsMenuReload(true);
-        getMenuDataFunc(1);
+        getMenuDataFunc(decodeToken?.token, decodeToken?.userId);
       } else {
         const errorText = await response.json();
         toast.error(errorText?.error?.toString());
@@ -171,19 +182,19 @@ const CreateMenuPage: FC<Props> = (props) => {
     }
   };
 
-  console.log("decodeUserId: ", decodeUserId);
-
   const isFormValidated =
     menuData?.banglaName &&
     menuData?.englishName &&
     // menuData?.roleId &&
+    // @ts-ignore
     menuData?.parentLayerId?.toString() &&
     menuData?.htmlIcon;
+
   return (
-    <div className="flex h-screen items-center justify-center  bg-gradient-to-b from-primary to-primary90 ">
-      <div className="flex w-80p flex-col bg-primary justify-center gap-y-4 border border-primary80 rounded-2xl p-4">
+    <div className="flex fixed h-screen items-center justify-center  bg-gradient-to-b from-primary to-primary90 ">
+      <div className="flex w-80p flex-col bg-white justify-center gap-y-4 border border-primary80 rounded-2xl p-4">
         <h1 className="text-zinc-500 font-sans text-center text-2xl">
-          Create Menu
+          Create Dormitory Menu
         </h1>
         <div className="flex items-center justify-between bg-white py-1">
           <div className="w-[49%]">
@@ -301,8 +312,8 @@ const CreateMenuPage: FC<Props> = (props) => {
           <button
             className="bg-primary70 font-workSans text-md py-2 px-8 rounded-lg text-black hover:bg-primary50 hover:text-white"
             onClick={() => {
-              isFormValidated && decodeUserId
-                ? onSubmitFunc(menuData)
+              isFormValidated && decodeToken?.userId
+                ? onSubmitFunc(menuData, decodeToken?.token)
                 : toast.error("Please complete all the required fields !");
             }}
           >

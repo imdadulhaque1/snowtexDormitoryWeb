@@ -4,7 +4,6 @@ interface User {
   userId: number;
   name: string;
   email: string;
-  phone: string;
 }
 
 interface UserSelectorProps {
@@ -98,9 +97,7 @@ const UserMultiSelector: React.FC<UserSelectorProps> = React.memo(
                 hoveredUser === user.userId ? "text-blue-600" : "text-black"
               }`}
             >
-              {hoveredUser === user.userId
-                ? `${user.name} | ${user.phone}`
-                : user.email}
+              {hoveredUser === user.userId ? `${user.name}` : user.email}
             </span>
           </label>
         ))}
