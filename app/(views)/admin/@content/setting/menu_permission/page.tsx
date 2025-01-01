@@ -139,7 +139,7 @@ const MenuPermission: FC<Props> = (props) => {
     const roleBasedMenuData = {
       roleId: roleBasedMenuSelectedItems.role,
       menuIds: roleBasedMenuSelectedItems.menus,
-      userId: decodeToken?.userId,
+      createdBy: parseInt(decodeToken?.userId),
     };
 
     try {
@@ -154,7 +154,7 @@ const MenuPermission: FC<Props> = (props) => {
         }
       );
 
-      if (data?.status === 200) {
+      if (data?.status === 201) {
         toast.success(data?.message);
         setRoleBasedMenuSelectedItems((prev: any) => ({
           ...prev,
@@ -175,7 +175,7 @@ const MenuPermission: FC<Props> = (props) => {
     const roleBasedUserData = {
       roleId: roleBasedUserPermission.role,
       userIds: roleBasedUserPermission.userIds,
-      userId: decodeToken?.userId,
+      createdBy: decodeToken?.userId,
     };
 
     try {
@@ -190,8 +190,8 @@ const MenuPermission: FC<Props> = (props) => {
         }
       );
 
-      if (data?.status === 200) {
-        toast.success(data?.message);
+      if (data?.status === 201) {
+        toast.success("Successfully submitted !");
         setRoleBasedUserPermission((prev: any) => ({
           ...prev,
           role: null,
