@@ -4,9 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import profileImg from "../../images/proImg.png";
 import dormitoryIcon from "../../images/dormitoryIcon.png";
-import { FaUser, FaBell, FaLock, FaEnvelope } from "react-icons/fa";
-import { MdPostAdd } from "react-icons/md";
-import { AiFillMessage, AiTwotoneMessage } from "react-icons/ai";
+import { FaUser, FaEnvelope } from "react-icons/fa";
+import { AiTwotoneMessage } from "react-icons/ai";
 import { IoNotificationsOutline } from "react-icons/io5";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -30,7 +29,6 @@ const RootNavbar: FC<Props> = ({
     if (passingAuthToken) {
       setToken(passingAuthToken);
     }
-    console.log("getToken from passingAuthToken: ", getToken);
   }, [passingAuthToken, setToken]);
 
   const menuItems = [
