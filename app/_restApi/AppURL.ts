@@ -14,7 +14,7 @@ class AppURL {
   // static retrieveCookieToken: string = `${this.baseURL}auth/retrieveToken`;
 
   // Admin API's
-  static menuApi: string = `${this.baseURL}menu`; // .net
+  static menuApi: string = `${this.baseURL}Menu`; // .net
   static postApi: string = `${this.baseURL}admin/post`;
   static roleBasedMenuApi: string = `${this.baseURL}admin/RoleBasedMenu`; // .net
   static roleBasedUserApi: string = `${this.baseURL}admin/RoleBasedUser`; // .net

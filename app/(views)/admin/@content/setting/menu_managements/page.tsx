@@ -103,7 +103,7 @@ const MenuManagements: FC<Props> = (props) => {
 
   const menuDeleteFunc = async (menuId: string | number, userId: any) => {
     try {
-      const res = await fetch(`${AppURL.menuApi}?id=${menuId}`, {
+      const res = await fetch(`${AppURL.menuApi}/${menuId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -301,10 +301,10 @@ const MenuManagements: FC<Props> = (props) => {
                                                         />
                                                         <FaTrash
                                                           onClick={() =>
-                                                            decodeUserId &&
+                                                            decodeToken?.userId &&
                                                             menuDeleteFunc(
                                                               fourthLayerMenu?.menuId,
-                                                              decodeUserId
+                                                              decodeToken?.userId
                                                             )
                                                           } // Ensure the correct menu is passed
                                                           size={25}
@@ -349,10 +349,10 @@ const MenuManagements: FC<Props> = (props) => {
                                               />
                                               <FaTrash
                                                 onClick={() =>
-                                                  decodeUserId &&
+                                                  decodeToken?.userId &&
                                                   menuDeleteFunc(
                                                     thirdLayerMenu?.menuId,
-                                                    decodeUserId
+                                                    decodeToken?.userId
                                                   )
                                                 }
                                                 size={25}
@@ -396,10 +396,10 @@ const MenuManagements: FC<Props> = (props) => {
                                   />
                                   <FaTrash
                                     onClick={() =>
-                                      decodeUserId &&
+                                      decodeToken?.userId &&
                                       menuDeleteFunc(
                                         secondLayerMenu?.menuId,
-                                        decodeUserId
+                                        decodeToken?.userId
                                       )
                                     }
                                     size={25}
@@ -441,8 +441,11 @@ const MenuManagements: FC<Props> = (props) => {
                       />
                       <FaTrash
                         onClick={() =>
-                          decodeUserId &&
-                          menuDeleteFunc(parentMenu?.menuId, decodeUserId)
+                          decodeToken?.userId &&
+                          menuDeleteFunc(
+                            parentMenu?.menuId,
+                            decodeToken?.userId
+                          )
                         }
                         size={25}
                         className="cursor-pointer text-errorColor hover:text-red-500"
