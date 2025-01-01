@@ -183,8 +183,6 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     </ul>
   );
 
-  console.log("menus Items: ", JSON.stringify(menuItem, null, 2));
-
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <div
