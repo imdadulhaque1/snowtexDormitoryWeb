@@ -9,6 +9,7 @@ import AppURL from "@/app/_restApi/AppURL";
 import { convertedMenu } from "@/app/_utils/handler/ConvertedMenu";
 import retrieveToken from "@/app/_utils/handler/retrieveToken";
 import jwtDecode from "jsonwebtoken";
+import MenuModal from "@/app/_components/modal/MenuModal";
 
 interface Props {}
 interface tokenInterface {
@@ -132,27 +133,23 @@ const MenuManagements: FC<Props> = (props) => {
 
   const handleModalSubmit = async (updatedMenu: any) => {
     const menuInfo = {
-      selfLayerId: updatedMenu.selfLayerId,
       banglaName: updatedMenu.banglaName?.trim(),
       englishName: updatedMenu.englishName?.trim(),
-      url: updatedMenu.url ? updatedMenu.url?.trim() : null,
+      url: updatedMenu.url ? updatedMenu.url?.trim() : "",
 
       parentLayerId: updatedMenu.parentLayerId?.toString(),
       htmlIcon: updatedMenu.htmlIcon?.toString(),
-      userId: decodeToken?.token,
+      updatedBy: decodeToken?.userId,
     };
 
-    const response = await fetch(
-      `${AppURL.menuApi}?id=${updatedMenu?.menuId}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${retrieveData?.token}`,
-        },
-        body: JSON.stringify(menuInfo),
-      }
-    );
+    const response = await fetch(`${AppURL.menuApi}/${updatedMenu?.menuId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${decodeToken?.token}`,
+      },
+      body: JSON.stringify(menuInfo),
+    });
 
     if (response.ok) {
       toast.success("Menu successfully updated !");
