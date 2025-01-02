@@ -16,11 +16,13 @@ import PopupMenu from "../popup/PopupMenu";
 interface Props {
   isAuthenticateUser?: boolean;
   passingAuthToken?: any;
+  isShowIcon?: boolean;
 }
 
 const RootNavbar: FC<Props> = ({
   isAuthenticateUser = false,
   passingAuthToken,
+  isShowIcon = true,
 }) => {
   const router = useRouter();
   const { setToken, getToken } = useAppContext();
@@ -61,22 +63,28 @@ const RootNavbar: FC<Props> = ({
   };
 
   return (
-    <ul className="flex items-center justify-between bg-primary95 px-5  mx-0  rounded-sm md:rounded-xl shadow-sm shadow-primary90 z-50">
-      <Link
-        href={`/`}
-        className="text-blue-300 text-2xl flex rounded flex-wrap items-center py-2  md:mb-0 "
-      >
-        <Image
-          src={dormitoryIcon}
-          alt="Dormitory Icon"
-          width={40}
-          height={40}
-          className="object-cover rounded-full transition-transform duration-300 ease-in-out border"
-        />
-        <span className="text-primary text-2xl font-workSans ml-1">
-          Dormitory
-        </span>
-      </Link>
+    <ul
+      className={`flex items-center ${
+        isShowIcon ? "justify-between" : "justify-end"
+      } bg-white px-5 py-2  mx-0  rounded-sm md:rounded-xl shadow-lg shadow-primary90 z-50`}
+    >
+      {isShowIcon && (
+        <Link
+          href={`/`}
+          className="text-blue-300 text-2xl flex rounded flex-wrap items-center py-2  md:mb-0 "
+        >
+          <Image
+            src={dormitoryIcon}
+            alt="Dormitory Icon"
+            width={40}
+            height={40}
+            className="object-cover rounded-full transition-transform duration-300 ease-in-out border"
+          />
+          <span className="text-primary text-2xl font-workSans ml-1">
+            Dormitory
+          </span>
+        </Link>
+      )}
 
       <div className="flex  justify-center mb-2 md:mb-0">
         <li className="mr-4 flex items-center ">
