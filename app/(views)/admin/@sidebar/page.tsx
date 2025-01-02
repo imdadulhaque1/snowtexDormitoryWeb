@@ -116,6 +116,11 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
         return;
       }
 
+      console.log(
+        "data.data.menus: ",
+        JSON.stringify(data.data.menus, null, 2)
+      );
+
       const convertedMenuItems: any = convertedMenu(data.data.menus);
       setMenuItem(convertedMenuItems);
     } catch (error: any) {
