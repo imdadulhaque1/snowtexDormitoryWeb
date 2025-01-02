@@ -11,9 +11,14 @@ import Cookies from "js-cookie";
 interface LoginFormProps {
   onClose: () => void;
   onSuccess: () => void;
+  isFormModal: boolean;
 }
 
-const LoginForm: FC<LoginFormProps> = ({ onClose, onSuccess }) => {
+const LoginForm: FC<LoginFormProps> = ({
+  onClose,
+  onSuccess,
+  isFormModal = false,
+}) => {
   const router = useRouter();
 
   const [loginData, setLoginData] = useState({
@@ -43,7 +48,7 @@ const LoginForm: FC<LoginFormProps> = ({ onClose, onSuccess }) => {
 
   const handleOutsideClick = (event: MouseEvent) => {
     if ((event.target as HTMLElement).closest("form")) return;
-    onClose();
+    onClose(); // onClose is optional so use here the ts type
   };
 
   useEffect(() => {
@@ -73,7 +78,8 @@ const LoginForm: FC<LoginFormProps> = ({ onClose, onSuccess }) => {
           secure: process.env.NODE_ENV === "production",
           sameSite: "strict",
         });
-        onSuccess(); // Notify success
+        isFormModal && onSuccess(); // onSuccess is optional so use here the ts type
+        !isFormModal && router.push("/");
       } else {
         toast.error("Invalid credentials!");
       }
@@ -127,54 +133,20 @@ const LoginForm: FC<LoginFormProps> = ({ onClose, onSuccess }) => {
               : "bg-primary95"
           }
         />
+        <div>
+          <p className="text-black font-workSans text-md mt-4">
+            Don't have an account yet ?
+            <a
+              href="/registration"
+              className="text-primary underline font-semibold ml-3"
+            >
+              Sign Up
+            </a>
+          </p>
+        </div>
       </form>
     </div>
   );
 };
 
 export default LoginForm;
-
-/*
-
-
-   async function onSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    if (!validateForm()) return;
-
-    try {
-      const submitData = {
-        email: loginData.emailOrPhone,
-        password: loginData.password,
-      };
-
-      const { data } = await axios.post(AppURL.signin, submitData, {
-        withCredentials: true,
-      });
-
-      console.log("Login Response: ", JSON.stringify(data, null, 2));
-      if (data?.status === 200) {
-        toast.success("Successfully log-in !");
-        Cookies.set("authToken", data.user.token, {
-          expires: 7, // Expires in 7 days
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
-        });
-        onSuccess(); // Notify success
-      } else {
-        toast.error("Invalid credentials!");
-      }
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "An error occurred");
-    }
-  }
-
-
-  Retrieve the token from Cookies by Client Side Rendering
-
-
-
-
-
-
-
-*/

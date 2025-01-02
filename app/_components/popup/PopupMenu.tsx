@@ -183,6 +183,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({
         <LoginForm
           onClose={handleCloseLoginModal}
           onSuccess={handleLoginSuccess}
+          isFormModal={true}
         />
       )}
     </div>

@@ -19,6 +19,8 @@ export const isTokenExpired = (token: string): boolean => {
     const expirationDate = new Date(decoded.exp * 1000);
     const currentDate = new Date();
 
+    console.log(expirationDate <= currentDate);
+
     return expirationDate <= currentDate; // Check if expired
   } catch (error) {
     console.error("Error decoding token:", error);

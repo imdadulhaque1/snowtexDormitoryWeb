@@ -267,23 +267,23 @@ const RegistrationForm: FC<Props> = () => {
                 }
                 errorMsg={formRegiData.confirmPasswordErrorMsg}
               />
-              {/* <Input
-                label="Confirm Password"
-                name="confirmPassword"
-                type="password"
-                placeholder="Confirm password"
-                value={passwords.confirmPassword}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handlePasswordChange("confirmPassword", e.target.value)
-                }
-                errorMsg={formRegiData.confirmPasswordErrorMsg}
-              /> */}
             </div>
           </div>
 
           {/* Submit Button */}
-          <div className="flex w-full items-center justify-center mt-5">
+          <div className="flex flex-col w-full items-center justify-center mt-5">
             <SubmitButton label="Register" loading="Registering Account..." />
+            <div>
+              <p className="text-black font-workSans text-md mt-4">
+                Already have an account ?{" "}
+                <a
+                  href="/login"
+                  className="text-primary underline font-semibold"
+                >
+                  Login
+                </a>
+              </p>
+            </div>
           </div>
         </div>
       </form>

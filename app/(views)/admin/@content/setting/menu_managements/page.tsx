@@ -72,8 +72,6 @@ const MenuManagements: FC<Props> = (props) => {
   }, [decodeToken?.token, decodeToken?.userId]);
 
   const getMenuDataFunc = async (token: string, userId: any) => {
-    console.log(`${AppURL.userBasedMenuApi}?userId=${userId}`);
-
     try {
       const fetchUserBasedMenus =
         await `${AppURL.userBasedMenuApi}?userId=${userId}`;
