@@ -1,9 +1,13 @@
 "use client";
 import AreaSubmitForm from "@/app/_components/Form/AreaSubmitForm";
+import retrieveToken from "@/app/_utils/handler/retrieveToken";
+import { tokenInterface } from "@/interface/admin/decodeToken/tokenInterface";
 import React, { FC, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
+import jwtDecode from "jsonwebtoken";
+import AppURL from "@/app/_restApi/AppURL";
+import axios from "axios";
 
 interface Props {}
 interface rolesInterface {
@@ -29,20 +33,60 @@ const RolesPage: FC<Props> = (props) => {
     expandRoleObj: null,
   });
 
-  const handleRoleSubmit = async (formData: FormData) => {
-    const newRole = {
-      name: formData.get("name")?.toString(),
+  const [decodeToken, setDecodeToken] = useState<tokenInterface>({
+    userId: "",
+    name: "",
+    email: "",
+    token: "",
+    expireDate: null,
+  });
+
+  useEffect(() => {
+    const fetchAndDecodeToken = async () => {
+      const token = await retrieveToken();
+
+      if (token) {
+        try {
+          const decoded: any = jwtDecode.decode(token);
+
+          setDecodeToken({
+            userId: decoded?.userId,
+            name: decoded?.name,
+            email: decoded?.email,
+            token: token,
+            expireDate: decoded?.exp,
+          });
+        } catch (error) {
+          console.error("Error decoding token:", error);
+        }
+      }
     };
 
-    const response = await fetch("/api/admin/basic_setup/roles", {
+    fetchAndDecodeToken();
+
+    if (decodeToken?.token && decodeToken?.userId) {
+      getRolesFunc(decodeToken?.token);
+    }
+  }, [decodeToken?.token, decodeToken?.userId]);
+
+  const handleRoleSubmit = async (formData: FormData, userId: any) => {
+    const newRole = {
+      name: formData.get("name")?.toString(),
+      createdBy: userId.toString(),
+    };
+
+    const response = await fetch(AppURL.roleApi, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${decodeToken?.token}`,
+      },
       body: JSON.stringify(newRole),
     });
 
     if (response.ok) {
       toast.success("Role has been created");
-      getRolesFunc();
+      getRolesFunc(decodeToken?.token);
     } else {
       const errorText = await response.json();
       toast.error(errorText?.error?.toString());
@@ -55,36 +99,40 @@ const RolesPage: FC<Props> = (props) => {
     }
   };
 
-  useEffect(() => {
-    getRolesFunc();
-  }, []);
-
-  const getRolesFunc = async () => {
+  const getRolesFunc = async (token: string) => {
     try {
-      const response = await fetch("/api/admin/basic_setup/roles");
-      const data = await response.json();
-      setRoles((prev) => ({ ...prev, getRoles: data }));
+      const { data } = await axios.get(AppURL.roleApi, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      await setRoles((prev) => ({ ...prev, getRoles: data?.roles }));
     } catch (error: any) {
       setRoles((prev) => ({ ...prev, roleGetError: error.message }));
     }
   };
-  const updateTags = async (roleObj: any) => {
+  const updateTags = async (roleObj: any, userId: any) => {
     if (roleName?.trim() && roleObj.roleId) {
       try {
         const updatedRole = {
-          roleId: roleObj.roleId,
           name: roleName,
+          updatedBy: userId.toString(),
         };
 
         // Send PATCH request
-        const response = await fetch("/api/admin/basic_setup/roles", {
+        const response = await fetch(`${AppURL.roleApi}/${roleObj.roleId}`, {
           method: "PUT",
           body: JSON.stringify(updatedRole),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${decodeToken?.token}`,
+          },
         });
 
         const data = await response.json();
         if (response.ok) {
-          getRolesFunc();
+          getRolesFunc(decodeToken?.token);
           toast.success("Role has been updated successfully !");
         }
 
@@ -104,17 +152,17 @@ const RolesPage: FC<Props> = (props) => {
       }
     }
   };
-  const deleteRole = async (roleId: any) => {
+  const deleteRole = async (roleId: any, token: string) => {
     try {
-      const res = await fetch("/api/admin/basic_setup/roles", {
+      const res = await fetch(`${AppURL.roleApi}/${roleId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ roleId: roleId }),
       });
       if (res?.ok) {
-        getRolesFunc();
+        getRolesFunc(decodeToken?.token);
         setRoles((prev) => ({
           ...prev,
           expandRole: false,
@@ -133,7 +181,7 @@ const RolesPage: FC<Props> = (props) => {
   };
 
   return (
-    <div className="flex-col min-h-screen bg-gradient-to-b from-primary to-primary90 p-4">
+    <div className="flex-col min-h-screen bg-slate-100 p-4">
       <AreaSubmitForm
         addHoverText="Add Roles"
         updateHoverText="Update roles"
@@ -142,10 +190,11 @@ const RolesPage: FC<Props> = (props) => {
         placeholder="Enter Roles"
         // @ts-ignore
         onSubmit={(formData) => {
-          if (!roles?.expandRole) {
-            return handleRoleSubmit(formData);
+          if (!roles?.expandRole && decodeToken.userId) {
+            return handleRoleSubmit(formData, decodeToken.userId);
           }
-          updateTags(roles?.expandRoleObj);
+          decodeToken.userId &&
+            updateTags(roles?.expandRoleObj, decodeToken.userId);
         }}
         errorMessage={roles.rolePostError}
         value={roleName}
@@ -168,7 +217,7 @@ const RolesPage: FC<Props> = (props) => {
             return (
               <div
                 key={index}
-                className="flex items-center justify-center bg-primary90  rounded-md m-2 cursor-pointer"
+                className="flex items-center justify-center bg-slate-300  rounded-md m-2 cursor-pointer"
               >
                 <button
                   onClick={() => {
@@ -179,7 +228,7 @@ const RolesPage: FC<Props> = (props) => {
                       expandRoleObj: roleItem,
                     }));
                   }}
-                  className="bg-primary90 p-2 rounded-md h-full hover:bg-primary80 hover:text-white font-workSans text-md text-black"
+                  className="bg-slate-300 p-2 rounded-md h-full hover:bg-slate-400 hover:text-white font-workSans text-md text-black"
                 >
                   {roleItem.name}
                 </button>
@@ -189,7 +238,10 @@ const RolesPage: FC<Props> = (props) => {
                     <div className="flex pl-4 h-full items-center justify-center ">
                       <div className="relative group items-center">
                         <MdDelete
-                          onClick={() => deleteRole(roleItem.roleId)}
+                          onClick={() =>
+                            decodeToken?.token &&
+                            deleteRole(roleItem.roleId, decodeToken?.token)
+                          }
                           className=" text-errorColor hover:text-red-500 cursor-pointer  shadow-xl shadow-white"
                           size={25}
                           style={{ marginRight: 1 }}
