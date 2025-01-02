@@ -265,7 +265,6 @@ const MenuPermission: FC<Props> = (props) => {
           Authorization: `Bearer ${decodeToken?.token}`,
         },
       });
-      console.log("API Response: ", JSON.stringify(data?.users, null, 2));
 
       if (data.status === 200) {
         setRetrieeveData((prev) => ({
@@ -279,11 +278,6 @@ const MenuPermission: FC<Props> = (props) => {
       console.log("Error fetching role-based user: " + error.message);
     }
   };
-
-  console.log(
-    "Role based User: ",
-    JSON.stringify(retrieveData?.roleBasedUser, null, 2)
-  );
 
   return (
     <div className="flex flex-col  md:flex-row h-screen py-5 bg-gradient-to-b from-primary to-primary90 ">
