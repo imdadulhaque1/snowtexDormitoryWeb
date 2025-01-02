@@ -4,18 +4,16 @@ import MenuSelector from "@/app/_components/checkbox/MenuSelector";
 import UserMultiSelector from "@/app/_components/checkbox/UserMultiSelector";
 import AppURL from "@/app/_restApi/AppURL";
 import { convertedMenu } from "@/app/_utils/handler/ConvertedMenu";
-import { decodeToken } from "@/app/_utils/handler/decodeToken";
 import retrieveToken from "@/app/_utils/handler/retrieveToken";
-import { tokenInterface } from "@/interface/admin/decodeToken/TokenInterface";
 import axios from "axios";
 import React, { FC, useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import jwtDecode from "jsonwebtoken";
+import { tokenInterface } from "@/interface/admin/decodeToken/tokenInterface";
 
 interface Props {}
 
 const MenuPermission: FC<Props> = (props) => {
-  const [hasToken, setHasToken] = useState(false);
   const [roleBasedMenuSelectedItems, setRoleBasedMenuSelectedItems] = useState({
     role: null,
     menus: [],
@@ -87,8 +85,6 @@ const MenuPermission: FC<Props> = (props) => {
         label: name,
       }));
       setRetrieeveData((prev) => ({ ...prev, roles: data?.roles }));
-
-      // setRole((prev) => ({ ...prev, data: convertedRole }));
     } catch (error: any) {
       console.log("Error to fetch roles: " + error.message);
     }
@@ -139,7 +135,7 @@ const MenuPermission: FC<Props> = (props) => {
     const roleBasedMenuData = {
       roleId: roleBasedMenuSelectedItems.role,
       menuIds: roleBasedMenuSelectedItems.menus,
-      userId: decodeToken?.userId,
+      createdBy: parseInt(decodeToken?.userId),
     };
 
     try {
@@ -154,7 +150,7 @@ const MenuPermission: FC<Props> = (props) => {
         }
       );
 
-      if (data?.status === 200) {
+      if (data?.status === 201) {
         toast.success(data?.message);
         setRoleBasedMenuSelectedItems((prev: any) => ({
           ...prev,
@@ -175,7 +171,7 @@ const MenuPermission: FC<Props> = (props) => {
     const roleBasedUserData = {
       roleId: roleBasedUserPermission.role,
       userIds: roleBasedUserPermission.userIds,
-      userId: decodeToken?.userId,
+      createdBy: decodeToken?.userId,
     };
 
     try {
@@ -190,8 +186,8 @@ const MenuPermission: FC<Props> = (props) => {
         }
       );
 
-      if (data?.status === 200) {
-        toast.success(data?.message);
+      if (data?.status === 201) {
+        toast.success("Successfully submitted !");
         setRoleBasedUserPermission((prev: any) => ({
           ...prev,
           role: null,
