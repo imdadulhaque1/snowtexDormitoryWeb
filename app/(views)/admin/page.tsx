@@ -72,6 +72,9 @@ import TagPage from "./@content/basic_setup/tags/page";
 import MenuPermission from "./@content/setting/menu_permission/page";
 import axios from "axios";
 import AppURL from "@/app/_restApi/AppURL";
+import RolesPage from "./@content/basic_setup/roles/page";
+import MenuManagements from "./@content/setting/menu_managements/page";
+import CreateMenuPage from "./@content/create_menu/page";
 
 const AdminPage = () => {
   const router = useRouter();
@@ -129,8 +132,14 @@ const AdminPage = () => {
         return <AdminDashboardPage />;
       case "basic_setup/tags":
         return <TagPage />;
+      case "basic_setup/roles":
+        return <RolesPage />;
+      case "setting/menu_managements":
+        return <MenuManagements />;
       case "setting/menu_permission":
         return <MenuPermission />;
+      case "create_menu":
+        return <CreateMenuPage />;
       default:
         return <AdminDashboardPage />;
     }
