@@ -75,6 +75,7 @@ import AppURL from "@/app/_restApi/AppURL";
 import RolesPage from "./@content/basic_setup/roles/page";
 import MenuManagements from "./@content/setting/menu_managements/page";
 import CreateMenuPage from "./@content/create_menu/page";
+import ProfilePage from "./@content/profile/page";
 
 const AdminPage = () => {
   const router = useRouter();
@@ -130,6 +131,8 @@ const AdminPage = () => {
     switch (page) {
       case "dashboard":
         return <AdminDashboardPage />;
+      case "profile":
+        return <ProfilePage />;
       case "basic_setup/tags":
         return <TagPage />;
       case "basic_setup/roles":

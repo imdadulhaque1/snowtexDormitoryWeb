@@ -70,7 +70,6 @@ const LoginForm: FC<LoginFormProps> = ({
         withCredentials: true,
       });
 
-      console.log("Login Response: ", JSON.stringify(data, null, 2));
       if (data?.status === 200) {
         toast.success("Successfully log-in !");
         Cookies.set("authToken", data.user.token, {
@@ -79,7 +78,7 @@ const LoginForm: FC<LoginFormProps> = ({
           sameSite: "strict",
         });
         isFormModal && onSuccess(); // onSuccess is optional so use here the ts type
-        !isFormModal && router.push("/");
+        !isFormModal && router.push("/admin");
       } else {
         toast.error("Invalid credentials!");
       }
