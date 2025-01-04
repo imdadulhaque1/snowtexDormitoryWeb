@@ -42,6 +42,7 @@ const CreateMenuPage: FC<Props> = (props) => {
     url: "",
     // roleId: null,
     parentLayerId: null,
+    menuSerialNo: 0,
     htmlIcon: "",
   });
 
@@ -191,8 +192,8 @@ const CreateMenuPage: FC<Props> = (props) => {
     menuData?.htmlIcon;
 
   return (
-    <div className="flex fixed h-screen items-center justify-center  bg-gradient-to-b from-primary to-primary90 ">
-      <div className="flex w-80p flex-col bg-white justify-center gap-y-4 border border-primary80 rounded-2xl p-4">
+    <div className="flex  w-full h-screen items-center justify-center   ">
+      <div className="flex  md:w-80p flex-col bg-white justify-center gap-y-4 border border-primary80 rounded-2xl p-4">
         <h1 className="text-zinc-500 font-sans text-center text-2xl">
           Create Dormitory Menu
         </h1>
@@ -279,28 +280,26 @@ const CreateMenuPage: FC<Props> = (props) => {
             />
           </div>
         </div>
-        {/* <div className="flex items-center justify-between bg-white  py-1">
+        <div className="flex items-center justify-between bg-white  py-1">
           <div className="w-[49%]">
-            <div className="flex-col items-center">
-              <label className=" text-black text-sm font-workSans mb-2">
-                Select Related Roles
-              </label>
-
-              <div className="mb-2">
-                <SearchableDropdown
-                  options={role?.data}
-                  placeholder="Select Role..."
-                  onSelect={(value: string, label: string) => {
-                    setMenuData((prevItem: any) => ({
-                      ...prevItem,
-                      roleId: value,
-                    }));
-                  }}
-                />
-              </div>
-            </div>
+            <VerticalSingleInput
+              label="Menu Serial No"
+              type="number"
+              name="url"
+              placeholder="Enter Menu Serial No..."
+              // @ts-ignore
+              value={menuData?.menuSerialNo}
+              onChange={(e: any) =>
+                setMenuData((prev) => ({
+                  ...prev,
+                  menuSerialNo: e.target.value,
+                }))
+              }
+              required
+            />
           </div>
-        </div> */}
+        </div>
+
         <div className="flex items-center justify-between bg-white  py-1">
           <CodeEditorView
             label="Icon By Code"
@@ -308,6 +307,7 @@ const CreateMenuPage: FC<Props> = (props) => {
             onChange={handleCodeChange}
           />
         </div>
+
         <div className="flex items-center justify-center">
           <button
             className="bg-primary70 font-workSans text-md py-2 px-8 rounded-lg text-black hover:bg-primary50 hover:text-white"

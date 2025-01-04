@@ -280,8 +280,8 @@ const MenuPermission: FC<Props> = (props) => {
   };
 
   return (
-    <div className="flex flex-col  md:flex-row h-screen py-5 bg-gradient-to-b from-primary to-primary90 ">
-      <div className="flex flex-col items-center w-full md:w-48p  bg-white ml-3 m-2 py-5 border-2 border-primary80 rounded-lg shadow-lg">
+    <div className="flex flex-col   md:flex-row h-screen py-5 bg-gradient-to-b from-primary to-primary90 ">
+      <div className="flex flex-col items-center w-full md:w-48p  md:h-90p bg-white ml-3 m-2 py-5 border-2 border-primary80 rounded-lg shadow-lg">
         <p className="font-workSans text-black text-xl  text-center mb-3 pb-1 border-b-2 border-primary80 border-double">
           Role Based Menu Selected
         </p>
@@ -333,13 +333,13 @@ const MenuPermission: FC<Props> = (props) => {
 
         <button
           onClick={postRoleBasedMenuFunc}
-          className="w-1/2 md:w-1/4 py-2 px-4 bg-blue-500 text-white font-bold rounded-lg"
+          className="w-1/2 md:w-1/4 mt-5 md:mt-0 py-2 px-4 bg-blue-500 text-white font-bold rounded-lg"
         >
           Submit
         </button>
       </div>
 
-      <div className="flex flex-col items-center w-full md:w-48p  bg-white ml-3 m-2 py-5 border-2 border-primary80 rounded-lg shadow-lg">
+      <div className="flex flex-col items-center w-full md:w-48p md:h-90p  bg-white ml-3 m-2 py-5 border-2 border-primary80 rounded-lg shadow-lg">
         <p className="font-workSans text-black text-xl  text-center mb-3 pb-1 border-b-2 border-primary80 border-double">
           Role Based User Permissions
         </p>
@@ -390,7 +390,7 @@ const MenuPermission: FC<Props> = (props) => {
 
         <button
           onClick={postRoleBasedUserPermissionFunc}
-          className="w-1/2 md:w-1/4 py-2 px-4 bg-blue-500 text-white font-bold rounded-lg"
+          className="w-1/2 md:w-1/4 py-2 px-4 mt-5 md:mt-0 bg-blue-500 text-white font-bold rounded-lg"
         >
           Submit
         </button>

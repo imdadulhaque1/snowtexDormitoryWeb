@@ -186,7 +186,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <div
-        className={`flex h-screen bg-white transition-transform duration-500 ease-in-out border-r-2 shadow-2xl  ${
+        className={`flex  h-screen bg-white transition-transform duration-500 ease-in-out border-r-2 shadow-2xl  ${
           isDrawerOpen ? "w-[250]" : "w-0"
         }`}
       >
@@ -238,7 +238,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
         </div>
 
         <main
-          className={`flex-1 min-h-screen ${
+          className={`flex-1 min-h-screen  ${
             isDrawerOpen ? "w-full" : "w-0"
           } transition-all duration-500  overflow-y-auto`}
         >
@@ -250,3 +250,56 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
 };
 
 export default Sidebar;
+
+/*
+
+using System.ComponentModel.DataAnnotations;
+
+namespace snowtexDormitoryApi.Models.admin.menu
+{
+    public class MenuModel
+    {
+        
+        [Key]
+        public int menuId { get; set; }
+        public required int menuSerialNo { get; set; }
+        //public int selfLayerId { get; set; }
+        public required string banglaName { get; set; }
+        public required string englishName { get; set; }
+        public string url { get; set; }
+        public required string parentLayerId { get; set; }
+        public required string htmlIcon { get; set; }
+
+        public bool? isApprove { get; set; } = false;
+        public string? approvedBy { get; set; }
+        public bool? isActive { get; set; } = true;
+        public string? inactiveBy { get; set; }
+        public required string createdBy { get; set; }
+        public DateTime? createdTime { get; set; }
+        public string? updatedBy { get; set; }
+        public DateTime? updatedTime { get; set; }
+    
+    }
+}
+
+
+
+Above is my MenuModal and fetch the menus as mentioned below, fetch the menu order by menuSerialNo in below controller,
+
+ // GET api/menu
+ [HttpGet]
+ public async Task<IActionResult> GetMenus()
+ {
+     var menus = await _context.Menus.ToListAsync();
+     return Ok(new { status = 200, message = "Menu retrieved successfully.", menus });
+ }
+
+
+
+
+
+
+
+
+
+*/

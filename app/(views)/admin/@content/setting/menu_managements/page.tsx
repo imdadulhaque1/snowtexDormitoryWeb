@@ -26,14 +26,14 @@ const MenuManagements: FC<Props> = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState<any>(null);
 
-  const [retrieveData, setRetrieeveData] = useState({
-    token: null,
-    roles: [],
-    menus: [],
-    users: [],
-    roleBasedMenu: [],
-    roleBasedUser: [],
-  });
+  // const [retrieveData, setRetrieeveData] = useState({
+  //   token: null,
+  //   roles: [],
+  //   menus: [],
+  //   users: [],
+  //   roleBasedMenu: [],
+  //   roleBasedUser: [],
+  // });
 
   const [decodeToken, setDecodeToken] = useState<tokenInterface>({
     userId: "",
@@ -96,6 +96,8 @@ const MenuManagements: FC<Props> = (props) => {
   };
 
   const menuUpdateFunc = (menu: any) => {
+    console.log("Updated Menu: ", JSON.stringify(menu, null, 2));
+
     setSelectedMenu(menu); // Set selected menu data
     setIsModalOpen(true); // Open modal
   };
@@ -134,11 +136,13 @@ const MenuManagements: FC<Props> = (props) => {
       banglaName: updatedMenu.banglaName?.trim(),
       englishName: updatedMenu.englishName?.trim(),
       url: updatedMenu.url ? updatedMenu.url?.trim() : "",
-
       parentLayerId: updatedMenu.parentLayerId?.toString(),
+      menuSerialNo: parseInt(updatedMenu.menuSerialNo),
       htmlIcon: updatedMenu.htmlIcon?.toString(),
       updatedBy: decodeToken?.userId,
     };
+
+    console.log("menuInfo: ", JSON.stringify(menuInfo, null, 2));
 
     const response = await fetch(`${AppURL.menuApi}/${updatedMenu?.menuId}`, {
       method: "PUT",
