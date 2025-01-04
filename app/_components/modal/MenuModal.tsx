@@ -3,14 +3,12 @@ import { FC, useEffect, useState } from "react";
 
 import VerticalSingleInput from "../inputField/VerticalSingleInput";
 import SearchableDropdown from "../SearchableDropdown";
-
 import axios from "axios";
-import { decodeToken } from "@/app/_utils/handler/decodeToken";
 import AppURL from "@/app/_restApi/AppURL";
 import { MenuInterface } from "@/interface/admin/menu/MenuInterface";
-import { tokenInterface } from "@/interface/admin/decodeToken/TokenInterface";
 import retrieveToken from "@/app/_utils/handler/retrieveToken";
 import jwtDecode from "jsonwebtoken";
+import { tokenInterface } from "@/interface/admin/decodeToken/tokenInterface";
 
 interface ModalProps {
   menu: MenuInterface;
@@ -66,8 +64,6 @@ const MenuModal: FC<ModalProps> = ({ menu, onClose, onSubmit }) => {
   }, [decodeToken?.token, decodeToken?.userId]);
 
   const getMenuDataFunc = async (token: string, userId: any) => {
-    console.log(`${AppURL.userBasedMenuApi}?userId=${userId}`);
-
     try {
       const fetchUserBasedMenus =
         await `${AppURL.userBasedMenuApi}?userId=${userId}`;
@@ -116,12 +112,14 @@ const MenuModal: FC<ModalProps> = ({ menu, onClose, onSubmit }) => {
     onSubmit(formData);
   };
 
-  console.log("formData: ", JSON.stringify(formData, null, 2));
+  // console.log("formData: ", JSON.stringify(formData, null, 2));
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-6 rounded-lg w-3/4 max-w-3xl">
-        <h2 className="text-xl font-bold mb-4">Edit Menu</h2>
+        <h2 className="text-xl font-semibold mb-4 text-center font-workSans">
+          Update Dormitory Menu
+        </h2>
 
         {/* Input Fields */}
         <div className="flex items-center justify-between gap-4 mb-4">
@@ -190,6 +188,19 @@ const MenuModal: FC<ModalProps> = ({ menu, onClose, onSubmit }) => {
               onSelect={handleDropdownChange("parentLayerId")}
             />
           </div>
+        </div>
+
+        <div className="flex w-1/2 items-center justify-between gap-4 mb-4">
+          <VerticalSingleInput
+            label="Menu Serial No"
+            type="number"
+            name="menuSerialNo"
+            placeholder="Enter Menu Serial No..."
+            // @ts-ignore
+            value={formData.menuSerialNo}
+            onChange={handleChange}
+            required
+          />
         </div>
 
         {/* Action Buttons */}

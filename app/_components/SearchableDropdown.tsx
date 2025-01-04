@@ -68,9 +68,9 @@ const SearchableDropdown: FC<Props> = ({
   };
 
   return (
-    <div className="relative w-64">
+    <div className="relative w-full">
       <button
-        className={`w-full px-4 py-2 text-left bg-white border rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-indigo-500 font-workSans ${
+        className={`w-full px-4 py-2 text-left bg-primary95 border rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-indigo-200 font-workSans ${
           isDisable && "opacity-40"
         }`}
         onClick={toggleDropdown}
@@ -94,7 +94,7 @@ const SearchableDropdown: FC<Props> = ({
                 <li
                   key={option.value}
                   onClick={() => handleSelect(option)}
-                  className="px-4 py-2 cursor-pointer hover:bg-indigo-500 hover:text-white font-workSans"
+                  className="px-4 py-2 cursor-pointer hover:bg-indigo-50 font-workSans"
                 >
                   {option.label}
                 </li>

@@ -139,7 +139,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({
 
       {isOpen && (
         <div
-          className={`bg-primary z-[1000] absolute mt-2 pt-3 md:pt-1 shadow-lg rounded-lg z-100 transform transition-transform duration-300 ease-in-out ${
+          className={`bg-white z-[1000] absolute mt-2 pt-3 md:pt-1 shadow-lg shadow-primary90 rounded-lg z-100 transform transition-transform duration-300 border-b-2 border-r-2 border-l-2 border-slate-200 ease-in-out ${
             isOpen ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"
           }`}
           style={{ width: "300px", ...menuPosition }}
