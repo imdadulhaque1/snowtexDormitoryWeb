@@ -142,8 +142,6 @@ const MenuManagements: FC<Props> = (props) => {
       updatedBy: decodeToken?.userId,
     };
 
-    console.log("menuInfo: ", JSON.stringify(menuInfo, null, 2));
-
     const response = await fetch(`${AppURL.menuApi}/${updatedMenu?.menuId}`, {
       method: "PUT",
       headers: {
@@ -188,7 +186,7 @@ const MenuManagements: FC<Props> = (props) => {
                   >
                     <div className="flex w-full items-center justify-evenly bg-primary70 py-2 rounded-t-md">
                       <p className="font-workSans text-xl font-medium text-black">
-                        {parentMenu.menuId}
+                        {`${parentMenu.menuSerialNo} / ${parentMenu.menuId}`}
                       </p>
                       <p className="font-workSans text-xl font-medium text-black">
                         {parentMenu.englishName}
@@ -213,7 +211,7 @@ const MenuManagements: FC<Props> = (props) => {
                               >
                                 <div className="flex w-full items-center justify-around  bg-primary80  rounded-t-md ">
                                   <p className="font-workSans text-xl font-medium text-black">
-                                    {secondLayerMenu.menuId}
+                                    {`${secondLayerMenu.menuSerialNo} / ${secondLayerMenu.menuId}`}
                                   </p>
                                   <p className="font-workSans text-xl font-medium text-black">
                                     {secondLayerMenu.englishName}
@@ -240,7 +238,7 @@ const MenuManagements: FC<Props> = (props) => {
                                           >
                                             <div className="flex w-full items-center justify-around  bg-primary90  rounded-t-md ">
                                               <p className="font-workSans text-xl font-medium text-black">
-                                                {thirdLayerMenu.menuId}
+                                                {`${thirdLayerMenu.menuSerialNo} / ${thirdLayerMenu.menuId}`}
                                               </p>
                                               <p className="font-workSans text-xl font-medium text-black">
                                                 {thirdLayerMenu.englishName}
@@ -269,9 +267,7 @@ const MenuManagements: FC<Props> = (props) => {
                                                       {/* Main Content */}
                                                       <div className="flex w-full items-center justify-center bg-primary90 py-2 rounded-t-md group-hover:blur-sm group-hover:opacity-70 transition-all duration-300">
                                                         <p className="font-workSans text-xl font-medium text-black">
-                                                          {
-                                                            fourthLayerMenu.menuId
-                                                          }
+                                                          {`${fourthLayerMenu.menuSerialNo} / ${fourthLayerMenu.menuId}`}
                                                         </p>
                                                       </div>
                                                       <div className="flex flex-col items-center justify-center py-2 group-hover:blur-sm group-hover:opacity-70 transition-all duration-300">
@@ -325,7 +321,7 @@ const MenuManagements: FC<Props> = (props) => {
                                             {/* Main Content */}
                                             <div className="flex w-full items-center justify-center bg-primary90 py-2 rounded-t-md group-hover:blur-sm group-hover:opacity-70 transition-all duration-300">
                                               <p className="font-workSans text-xl font-medium text-black">
-                                                {thirdLayerMenu.menuId}
+                                                {`${thirdLayerMenu.menuSerialNo} / ${thirdLayerMenu.menuId}`}
                                               </p>
                                             </div>
                                             <div className="flex flex-col items-center justify-center py-2 group-hover:blur-sm group-hover:opacity-70 transition-all duration-300">
@@ -372,7 +368,7 @@ const MenuManagements: FC<Props> = (props) => {
                                 {/* Main Content */}
                                 <div className="flex w-full items-center justify-center bg-primary75 py-2 rounded-t-md group-hover:blur-sm group-hover:opacity-70 transition-all duration-300">
                                   <p className="font-workSans text-xl font-medium text-black">
-                                    {secondLayerMenu.menuId}
+                                    {`${secondLayerMenu.menuSerialNo} / ${secondLayerMenu.menuId}`}
                                   </p>
                                 </div>
                                 <div className="flex flex-col items-center justify-center py-2 group-hover:blur-sm group-hover:opacity-70 transition-all duration-300">
@@ -419,7 +415,7 @@ const MenuManagements: FC<Props> = (props) => {
                     {/* Main Content */}
                     <div className="flex w-full items-center justify-center bg-primary70 py-2 rounded-t-md group-hover:blur-sm group-hover:opacity-70 transition-all duration-300">
                       <p className="font-workSans text-xl font-medium text-black">
-                        {parentMenu.menuId}
+                        {`${parentMenu.menuSerialNo} / ${parentMenu.menuId}`}
                       </p>
                     </div>
                     <div className="flex flex-col items-center justify-center py-2 group-hover:blur-sm group-hover:opacity-70 transition-all duration-300">

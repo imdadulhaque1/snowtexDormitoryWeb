@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, useEffect } from "react";
+import React, { FC, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import profileImg from "../../images/proImg.png";
@@ -12,6 +12,9 @@ import { useRouter } from "next/navigation";
 import { useAppContext } from "@/app/_stateManagements/contextApi";
 import { COLORS } from "@/app/_utils/COLORS";
 import PopupMenu from "../popup/PopupMenu";
+import retrieveToken from "@/app/_utils/handler/retrieveToken";
+import { tokenInterface } from "@/interface/admin/decodeToken/tokenInterface";
+import jwtDecode from "jsonwebtoken";
 
 interface Props {
   isAuthenticateUser?: boolean;
@@ -54,6 +57,38 @@ const RootNavbar: FC<Props> = ({
     },
   ];
 
+  const [decodeToken, setDecodeToken] = useState<tokenInterface>({
+    userId: "",
+    name: "",
+    email: "",
+    token: "",
+    expireDate: null,
+  });
+
+  useEffect(() => {
+    const fetchAndDecodeToken = async () => {
+      const token = await retrieveToken();
+
+      if (token) {
+        try {
+          const decoded: any = jwtDecode.decode(token);
+
+          setDecodeToken({
+            userId: decoded?.userId,
+            name: decoded?.name,
+            email: decoded?.email,
+            token: token,
+            expireDate: decoded?.exp,
+          });
+        } catch (error) {
+          console.error("Error decoding token:", error);
+        }
+      }
+    };
+
+    fetchAndDecodeToken();
+  }, [decodeToken?.token, decodeToken?.userId]);
+
   const handleMenuItemClick = (itemLabel: string) => {
     if (itemLabel?.toLowerCase()?.trim() === "my profile") {
       router.push("/admin");
@@ -87,7 +122,7 @@ const RootNavbar: FC<Props> = ({
       )}
 
       <div className="flex  justify-center mb-2 md:mb-0">
-        <li className="mr-4 flex items-center ">
+        {/* <li className="mr-4 flex items-center ">
           <Link
             href={`/dashboard`}
             className="flex text-black text-lg md:hover:bg-primary90 py-2 px-2 rounded justify-center items-center"
@@ -114,6 +149,11 @@ const RootNavbar: FC<Props> = ({
               Notifications
             </span>
           </Link>
+        </li> */}
+        <li className="mr-4 flex items-center ">
+          <span className=" text-md font-workSans text-black">
+            {decodeToken?.name ? decodeToken?.name : ""}
+          </span>
         </li>
         <div className="py-2">
           <PopupMenu
