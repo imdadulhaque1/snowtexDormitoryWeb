@@ -11,6 +11,7 @@ import { buildingsInterface } from "@/interface/admin/basicSetup/buildingsInterf
 import { MdDelete, MdDeleteOutline } from "react-icons/md";
 import { FaEdit, FaRegWindowClose } from "react-icons/fa";
 import { COLORS } from "@/app/_utils/COLORS";
+import { isValidBDTelephone } from "@/app/_utils/handler/validateBDTelephone ";
 
 interface Props {}
 
@@ -24,6 +25,9 @@ const BuildingManagements: FC<Props> = (props) => {
     contactNo: "",
     isUpdated: false,
     buildingId: null,
+    buildingNameErrorMsg: "",
+    addressErrorMsg: "",
+    contactNoErrorMsg: "",
   });
 
   const [decodeToken, setDecodeToken] = useState<tokenInterface>({
@@ -84,7 +88,31 @@ const BuildingManagements: FC<Props> = (props) => {
     }
   };
 
+  const validateForm = () => {
+    let isValid = true;
+    const errors: Partial<typeof buildingData> = {};
+
+    if (!buildingData.buildingName.trim()) {
+      isValid = false;
+      errors.buildingNameErrorMsg = "Building name is required.";
+    }
+    if (!buildingData.address.trim()) {
+      isValid = false;
+      errors.addressErrorMsg = "Building address is required.";
+    }
+
+    if (!buildingData.contactNo) {
+      isValid = false;
+      errors.contactNoErrorMsg = "Phone number is required.";
+    }
+
+    setBuildingData((prev) => ({ ...prev, ...errors }));
+    return isValid;
+  };
+
   const onSubmitFunc = async (data: any, token: string) => {
+    if (!validateForm()) return;
+
     const submittedData = await {
       buildingName: data?.buildingName,
       buildingAddress: data?.address,
@@ -129,14 +157,14 @@ const BuildingManagements: FC<Props> = (props) => {
   // console.log("fetchBuildings: ", JSON.stringify(fetchBuildings, null, 2));
 
   const updateFunc = async (buildingsData: any, token: string, userId: any) => {
+    if (!validateForm()) return;
+
     const updatedData = {
       buildingName: buildingsData?.buildingName,
       buildingAddress: buildingsData?.address,
       contactNo: buildingsData?.contactNo,
       updatedBy: userId,
     };
-
-    console.log(`${AppURL.buildingInfoApi}/${buildingsData?.buildingId}`);
 
     try {
       const { data: responseData } = await axios.put(
@@ -204,8 +232,10 @@ const BuildingManagements: FC<Props> = (props) => {
                 setBuildingData((prev) => ({
                   ...prev,
                   buildingName: e.target.value,
+                  buildingNameErrorMsg: "",
                 }))
               }
+              errorMsg={buildingData.buildingNameErrorMsg}
               required
             />
             <div className="my-3">
@@ -220,24 +250,38 @@ const BuildingManagements: FC<Props> = (props) => {
                   setBuildingData((prev) => ({
                     ...prev,
                     address: e.target.value,
+                    addressErrorMsg: "",
                   }))
                 }
+                errorMsg={buildingData.addressErrorMsg}
                 required
               />
             </div>
             <VerticalSingleInput
               label="Contact No"
-              type="text"
+              type="tel"
               name="contactNo"
               placeholder="Enter Contact No..."
               // @ts-ignore
               value={buildingData?.contactNo}
-              onChange={(e: any) =>
-                setBuildingData((prev) => ({
+              onChange={async (e: any) => {
+                await setBuildingData((prev) => ({
                   ...prev,
                   contactNo: e.target.value,
-                }))
-              }
+                }));
+                if (isValidBDTelephone(e.target.value)) {
+                  setBuildingData((prev) => ({
+                    ...prev,
+                    contactNoErrorMsg: "",
+                  }));
+                } else {
+                  setBuildingData((prev) => ({
+                    ...prev,
+                    contactNoErrorMsg: "Invalid Phone Number",
+                  }));
+                }
+              }}
+              errorMsg={buildingData.contactNoErrorMsg}
               required
             />
 
@@ -246,7 +290,9 @@ const BuildingManagements: FC<Props> = (props) => {
                 <button
                   className="bg-primary70 font-workSans text-md py-2 px-8 rounded-lg text-black hover:bg-primary50 hover:text-white"
                   onClick={() => {
-                    buildingData && decodeToken?.userId
+                    buildingData &&
+                    decodeToken?.userId &&
+                    isValidBDTelephone(buildingData?.contactNo)
                       ? onSubmitFunc(buildingData, decodeToken?.token)
                       : toast.error(
                           "Please complete all the required fields !"
@@ -260,7 +306,9 @@ const BuildingManagements: FC<Props> = (props) => {
                   <button
                     className="bg-primary70 font-workSans text-md py-2 px-4 rounded-lg text-black hover:bg-primary50 hover:text-white"
                     onClick={async () => {
-                      await (buildingData && decodeToken?.userId
+                      await (buildingData &&
+                      decodeToken?.userId &&
+                      isValidBDTelephone(buildingData?.contactNo)
                         ? updateFunc(
                             buildingData,
                             decodeToken?.token,
