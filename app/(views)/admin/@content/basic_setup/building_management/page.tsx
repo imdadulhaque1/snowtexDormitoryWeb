@@ -20,6 +20,7 @@ const BuildingManagements: FC<Props> = (props) => {
   const [fetchBuildings, setFetchBuildings] = useState<buildingsInterface[]>(
     []
   );
+
   const [buildingData, setBuildingData] = useState({
     buildingName: "",
     address: "",
