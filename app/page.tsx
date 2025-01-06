@@ -14,8 +14,8 @@ const DormitoryPage = async () => {
   return (
     <div className="fixed h-screen w-screen bg-white">
       <RootNavbar isAuthenticateUser={!isExpired} passingAuthToken={aspToken} />
-      <h1 className="text-zinc-500 font-sans text-center text-2xl">
-        Welcome to Snowtex Dormitory!
+      <h1 className="text-zinc-500 font-sans text-center text-2xl mt-10">
+        Welcome to Snowtex Dormitory !
       </h1>
     </div>
   );
