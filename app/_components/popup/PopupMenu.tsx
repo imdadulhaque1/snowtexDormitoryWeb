@@ -103,7 +103,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({
 
   const handleLoginSuccess = () => {
     setIsLoginModalView(false); // Close LoginForm
-    router.push("/"); // Navigate to the homepage or other appropriate route
+    router.push("/admin"); // Navigate to the homepage or other appropriate route
   };
 
   return (
