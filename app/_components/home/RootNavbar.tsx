@@ -101,7 +101,7 @@ const RootNavbar: FC<Props> = ({
     <ul
       className={`flex items-center ${
         isShowIcon ? "justify-between" : "justify-end"
-      } bg-white px-5 py-2  mx-0  rounded-sm md:rounded-xl shadow-lg shadow-primary90 z-50`}
+      } bg-white px-5 py-2  mx-0  shadow-lg shadow-primary90 z-50`}
     >
       {isShowIcon && (
         <Link

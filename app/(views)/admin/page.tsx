@@ -76,6 +76,9 @@ import RolesPage from "./@content/basic_setup/roles/page";
 import MenuManagements from "./@content/setting/menu_managements/page";
 import CreateMenuPage from "./@content/create_menu/page";
 import ProfilePage from "./@content/profile/page";
+import BuildingManagements from "./@content/basic_setup/building_management/page";
+import FloorManagement from "./@content/basic_setup/floor_management/page";
+import RoomManagement from "./@content/basic_setup/room_management/page";
 
 const AdminPage = () => {
   const router = useRouter();
@@ -143,6 +146,12 @@ const AdminPage = () => {
         return <MenuPermission />;
       case "create_menu":
         return <CreateMenuPage />;
+      case "basic_setup/building_management":
+        return <BuildingManagements />;
+      case "basic_setup/floor_management":
+        return <FloorManagement />;
+      case "basic_setup/room_management":
+        return <RoomManagement />;
       default:
         return <AdminDashboardPage />;
     }

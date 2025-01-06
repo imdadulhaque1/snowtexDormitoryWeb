@@ -40,7 +40,6 @@ const CreateMenuPage: FC<Props> = (props) => {
     banglaName: "",
     englishName: "",
     url: "",
-    // roleId: null,
     parentLayerId: null,
     menuSerialNo: 0,
     htmlIcon: "",
@@ -150,6 +149,7 @@ const CreateMenuPage: FC<Props> = (props) => {
       englishName: newMenu.englishName?.trim(),
       url: newMenu.url ? newMenu.url?.trim() : "",
       parentLayerId: newMenu.parentLayerId?.toString(),
+      menuSerialNo: newMenu.menuSerialNo,
       htmlIcon: newMenu.htmlIcon?.toString(),
       createdBy: decodeToken?.userId,
     };

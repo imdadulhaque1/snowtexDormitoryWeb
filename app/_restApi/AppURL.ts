@@ -37,6 +37,10 @@ class AppURL {
   // static areaApi: string = `${this.baseURL}admin/area_wise/`;
   // static tagApi: string = `${this.baseURL}admin/tag`;
 
+  static buildingInfoApi: string = `${this.baseURL}admin/BuildingInfo`;
+  static floorInfoApi: string = `${this.baseURL}admin/FloorInfo`;
+  static roomInfoApi: string = `${this.baseURL}admin/RoomInfo`;
+
   // Get All Users
   static getUsersApi: string = `${this.baseURL}admin/user`;
 

@@ -10,8 +10,6 @@ type MenuItem = {
 };
 
 export const convertedMenu = (menuList: MenuItem[]): MenuItem[] => {
-  console.log("converted Menu menuList: ", JSON.stringify(menuList, null, 2));
-
   if (!Array.isArray(menuList)) {
     console.error("Invalid menuList, expected an array:", menuList);
     return [];
