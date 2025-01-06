@@ -83,11 +83,6 @@ const MenuManagements: FC<Props> = (props) => {
         },
       });
 
-      console.log(
-        "data?.data?.menus: ",
-        JSON.stringify(data?.data?.menus, null, 2)
-      );
-
       const convertedMenuItems: any = convertedMenu(data?.data?.menus);
       setMenuItem(convertedMenuItems);
     } catch (error: any) {
@@ -464,10 +459,3 @@ const MenuManagements: FC<Props> = (props) => {
 };
 
 export default MenuManagements;
-
-/*
-
-Make a reuseable item delete modal as mentioned attached file using tailwind css  in nextJS in optimized way
-
-
-*/

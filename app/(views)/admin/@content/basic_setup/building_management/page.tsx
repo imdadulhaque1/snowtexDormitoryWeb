@@ -12,7 +12,6 @@ import { MdDelete, MdDeleteOutline } from "react-icons/md";
 import { FaEdit, FaRegWindowClose } from "react-icons/fa";
 import { COLORS } from "@/app/_utils/COLORS";
 import { isValidBDTelephone } from "@/app/_utils/handler/validateBDTelephone ";
-import DeletedModal from "@/app/_components/modal/DeletedModal";
 import DeleteModal from "@/app/_components/modal/DeletedModal";
 
 interface Props {}
@@ -21,6 +20,7 @@ const BuildingManagements: FC<Props> = (props) => {
   const [fetchBuildings, setFetchBuildings] = useState<buildingsInterface[]>(
     []
   );
+
   const [buildingData, setBuildingData] = useState({
     buildingName: "",
     address: "",
