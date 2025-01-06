@@ -12,6 +12,8 @@ import { MdDelete, MdDeleteOutline } from "react-icons/md";
 import { FaEdit, FaRegWindowClose } from "react-icons/fa";
 import { COLORS } from "@/app/_utils/COLORS";
 import { isValidBDTelephone } from "@/app/_utils/handler/validateBDTelephone ";
+import DeletedModal from "@/app/_components/modal/DeletedModal";
+import DeleteModal from "@/app/_components/modal/DeletedModal";
 
 interface Props {}
 
@@ -24,6 +26,7 @@ const BuildingManagements: FC<Props> = (props) => {
     address: "",
     contactNo: "",
     isUpdated: false,
+    isDeleted: false,
     buildingId: null,
     buildingNameErrorMsg: "",
     addressErrorMsg: "",
@@ -62,8 +65,6 @@ const BuildingManagements: FC<Props> = (props) => {
     fetchAndDecodeToken();
 
     if (decodeToken?.token && decodeToken?.userId) {
-      console.log("Decode Token: ", JSON.stringify(decodeToken, null, 2));
-
       getBuildingsFunc(decodeToken?.token);
     }
   }, [decodeToken?.token, decodeToken?.userId]);
@@ -192,10 +193,6 @@ const BuildingManagements: FC<Props> = (props) => {
         toast.error("Error updating building !");
       }
     } catch (error: any) {
-      // if (error?.status === 409) {
-      //   toast.error("Building already exists !");
-      // } else {
-      // }
       toast.error("Failed to update. Please try again !");
       console.log("Error updating building: ", JSON.stringify(error, null, 2));
     }
@@ -210,7 +207,48 @@ const BuildingManagements: FC<Props> = (props) => {
     }));
   };
 
-  const deleteFunc = () => {};
+  const deleteFunc = async () => {
+    const deleteData = await {
+      inactiveBy: decodeToken?.userId,
+    };
+    if (buildingData?.buildingId && decodeToken?.userId) {
+      try {
+        const response: any = await fetch(
+          `${AppURL.buildingInfoApi}/${buildingData?.buildingId}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${decodeToken?.token}`,
+            },
+            body: JSON.stringify(deleteData),
+          }
+        );
+
+        if (response?.status === 200) {
+          toast.success("Building deleted successfully !");
+          setBuildingData((prev) => ({
+            ...prev,
+            buildingId: null,
+            isDeleted: false,
+          }));
+          getBuildingsFunc(decodeToken?.token);
+        } else {
+          toast.error("Error deleting building !");
+        }
+      } catch (error: any) {
+        toast.error("Failed to delete. Please try again !");
+        console.log("Error deleting building: ", error.message);
+      }
+    }
+  };
+  const handleCancel = () => {
+    setBuildingData((prev) => ({
+      ...prev,
+      buildingId: null,
+      isDeleted: false,
+    }));
+  };
 
   const size = useWindowSize();
   const windowWidth: any = size && size?.width;
@@ -426,7 +464,15 @@ const BuildingManagements: FC<Props> = (props) => {
                       </div>
 
                       <div className="relative group ">
-                        <button onClick={deleteFunc}>
+                        <button
+                          onClick={async () => {
+                            await setBuildingData((prev) => ({
+                              ...prev,
+                              buildingId: building?.buildingId,
+                              isDeleted: true,
+                            }));
+                          }}
+                        >
                           <MdDeleteOutline
                             color={COLORS.errorColor}
                             size={30}
@@ -445,6 +491,14 @@ const BuildingManagements: FC<Props> = (props) => {
             </div>
           )}
         </div>
+
+        <DeleteModal
+          title="Do you want to delete ?"
+          description="You're going to delete this buildings ."
+          onConfirm={deleteFunc}
+          onCancel={handleCancel}
+          isVisible={buildingData?.isDeleted}
+        />
       </div>
     </Suspense>
   );

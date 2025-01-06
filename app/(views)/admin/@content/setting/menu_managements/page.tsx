@@ -465,4 +465,9 @@ const MenuManagements: FC<Props> = (props) => {
 
 export default MenuManagements;
 
-//
+/*
+
+Make a reuseable item delete modal as mentioned attached file using tailwind css  in nextJS in optimized way
+
+
+*/
