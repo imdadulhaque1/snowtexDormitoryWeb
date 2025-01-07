@@ -1,8 +1,6 @@
 import { COLORS } from "@/app/_utils/COLORS";
 import React, { FC, InputHTMLAttributes } from "react";
 import { FaSearch } from "react-icons/fa";
-import { HiOutlineViewfinderCircle } from "react-icons/hi2";
-import { MdOutlineScreenSearchDesktop } from "react-icons/md";
 
 interface TableHeaderProps extends InputHTMLAttributes<HTMLInputElement> {
   headerText: string;
