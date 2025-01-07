@@ -24,6 +24,7 @@ const RoomManagement: FC<Props> = (props) => {
   const [dropdownProps, setDropdownProps] = useState({
     building: [],
     floor: [],
+    filteredFloors: [],
   });
   const [roomData, setRoomData] = useState({
     data: [],
@@ -137,7 +138,22 @@ const RoomManagement: FC<Props> = (props) => {
     }
   };
 
-  console.log("dropdownProps: ", JSON.stringify(dropdownProps, null, 2));
+  const handleBuildingChange = (buildingId: string) => {
+    setRoomData((prev: any) => ({
+      ...prev,
+      buildingId,
+      floorId: null, // Reset the floorId when building changes
+    }));
+
+    // Filter the floors based on the selected buildingId
+    const filteredFloors = dropdownProps.floor.filter(
+      (floor: any) => floor.buildingId === buildingId
+    );
+    setDropdownProps((prev) => ({
+      ...prev,
+      filteredFloors,
+    }));
+  };
 
   const validateForm = () => {
     let isValid = true;
@@ -167,40 +183,43 @@ const RoomManagement: FC<Props> = (props) => {
     const submitRoomData = await {
       roomName: roomData.roomName,
       roomDescription: roomData.roomDescription,
-      roomId: roomData.roomId,
       buildingId: roomData.buildingId,
+      floorId: roomData.floorId,
       createdBy: userId,
     };
     console.log("submitRoomData: ", JSON.stringify(submitRoomData, null, 2));
 
-    // try {
-    //   const { data } = await axios.post(AppURL.roomInfoApi, submitRoomData, {
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //   });
+    try {
+      const { data } = await axios.post(AppURL.roomInfoApi, submitRoomData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    //   if (data?.status === 201) {
-    //     toast.success(data?.message);
-    //     fetchFloorData(token);
-    //     getBuildingsFunc(token);
-    //     setFloorData((prev) => ({
-    //       ...prev,
-    //       floorName: "",
-    //       floorDescription: "",
-    //       buildingId: null,
-    //       isUpdated: false,
-    //       isDeleted: false,
-    //       floorNameErrorMsg: "",
-    //       floorDescriptionErrorMsg: "",
-    //       buildingIdErrorMsg: "",
-    //     }));
-    //   }
-    // } catch (error: any) {
-    //   toast.error("Failed to submit floor data !");
-    //   console.log("Error submitting floor data: ", error.message);
-    // }
+      if (data?.status === 201) {
+        toast.success(data?.message);
+        // fetchFloorData(token);
+        // getBuildingsFunc(token);
+        fetchRoomFunc(token);
+        setRoomData((prev) => ({
+          ...prev,
+          roomName: "",
+          roomDescription: "",
+          floorId: null,
+          buildingId: null,
+          isUpdated: false,
+          isDeleted: false,
+          roomNameErrorMsg: "",
+          roomDescriptionErrorMsg: "",
+          floorIdErrorMsg: "",
+          buildingIdErrorMsg: "",
+        }));
+      }
+    } catch (error: any) {
+      toast.error("Failed to submit floor data !");
+      console.log("Error submitting floor data: ", error.message);
+    }
   };
 
   const isRequiredRoom =
@@ -217,10 +236,10 @@ const RoomManagement: FC<Props> = (props) => {
             className={`w-[30%] h-80p bg-white p-4 m-4 rounded-lg shadow-lg`}
           >
             <VerticalSingleInput
-              label="Floor Name"
+              label="Room Name"
               type="text"
-              name="floorName"
-              placeholder="Enter floor Name..."
+              name="roomName"
+              placeholder="Enter room Name..."
               // @ts-ignore
               value={roomData?.roomName}
               onChange={(e: any) =>
@@ -235,10 +254,10 @@ const RoomManagement: FC<Props> = (props) => {
             />
             <div className="my-3">
               <VerticalSingleInput
-                label="Floor Description"
+                label="Room Description"
                 type="text"
-                name="floorDescription"
-                placeholder="Enter Floor Description..."
+                name="roomDescription"
+                placeholder="Enter Room Description..."
                 // @ts-ignore
                 value={roomData?.roomDescription}
                 onChange={(e: any) =>
@@ -253,31 +272,21 @@ const RoomManagement: FC<Props> = (props) => {
               />
             </div>
             <div className="my-3">
-              <label className=" text-black text-sm font-workSans mb-1 ">
-                Select Floors
-              </label>
-              <SearchableDropdown
-                options={dropdownProps?.floor}
-                isDisable={false}
-                placeholder="Select Floors..."
-                defaultValue={dropdownProps?.floor.find(
-                  (option: any) =>
-                    // @ts-ignore
-                    option.value === parseInt(roomData?.floorId)
-                )}
-                onSelect={(value: string, label: string) => {
-                  setRoomData((prevItem: any) => ({
-                    ...prevItem,
-                    floorId: value,
-                  }));
-                }}
-              />
-            </div>
-            <div className="my-3">
-              <label className=" text-black text-sm font-workSans mb-1 ">
+              <label className=" text-black text-sm font-workSans mb-1">
                 Select Buildings
               </label>
               <SearchableDropdown
+                options={dropdownProps?.building}
+                isDisable={false}
+                placeholder="Select Buildings..."
+                defaultValue={dropdownProps?.building.find(
+                  (option: any) =>
+                    // @ts-ignore
+                    option.value === parseInt(roomData?.buildingId)
+                )}
+                onSelect={(value) => handleBuildingChange(value)}
+              />
+              {/* <SearchableDropdown
                 options={dropdownProps?.building}
                 isDisable={false}
                 placeholder="Select Buildiings..."
@@ -292,7 +301,45 @@ const RoomManagement: FC<Props> = (props) => {
                     buildingId: value,
                   }));
                 }}
+              /> */}
+            </div>
+            <div className="my-3">
+              <label className=" text-black text-sm font-workSans mb-1 ">
+                Select Floors
+              </label>
+              <SearchableDropdown
+                options={dropdownProps?.filteredFloors}
+                isDisable={roomData?.buildingId === null}
+                placeholder="Select Floors..."
+                defaultValue={dropdownProps?.filteredFloors.find(
+                  // @ts-ignore
+                  (option: any) => option.value === parseInt(roomData?.floorId)
+                )}
+                onSelect={(value) => {
+                  console.log("value: ", value);
+
+                  setRoomData((prev: any) => ({
+                    ...prev,
+                    floorId: value,
+                  }));
+                }}
               />
+              {/* <SearchableDropdown
+                options={dropdownProps?.floor}
+                isDisable={false}
+                placeholder="Select Floors..."
+                defaultValue={dropdownProps?.floor.find(
+                  (option: any) =>
+                    // @ts-ignore
+                    option.value === parseInt(roomData?.floorId)
+                )}
+                onSelect={(value: string, label: string) => {
+                  setRoomData((prevItem: any) => ({
+                    ...prevItem,
+                    floorId: value,
+                  }));
+                }}
+              /> */}
             </div>
 
             <div className="flex justify-center items-center mt-4">
@@ -438,6 +485,7 @@ const RoomManagement: FC<Props> = (props) => {
                               roomName: room?.floorName,
                               roomDescription: room?.floorDescription,
                               buildingId: room?.buildingId,
+                              floorId: room?.floorId,
                               isUpdated: true,
                             }));
                           }}
