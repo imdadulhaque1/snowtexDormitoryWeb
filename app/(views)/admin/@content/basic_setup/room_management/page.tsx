@@ -11,6 +11,7 @@ import { FaEdit, FaRegWindowClose } from "react-icons/fa";
 import { COLORS } from "@/app/_utils/COLORS";
 import toast from "react-hot-toast";
 import DeleteModal from "@/app/_components/modal/DeletedModal";
+import TableHeader from "@/app/_components/inputField/table/TableHeader";
 
 interface Props {}
 
@@ -341,6 +342,7 @@ const RoomManagement: FC<Props> = (props) => {
     roomData?.buildingId;
 
   console.log("roomData: ", JSON.stringify(roomData, null, 2));
+  const [searchValue, setSearchValue] = useState("");
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -400,22 +402,6 @@ const RoomManagement: FC<Props> = (props) => {
                 )}
                 onSelect={(value) => handleBuildingChange(value)}
               />
-              {/* <SearchableDropdown
-                options={dropdownProps?.building}
-                isDisable={false}
-                placeholder="Select Buildiings..."
-                defaultValue={dropdownProps?.building.find(
-                  (option: any) =>
-                    // @ts-ignore
-                    option.value === parseInt(roomData?.buildingId)
-                )}
-                onSelect={(value: string, label: string) => {
-                  setRoomData((prevItem: any) => ({
-                    ...prevItem,
-                    buildingId: value,
-                  }));
-                }}
-              /> */}
             </div>
             <div className="my-3">
               <label className=" text-black text-sm font-workSans mb-1 ">
@@ -439,22 +425,6 @@ const RoomManagement: FC<Props> = (props) => {
                   }));
                 }}
               />
-              {/* <SearchableDropdown
-                options={dropdownProps?.floor}
-                isDisable={false}
-                placeholder="Select Floors..."
-                defaultValue={dropdownProps?.floor.find(
-                  (option: any) =>
-                    // @ts-ignore
-                    option.value === parseInt(roomData?.floorId)
-                )}
-                onSelect={(value: string, label: string) => {
-                  setRoomData((prevItem: any) => ({
-                    ...prevItem,
-                    floorId: value,
-                  }));
-                }}
-              /> */}
             </div>
 
             <div className="flex justify-center items-center mt-4">
@@ -523,37 +493,51 @@ const RoomManagement: FC<Props> = (props) => {
             <div
               className={`w-[52%] h-80p bg-white p-4 m-4 rounded-lg shadow-lg`}
             >
-              <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
-                <div className="flex w-1/12 items-center  justify-center border-slate-50 border-r-2">
-                  <p className="text-md font-workSans font-medium text-center ">
-                    Id
-                  </p>
-                </div>
-                <div className=" flex  w-1/5 items-center justify-center border-slate-50 border-r-2">
-                  <p className="text-md font-workSans font-medium text-center">
-                    Name
-                  </p>
-                </div>
-                <div className="flex w-1/3 items-center justify-center border-slate-50 border-r-2">
-                  <p className="text-md font-workSans font-medium text-center">
-                    Descriptions
-                  </p>
-                </div>
-                <div className="flex  w-1/5  justify-center items-center border-slate-50 border-r-2">
-                  <p className="text-md font-workSans font-medium text-center">
-                    Floor Name
-                  </p>
-                </div>
-                <div className="flex  w-1/5  justify-center items-center border-slate-50 border-r-2">
-                  <p className="text-md font-workSans font-medium text-center">
-                    Building Name
-                  </p>
-                </div>
-                <div className="flex  w-1/5  justify-center items-center">
-                  <p className="text-md font-workSans font-medium text-center">
-                    Actions
-                  </p>
-                </div>
+              <div className="flex w-full items-center border-2 border-slate-300 px-2 rounded-t-lg bg-slate-300">
+                <TableHeader
+                  headerText="Id"
+                  containerClassName="w-1/12 border-r-0"
+                  hasSearch={false}
+                />
+                <TableHeader
+                  headerText="Name"
+                  placeholder="Search by name"
+                  containerClassName="w-1/5 border-l-2"
+                  id="name-search"
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                />
+                <TableHeader
+                  headerText="Descriptions"
+                  placeholder="Search by description"
+                  containerClassName="w-1/3"
+                  id="description-search"
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                />
+
+                <TableHeader
+                  headerText="Floor Name"
+                  placeholder="Search by floor name"
+                  containerClassName="w-1/5"
+                  id="floorName-search"
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                />
+
+                <TableHeader
+                  headerText="Building Name"
+                  placeholder="Search by building name"
+                  containerClassName="w-1/5"
+                  id="buildingName-search"
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                />
+                <TableHeader
+                  headerText="Actions"
+                  containerClassName="w-1/5 border-r-0"
+                  hasSearch={false}
+                />
               </div>
 
               {roomData?.data?.map((room: any, roomIndex: number) => {
