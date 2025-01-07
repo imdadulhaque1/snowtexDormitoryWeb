@@ -10,6 +10,7 @@ import { MdDelete, MdDeleteOutline, MdOutlineFileUpload } from "react-icons/md";
 import { FaEdit, FaRegWindowClose } from "react-icons/fa";
 import { COLORS } from "@/app/_utils/COLORS";
 import toast from "react-hot-toast";
+import DeleteModal from "@/app/_components/modal/DeletedModal";
 
 interface Props {}
 
@@ -222,11 +223,124 @@ const RoomManagement: FC<Props> = (props) => {
     }
   };
 
+  const updateFunc = async (roomData: any, token: string, userId: any) => {
+    if (!validateForm()) return;
+
+    const updateRoomData = await {
+      roomName: roomData.roomName,
+      roomDescription: roomData.roomDescription,
+      buildingId: roomData.buildingId,
+      floorId: roomData.floorId,
+      updatedBy: userId,
+    };
+
+    await axios
+      .put(`${AppURL.roomInfoApi}/${roomData.roomId}`, updateRoomData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(({ data }) => {
+        if (data?.status === 200) {
+          toast.success("Successfully updated room data !");
+          // fetchFloorData(token);
+          // getBuildingsFunc(token);
+          fetchRoomFunc(token);
+          setRoomData((prev) => ({
+            ...prev,
+            roomId: null,
+            roomName: "",
+            roomDescription: "",
+            floorId: null,
+            buildingId: null,
+            isUpdated: false,
+            isDeleted: false,
+            roomNameErrorMsg: "",
+            roomDescriptionErrorMsg: "",
+            floorIdErrorMsg: "",
+            buildingIdErrorMsg: "",
+          }));
+        }
+      })
+      .catch((error: any) => {
+        toast.error("Failed to update Room data !");
+      });
+  };
+  const closeToUpdateFunc = async () => {
+    await setRoomData((prev) => ({
+      ...prev,
+      roomId: null,
+      roomName: "",
+      roomDescription: "",
+      floorId: null,
+      buildingId: null,
+      isUpdated: false,
+      isDeleted: false,
+      roomNameErrorMsg: "",
+      roomDescriptionErrorMsg: "",
+      floorIdErrorMsg: "",
+      buildingIdErrorMsg: "",
+    }));
+    // await getBuildingsFunc(decodeToken?.token);
+  };
+
+  const deleteFunc = async () => {
+    const deleteData = await {
+      inactiveBy: decodeToken?.userId,
+    };
+    if (roomData?.roomId && decodeToken?.userId) {
+      console.log(`${AppURL.roomInfoApi}/${roomData?.roomId}`);
+
+      try {
+        const response: any = await fetch(
+          `${AppURL.roomInfoApi}/${roomData?.roomId}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${decodeToken?.token}`,
+            },
+            body: JSON.stringify(deleteData),
+          }
+        );
+
+        console.log("response: ", JSON.stringify(response, null, 2));
+
+        if (response?.status === 200) {
+          toast.success("Room deleted successfully !");
+          setRoomData((prev) => ({
+            ...prev,
+            roomId: null,
+            isDeleted: false,
+          }));
+          fetchRoomFunc(decodeToken?.token);
+        } else {
+          toast.error("Error deleting Room !");
+        }
+      } catch (error: any) {
+        toast.error("Failed to delete. Please try again !");
+        console.log("Error deleting Room: ", error.message);
+      }
+    }
+  };
+  const handleCancel = () => {
+    setRoomData((prev) => ({
+      ...prev,
+      roomId: null,
+      isDeleted: false,
+    }));
+  };
+
   const isRequiredRoom =
-    roomData?.roomName.trim() &&
-    roomData?.roomDescription.trim() &&
+    roomData?.roomName &&
+    roomData?.roomDescription &&
+    roomData?.roomName?.trim() &&
+    roomData?.roomDescription?.trim() &&
     roomData?.floorId &&
     roomData?.buildingId;
+
+  console.log("roomData: ", JSON.stringify(roomData, null, 2));
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -282,7 +396,7 @@ const RoomManagement: FC<Props> = (props) => {
                 defaultValue={dropdownProps?.building.find(
                   (option: any) =>
                     // @ts-ignore
-                    option.value === parseInt(roomData?.buildingId)
+                    parseInt(option.value) === parseInt(roomData?.buildingId)
                 )}
                 onSelect={(value) => handleBuildingChange(value)}
               />
@@ -311,9 +425,10 @@ const RoomManagement: FC<Props> = (props) => {
                 options={dropdownProps?.filteredFloors}
                 isDisable={roomData?.buildingId === null}
                 placeholder="Select Floors..."
-                defaultValue={dropdownProps?.filteredFloors.find(
+                defaultValue={dropdownProps?.floor.find(
                   // @ts-ignore
-                  (option: any) => option.value === parseInt(roomData?.floorId)
+                  (option: any) =>
+                    parseInt(option.value) === parseInt(roomData?.floorId)
                 )}
                 onSelect={(value) => {
                   console.log("value: ", value);
@@ -481,9 +596,9 @@ const RoomManagement: FC<Props> = (props) => {
                           onClick={async () => {
                             await setRoomData((prev) => ({
                               ...prev,
-                              roomId: room?.floorId,
-                              roomName: room?.floorName,
-                              roomDescription: room?.floorDescription,
+                              roomId: room?.roomId,
+                              roomName: room?.roomName,
+                              roomDescription: room?.roomDescription,
                               buildingId: room?.buildingId,
                               floorId: room?.floorId,
                               isUpdated: true,
@@ -507,7 +622,7 @@ const RoomManagement: FC<Props> = (props) => {
                           onClick={async () => {
                             await setRoomData((prev) => ({
                               ...prev,
-                              roomId: room?.floorId,
+                              roomId: room?.roomId,
                               isDeleted: true,
                             }));
                           }}
@@ -530,6 +645,13 @@ const RoomManagement: FC<Props> = (props) => {
             </div>
           )}
         </div>
+        <DeleteModal
+          title="Do you want to delete ?"
+          description="You're going to delete this room ."
+          onConfirm={deleteFunc}
+          onCancel={handleCancel}
+          isVisible={roomData?.isDeleted}
+        />
       </div>
     </Suspense>
   );
