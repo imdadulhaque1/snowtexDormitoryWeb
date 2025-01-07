@@ -328,13 +328,13 @@ const BuildingManagements: FC<Props> = (props) => {
                 <button
                   className="bg-primary70 font-workSans text-md py-2 px-8 rounded-lg text-black hover:bg-primary50 hover:text-white"
                   onClick={() => {
-                    buildingData &&
-                    decodeToken?.userId &&
-                    isValidBDTelephone(buildingData?.contactNo)
-                      ? onSubmitFunc(buildingData, decodeToken?.token)
-                      : toast.error(
-                          "Please complete all the required fields !"
-                        );
+                    // buildingData &&
+                    // decodeToken?.userId &&
+                    // isValidBDTelephone(buildingData?.contactNo)
+                    onSubmitFunc(buildingData, decodeToken?.token);
+                    // : toast.error(
+                    //     "Please complete all the required fields !"
+                    //   );
                   }}
                 >
                   Add Building ?
