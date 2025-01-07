@@ -1,4 +1,4 @@
-import React, { FC, Suspense, useEffect, useState } from "react";
+import React, { FC, Suspense, use, useEffect, useState } from "react";
 import jwtDecode from "jsonwebtoken";
 import { tokenInterface } from "@/interface/admin/decodeToken/tokenInterface";
 import retrieveToken from "@/app/_utils/handler/retrieveToken";
@@ -22,6 +22,11 @@ const RoomManagement: FC<Props> = (props) => {
     email: "",
     token: "",
     expireDate: null,
+  });
+  const [searchKey, setSearchKey] = useState({
+    roomName: "",
+    buildingName: "",
+    floorName: "",
   });
   const [dropdownProps, setDropdownProps] = useState({
     building: [],
@@ -125,20 +130,36 @@ const RoomManagement: FC<Props> = (props) => {
   };
 
   const fetchRoomFunc = async (token: string) => {
+    // https://localhost:7094/api/admin/RoomInfo?name=test&buildingName=sc&floorName=c&sortOrder=asc&page=1&pageSize=10
+
+    const getRoomApi = `${AppURL.roomInfoApi}?name=${searchKey?.roomName}&buildingName=${searchKey?.buildingName}&floorName=${searchKey?.floorName}`;
+
     try {
-      const { data } = await axios.get(AppURL.roomInfoApi, {
+      const { data } = await axios.get(getRoomApi, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
       if (data?.status === 200) {
+        console.log(JSON.stringify(data?.data, null, 2));
+
         setRoomData((prev) => ({ ...prev, data: data?.data }));
       }
     } catch (error: any) {
       console.log("Error fetching room data: ", error);
     }
   };
+
+  // useEffect(() => {
+  //   if (
+  //     searchKey?.roomName ||
+  //     searchKey?.buildingName ||
+  //     searchKey?.floorName
+  //   ) {
+  //     fetchRoomFunc(decodeToken?.token);
+  //   }
+  // }, [searchKey?.roomName, searchKey?.buildingName, searchKey?.floorName]);
 
   const handleBuildingChange = (buildingId: string) => {
     setRoomData((prev: any) => ({
@@ -341,7 +362,7 @@ const RoomManagement: FC<Props> = (props) => {
     roomData?.floorId &&
     roomData?.buildingId;
 
-  console.log("roomData: ", JSON.stringify(roomData, null, 2));
+  // console.log("roomData: ", JSON.stringify(roomData, null, 2));
   const [searchValue, setSearchValue] = useState("");
 
   return (
@@ -489,7 +510,7 @@ const RoomManagement: FC<Props> = (props) => {
               )}
             </div>
           </div>
-          {roomData?.data && roomData?.data?.length > 0 && (
+          {
             <div
               className={`w-[52%] h-80p bg-white p-4 m-4 rounded-lg shadow-lg`}
             >
@@ -504,16 +525,19 @@ const RoomManagement: FC<Props> = (props) => {
                   placeholder="Search by name"
                   containerClassName="w-1/5 border-l-2"
                   id="name-search"
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
+                  value={searchKey.roomName}
+                  onChange={(e) => {
+                    setSearchKey((prev) => ({
+                      ...prev,
+                      roomName: e.target.value,
+                    }));
+                  }}
+                  onSearch={() => fetchRoomFunc(decodeToken?.token)}
                 />
                 <TableHeader
                   headerText="Descriptions"
-                  placeholder="Search by description"
                   containerClassName="w-1/3"
-                  id="description-search"
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
+                  hasSearch={false}
                 />
 
                 <TableHeader
@@ -521,8 +545,14 @@ const RoomManagement: FC<Props> = (props) => {
                   placeholder="Search by floor name"
                   containerClassName="w-1/5"
                   id="floorName-search"
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
+                  value={searchKey.floorName}
+                  onChange={(e) => {
+                    setSearchKey((prev) => ({
+                      ...prev,
+                      floorName: e.target.value,
+                    }));
+                  }}
+                  onSearch={() => fetchRoomFunc(decodeToken?.token)}
                 />
 
                 <TableHeader
@@ -530,8 +560,14 @@ const RoomManagement: FC<Props> = (props) => {
                   placeholder="Search by building name"
                   containerClassName="w-1/5"
                   id="buildingName-search"
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
+                  value={searchKey.buildingName}
+                  onChange={(e) => {
+                    setSearchKey((prev) => ({
+                      ...prev,
+                      buildingName: e.target.value,
+                    }));
+                  }}
+                  onSearch={() => fetchRoomFunc(decodeToken?.token)}
                 />
                 <TableHeader
                   headerText="Actions"
@@ -540,94 +576,96 @@ const RoomManagement: FC<Props> = (props) => {
                 />
               </div>
 
-              {roomData?.data?.map((room: any, roomIndex: number) => {
-                const isLastRoom = roomIndex === roomData?.data.length - 1;
-                return (
-                  <div
-                    key={roomIndex}
-                    className={`flex w-full items-center ${
-                      !isLastRoom ? "border-b-2" : "border-b-0"
-                    } border-slate-300 py-2 px-2  bg-slate-100`}
-                  >
-                    <div className="flex w-1/12 items-center  justify-center border-slate-300 border-r-2">
-                      <p className="text-md font-workSans text-center">
-                        {room?.roomId}
-                      </p>
-                    </div>
-                    <div className=" flex  w-1/5 items-center justify-center border-slate-300 border-r-2">
-                      <p className="text-md font-workSans text-center break-words max-w-full">
-                        {room?.roomName}
-                      </p>
-                    </div>
-                    <div className="flex w-1/3 items-center justify-center border-slate-300 border-r-2">
-                      <p className="text-md font-workSans text-center break-words max-w-full">
-                        {room?.roomDescription}
-                      </p>
-                    </div>
-                    <div className="flex  w-1/5  justify-center items-center border-slate-300 border-r-2">
-                      <p className="text-md font-workSans text-center break-words max-w-full">
-                        {room?.floorName}
-                      </p>
-                    </div>
-                    <div className="flex  w-1/5  justify-center items-center border-slate-300 border-r-2">
-                      <p className="text-md font-workSans text-center break-words max-w-full">
-                        {room?.buildingName}
-                      </p>
-                    </div>
-                    <div className="flex  w-1/5  justify-center items-center">
-                      <div className="relative group mr-3">
-                        <button
-                          onClick={async () => {
-                            await setRoomData((prev) => ({
-                              ...prev,
-                              roomId: room?.roomId,
-                              roomName: room?.roomName,
-                              roomDescription: room?.roomDescription,
-                              buildingId: room?.buildingId,
-                              floorId: room?.floorId,
-                              isUpdated: true,
-                            }));
-                          }}
-                        >
-                          <FaEdit
-                            color={COLORS.primary80}
-                            size={28}
-                            className="cursor-pointer  shadow-xl shadow-white"
-                          />
-                        </button>
-
-                        <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full  px-2 py-1 text-xs text-black  opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
-                          Update Floor
-                        </span>
+              {roomData?.data &&
+                roomData?.data?.length > 0 &&
+                roomData?.data?.map((room: any, roomIndex: number) => {
+                  const isLastRoom = roomIndex === roomData?.data.length - 1;
+                  return (
+                    <div
+                      key={roomIndex}
+                      className={`flex w-full items-center ${
+                        !isLastRoom ? "border-b-2" : "border-b-0"
+                      } border-slate-300 py-2 px-2  bg-slate-100`}
+                    >
+                      <div className="flex w-1/12 items-center  justify-center border-slate-300 border-r-2">
+                        <p className="text-md font-workSans text-center">
+                          {room?.roomId}
+                        </p>
                       </div>
+                      <div className=" flex  w-1/5 items-center justify-center border-slate-300 border-r-2">
+                        <p className="text-md font-workSans text-center break-words max-w-full">
+                          {room?.roomName}
+                        </p>
+                      </div>
+                      <div className="flex w-1/3 items-center justify-center border-slate-300 border-r-2">
+                        <p className="text-md font-workSans text-center break-words max-w-full">
+                          {room?.roomDescription}
+                        </p>
+                      </div>
+                      <div className="flex  w-1/5  justify-center items-center border-slate-300 border-r-2">
+                        <p className="text-md font-workSans text-center break-words max-w-full">
+                          {room?.floorName}
+                        </p>
+                      </div>
+                      <div className="flex  w-1/5  justify-center items-center border-slate-300 border-r-2">
+                        <p className="text-md font-workSans text-center break-words max-w-full">
+                          {room?.buildingName}
+                        </p>
+                      </div>
+                      <div className="flex  w-1/5  justify-center items-center">
+                        <div className="relative group mr-3">
+                          <button
+                            onClick={async () => {
+                              await setRoomData((prev) => ({
+                                ...prev,
+                                roomId: room?.roomId,
+                                roomName: room?.roomName,
+                                roomDescription: room?.roomDescription,
+                                buildingId: room?.buildingId,
+                                floorId: room?.floorId,
+                                isUpdated: true,
+                              }));
+                            }}
+                          >
+                            <FaEdit
+                              color={COLORS.primary80}
+                              size={28}
+                              className="cursor-pointer  shadow-xl shadow-white"
+                            />
+                          </button>
 
-                      <div className="relative group ">
-                        <button
-                          onClick={async () => {
-                            await setRoomData((prev) => ({
-                              ...prev,
-                              roomId: room?.roomId,
-                              isDeleted: true,
-                            }));
-                          }}
-                        >
-                          <MdDeleteOutline
-                            color={COLORS.errorColor}
-                            size={30}
-                            className="cursor-pointer  shadow-xl shadow-white"
-                          />
-                        </button>
+                          <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full  px-2 py-1 text-xs text-black  opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
+                            Update Floor
+                          </span>
+                        </div>
 
-                        <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full  px-2 py-1 text-xs text-black  opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
-                          Delete Floor
-                        </span>
+                        <div className="relative group ">
+                          <button
+                            onClick={async () => {
+                              await setRoomData((prev) => ({
+                                ...prev,
+                                roomId: room?.roomId,
+                                isDeleted: true,
+                              }));
+                            }}
+                          >
+                            <MdDeleteOutline
+                              color={COLORS.errorColor}
+                              size={30}
+                              className="cursor-pointer  shadow-xl shadow-white"
+                            />
+                          </button>
+
+                          <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full  px-2 py-1 text-xs text-black  opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
+                            Delete Floor
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </div>
-          )}
+          }
         </div>
         <DeleteModal
           title="Do you want to delete ?"
