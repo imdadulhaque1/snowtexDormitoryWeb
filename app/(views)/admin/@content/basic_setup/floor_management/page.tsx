@@ -4,7 +4,6 @@ import { tokenInterface } from "@/interface/admin/decodeToken/tokenInterface";
 import retrieveToken from "@/app/_utils/handler/retrieveToken";
 import VerticalSingleInput from "@/app/_components/inputField/VerticalSingleInput";
 import toast from "react-hot-toast";
-import { isValidBDTelephone } from "@/app/_utils/handler/validateBDTelephone ";
 import { COLORS } from "@/app/_utils/COLORS";
 import { MdDelete, MdDeleteOutline, MdOutlineFileUpload } from "react-icons/md";
 import { FaEdit, FaRegWindowClose } from "react-icons/fa";
