@@ -22,3 +22,8 @@ const DormitoryPage = async () => {
 };
 
 export default DormitoryPage;
+
+/*
+
+
+ */
