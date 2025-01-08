@@ -454,8 +454,8 @@ const RoomManagement: FC<Props> = (props) => {
                 isDisable={roomData?.buildingId === null}
                 placeholder="Select Floors..."
                 defaultValue={dropdownProps?.floor.find(
-                  // @ts-ignore
                   (option: any) =>
+                    // @ts-ignore
                     parseInt(option.value) === parseInt(roomData?.floorId)
                 )}
                 onSelect={(value) => {
@@ -537,7 +537,7 @@ const RoomManagement: FC<Props> = (props) => {
           >
             <div className="flex w-full items-center  px-2 rounded-t-lg bg-slate-300">
               <TableHeader
-                headerText="View"
+                headerText="Details"
                 containerClassName="w-1/12 "
                 hasSearch={false}
               />
