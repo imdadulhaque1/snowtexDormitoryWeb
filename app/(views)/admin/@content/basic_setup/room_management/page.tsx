@@ -1,4 +1,5 @@
-import React, { FC, Suspense, use, useEffect, useState } from "react";
+"use client";
+import React, { FC, Suspense, useEffect, useState } from "react";
 import jwtDecode from "jsonwebtoken";
 import { tokenInterface } from "@/interface/admin/decodeToken/tokenInterface";
 import retrieveToken from "@/app/_utils/handler/retrieveToken";
@@ -12,7 +13,6 @@ import { COLORS } from "@/app/_utils/COLORS";
 import toast from "react-hot-toast";
 import DeleteModal from "@/app/_components/modal/DeletedModal";
 import TableHeader from "@/app/_components/inputField/table/TableHeader";
-import { LuView } from "react-icons/lu";
 import { BsEyeFill } from "react-icons/bs";
 
 import PaginationUI from "@/app/_components/pagination/PaginationUI";
@@ -184,16 +184,20 @@ const RoomManagement: FC<Props> = (props) => {
 
     if (!roomData.roomName.trim()) {
       isValid = false;
-      errors.floorNameErrorMsg = "Floor name is required.";
+      errors.roomNameErrorMsg = "Floor name is required.";
     }
     if (!roomData.roomDescription.trim()) {
       isValid = false;
-      errors.floorDescriptionErrorMsg = "Floor Description is required.";
+      errors.roomDescriptionErrorMsg = "Floor Description is required.";
     }
 
     if (!roomData.buildingId) {
       isValid = false;
       errors.buildingIdErrorMsg = "Cascading building is required.";
+    }
+    if (!roomData.floorId) {
+      isValid = false;
+      errors.floorIdErrorMsg = "Cascading floor is required.";
     }
 
     setRoomData((prev) => ({ ...prev, ...errors }));
@@ -386,6 +390,9 @@ const RoomManagement: FC<Props> = (props) => {
           <div
             className={`w-[25%] h-80p bg-white p-4 m-4 rounded-lg shadow-lg`}
           >
+            <p className=" text-lg font-workSans text-center uppercase font-semibold">
+              Room Entries
+            </p>
             <VerticalSingleInput
               label="Room Name"
               type="text"
@@ -528,21 +535,21 @@ const RoomManagement: FC<Props> = (props) => {
           <div
             className={`w-[57%] h-80p bg-white p-4 m-4 rounded-lg shadow-lg`}
           >
-            <div className="flex w-full items-center border-2 border-slate-300 px-2 rounded-t-lg bg-slate-300">
+            <div className="flex w-full items-center  px-2 rounded-t-lg bg-slate-300">
               <TableHeader
                 headerText="View"
-                containerClassName="w-1/12 border-r-0"
+                containerClassName="w-1/12 "
                 hasSearch={false}
               />
               <TableHeader
                 headerText="ID"
-                containerClassName="w-1/12 border-r-0"
+                containerClassName="w-1/12 border-l-2"
                 hasSearch={false}
               />
               <TableHeader
                 headerText="Name"
                 placeholder="Search by name"
-                containerClassName="w-1/5 border-l-2"
+                containerClassName="w-1/5 border-l-2 border-r-2 border-slate-50"
                 id="name-search"
                 value={searchKey.roomName}
                 onChange={(e) => {
@@ -555,13 +562,13 @@ const RoomManagement: FC<Props> = (props) => {
               />
               <TableHeader
                 headerText="Descriptions"
-                containerClassName="w-1/3"
+                containerClassName="w-1/3 "
                 hasSearch={false}
               />
               <TableHeader
                 headerText="Floor Name"
                 placeholder="Search by floor name"
-                containerClassName="w-1/5"
+                containerClassName="w-1/5 border-r-2 border-l-2 border-slate-50"
                 id="floorName-search"
                 value={searchKey.floorName}
                 onChange={(e) => {
@@ -575,7 +582,7 @@ const RoomManagement: FC<Props> = (props) => {
               <TableHeader
                 headerText="Building Name"
                 placeholder="Search by building name"
-                containerClassName="w-1/5"
+                containerClassName="w-1/5 border-r-2 border-slate-50"
                 id="buildingName-search"
                 value={searchKey.buildingName}
                 onChange={(e) => {
@@ -588,13 +595,13 @@ const RoomManagement: FC<Props> = (props) => {
               />
               <TableHeader
                 headerText="Actions"
-                containerClassName="w-44 border-r-0"
+                containerClassName="w-1/5 "
                 hasSearch={false}
               />
             </div>
 
             {/* Scrollable Rows */}
-            <div className="max-h-80 overflow-y-auto">
+            <div className="max-h-80p overflow-y-auto">
               {roomData?.data &&
                 roomData?.data?.length > 0 &&
                 roomData?.data?.map((room: any, roomIndex: number) => {
@@ -649,11 +656,7 @@ const RoomManagement: FC<Props> = (props) => {
                           {room?.buildingName}
                         </p>
                       </div>
-                      <div
-                        className={`flex ${
-                          roomData?.data?.length > 7 ? "w-36" : "w-44"
-                        } justify-center items-center`}
-                      >
+                      <div className={`flex w-1/5 justify-center items-center`}>
                         <div className="relative group mr-3">
                           <button
                             onClick={async () => {

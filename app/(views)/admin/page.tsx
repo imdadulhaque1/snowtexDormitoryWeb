@@ -79,6 +79,7 @@ import ProfilePage from "./@content/profile/page";
 import BuildingManagements from "./@content/basic_setup/building_management/page";
 import FloorManagement from "./@content/basic_setup/floor_management/page";
 import RoomManagement from "./@content/basic_setup/room_management/page";
+import RoomDetailsPage from "./@content/basic_setup/room_details/page";
 
 const AdminPage = () => {
   const router = useRouter();
@@ -152,6 +153,8 @@ const AdminPage = () => {
         return <FloorManagement />;
       case "basic_setup/room_management":
         return <RoomManagement />;
+      case "basic_setup/room_details":
+        return <RoomDetailsPage />;
       default:
         return <AdminDashboardPage />;
     }

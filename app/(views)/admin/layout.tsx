@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { isTokenExpired } from "@/app/_utils/handler/getCurrentDate";
 import RootNavbar from "@/app/_components/home/RootNavbar";
 
-const AdminLayout: FC<{ children: ReactNode }> = async ({ children }) => {
+const AdminLayout: FC<{ children?: ReactNode }> = async ({ children }) => {
   const cookieStore = await cookies();
   const aspToken: any = await (cookieStore.get("authToken")?.value || null);
 
@@ -33,51 +33,5 @@ export default AdminLayout;
 
 export const metadata = {
   title: "Admin",
-  description: "Job Bangla | Admin",
+  description: "Snowtex Group | Dormitory",
 };
-
-/*
-
-
-
-
-
-
-
-
-import { FC, ReactNode, Suspense } from "react";
-import Sidebar from "./@sidebar/page";
-
-interface LayoutProps {
-  children: ReactNode;
-}
-
-const AdminLayout: FC<LayoutProps> = ({ children }) => {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <div className="flex h-screen w-screen ">
-        <aside className="bg-gray-100">
-          <Sidebar />
-        </aside>
-        <main className="flex-1 ">{children}</main>
-      </div>
-    </Suspense>
-  );
-};
-
-export default AdminLayout;
-
-export const metadata = {
-  title: "Admin",
-  description: "Job Bangla | Admin",
-};
-
-
-
-
-
-
-
-
-
-*/

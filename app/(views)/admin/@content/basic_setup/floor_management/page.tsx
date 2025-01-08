@@ -1,3 +1,4 @@
+"use client";
 import React, { FC, Suspense, useEffect, useState } from "react";
 import jwtDecode from "jsonwebtoken";
 import { tokenInterface } from "@/interface/admin/decodeToken/tokenInterface";
@@ -527,43 +528,3 @@ const FloorManagement: FC<Props> = (props) => {
 };
 
 export default FloorManagement;
-
-/*
-
-// Get All Floors
-[HttpGet("")]
-public async Task<IActionResult> GetFloors()
-{
-    var floors = await _context.floorInfoModels
-        .Where(f => f.isActive == true)
-        .Join(
-            _context.buildingInfoModels,  // The second table to join
-            floor => floor.buildingId,    // Foreign key in the floor table
-            building => building.buildingId, // Primary key in the building table
-            (floor, building) => new      // Project the result
-            {
-                floor.floorId,
-                floor.floorName,
-                floor.floorDescription,
-                floor.buildingId,
-                BuildingName = building.buildingName, // Include building name
-                floor.createdBy,
-                floor.createdTime,
-                floor.isActive
-            }
-        )
-        .ToListAsync();
-
-    return Ok(new
-    {
-        status = 200,
-        message = "Fetched floors successfully",
-        data = floors
-    });
-}
-
-above GetFloors api controllers refactor for below 
-https://localhost:7094/api/admin/FloorInfo?floorNAme=B&buildingName=sdf
-
-
-*/

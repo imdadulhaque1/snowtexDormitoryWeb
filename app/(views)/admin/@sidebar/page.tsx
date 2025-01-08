@@ -242,7 +242,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
             isDrawerOpen ? "w-full" : "w-0"
           } transition-all duration-500  overflow-y-auto`}
         >
-          {children}
+          {children ?? <div>No Content Available</div>}
         </main>
       </div>
     </Suspense>
@@ -250,3 +250,5 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
 };
 
 export default Sidebar;
+
+//

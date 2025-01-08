@@ -9,9 +9,15 @@ import toast from "react-hot-toast";
 import AppURL from "@/app/_restApi/AppURL";
 import Cookies from "js-cookie";
 interface LoginFormProps {
-  onClose: () => void;
-  onSuccess: () => void;
-  isFormModal: boolean;
+  onClose?: () => void;
+  onSuccess?: () => void;
+  isFormModal?: boolean;
+}
+interface LoginDataINterface {
+  emailOrPhone: string;
+  password: string;
+  emailPhoneErrorMsg: string;
+  passwordErrorMsg: string;
 }
 
 const LoginForm: FC<LoginFormProps> = ({
@@ -21,7 +27,7 @@ const LoginForm: FC<LoginFormProps> = ({
 }) => {
   const router = useRouter();
 
-  const [loginData, setLoginData] = useState({
+  const [loginData, setLoginData] = useState<LoginDataINterface>({
     emailOrPhone: "",
     password: "",
     emailPhoneErrorMsg: "",
