@@ -894,3 +894,9 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
 };
 
 export default RoomGoodsEntriesPage;
+
+/*
+
+Commit puerrposde 
+
+ */
