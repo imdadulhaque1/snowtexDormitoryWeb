@@ -116,8 +116,6 @@ const FloorManagement: FC<Props> = (props) => {
   };
 
   const fetchFloorData = async (token: string) => {
-    console.log(AppURL.floorInfoApi);
-
     try {
       const { data } = await axios.get(AppURL.floorInfoApi, {
         headers: {

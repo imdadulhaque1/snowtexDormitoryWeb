@@ -187,7 +187,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     <Suspense fallback={<div>Loading...</div>}>
       <div
         className={`flex  h-screen bg-white transition-transform duration-500 ease-in-out border-r-2 shadow-2xl  ${
-          isDrawerOpen ? "w-[250]" : "w-0"
+          isDrawerOpen ? "w-[265]" : "w-0"
         }`}
       >
         {!isDrawerOpen && (
@@ -238,7 +238,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
         </div>
 
         <main
-          className={`flex-1 min-h-screen  ${
+          className={`flex-1  min-h-screen  ${
             isDrawerOpen ? "w-full" : "w-0"
           } transition-all duration-500  overflow-y-auto`}
         >

@@ -12,7 +12,7 @@ const AdminLayout: FC<{ children?: ReactNode }> = async ({ children }) => {
   const isExpired = await (aspToken ? isTokenExpired(aspToken) : true);
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <div className="flex h-screen w-screen">
+      <div className="flex  h-screen w-screen">
         <aside className="bg-gray-100">
           <Sidebar />
         </aside>

@@ -225,7 +225,7 @@ const RoomDetailsPage: FC<Props> = (props) => {
               <label className=" text-black text-sm font-workSans mb-1">
                 Room Side
               </label>
-              <div className="flex">
+              <div className="flex  bg-primary95 border-2 border-slate-200 rounded-lg p-2">
                 <VertcialRadioBtn
                   label="East"
                   value={1}
@@ -262,10 +262,10 @@ const RoomDetailsPage: FC<Props> = (props) => {
               <label className=" text-black text-sm font-workSans mb-1">
                 Common Features
               </label>
-              <div className="flex flex-wrap">
+              <div className="flex flex-wrap  bg-primary95 border-2 border-slate-200 rounded-lg p-2">
                 {defaultData.commonFeatures &&
                   defaultData.commonFeatures.map((feature: any, index) => (
-                    <div key={index} className="w-1/3 items-center ">
+                    <div key={index} className="w-1/3 items-center  relative">
                       <input
                         type="checkbox"
                         checked={roomDetails?.commonFeatures.includes(feature)}
@@ -282,7 +282,7 @@ const RoomDetailsPage: FC<Props> = (props) => {
                         }}
                         className="w-4 h-4 cursor-pointer bg-slate-500 rounded-lg"
                       />
-                      <span className="font-workSans text-black text-center text-sm">
+                      <span className="absolute font-workSans text-black text-center text-sm top-[-2] ml-1">
                         {feature}
                       </span>
                     </div>
