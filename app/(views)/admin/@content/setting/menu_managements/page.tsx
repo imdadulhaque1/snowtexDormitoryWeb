@@ -177,9 +177,9 @@ const MenuManagements: FC<Props> = (props) => {
               >
                 {parentMenu?.subItems?.length > 0 ? (
                   <div
-                    className={`flex flex-col items-center w-[300]  bg-primary70 rounded-md`}
+                    className={`flex flex-col items-center w-[300]  bg-slate-400 rounded-md`}
                   >
-                    <div className="flex w-full items-center justify-evenly bg-primary70 py-2 rounded-t-md">
+                    <div className="flex w-full items-center justify-evenly bg-slate-400 py-2 rounded-t-md">
                       <p className="font-workSans text-xl font-medium text-black">
                         {`${parentMenu.menuSerialNo} / ${parentMenu.menuId}`}
                       </p>
@@ -194,17 +194,17 @@ const MenuManagements: FC<Props> = (props) => {
                         return (
                           <div
                             key={secondLayerIndex}
-                            className={`flex items-center justify-center bg-primary80 mt-2 w-95p border-2 border-primary80 rounded-md ${
+                            className={`flex items-center justify-center bg-slate-300 mt-2 w-95p border-2 border-primary80 rounded-md ${
                               isSecondLast && "mb-3"
                             } `}
                           >
                             {secondLayerMenu?.subItems?.length > 0 ? (
                               <div
-                                className={` bg-primary80 mt-2 w-95p border-2 border-primary80 rounded-md ${
+                                className={` bg-slate-300 mt-2 w-95p border-2 border-slate-300 rounded-md ${
                                   isSecondLast && "mb-3"
                                 } `}
                               >
-                                <div className="flex w-full items-center justify-around  bg-primary80  rounded-t-md ">
+                                <div className="flex w-full items-center justify-around  bg-slate-300  rounded-t-md ">
                                   <p className="font-workSans text-xl font-medium text-black">
                                     {`${secondLayerMenu.menuSerialNo} / ${secondLayerMenu.menuId}`}
                                   </p>
@@ -227,7 +227,7 @@ const MenuManagements: FC<Props> = (props) => {
                                         0 ? (
                                           <div
                                             key={secondLayerIndex}
-                                            className={` bg-primary90 mt-2 w-full border-2 border-primary80 rounded-md ${
+                                            className={` bg-slate-100 mt-2 w-full border-2 border-slate-300 rounded-md ${
                                               isSecondLast && "mb-3"
                                             } `}
                                           >
@@ -309,12 +309,12 @@ const MenuManagements: FC<Props> = (props) => {
                                           </div>
                                         ) : (
                                           <div
-                                            className={`relative bg-primary95 mt-2 w-full border-2 border-primary96 rounded-md ${
+                                            className={`relative bg-slate-200 mt-2 w-full border-2 border-slate-200 rounded-md ${
                                               isThirdLast ? "mb-3" : ""
-                                            } group hover:bg-primary90`}
+                                            } group hover:bg-slate-200`}
                                           >
                                             {/* Main Content */}
-                                            <div className="flex w-full items-center justify-center bg-primary90 py-2 rounded-t-md group-hover:blur-sm group-hover:opacity-70 transition-all duration-300">
+                                            <div className="flex w-full items-center justify-center bg-slate-300 py-2 rounded-t-md group-hover:blur-sm group-hover:opacity-70 transition-all duration-300">
                                               <p className="font-workSans text-xl font-medium text-black">
                                                 {`${thirdLayerMenu.menuSerialNo} / ${thirdLayerMenu.menuId}`}
                                               </p>
@@ -358,10 +358,10 @@ const MenuManagements: FC<Props> = (props) => {
                               </div>
                             ) : (
                               <div
-                                className={`relative bg-primary80 w-full border-2 border-primary80 rounded-md group hover:bg-primary75`}
+                                className={`relative bg-slate-300 w-full border-2 border-slate-300 rounded-md group hover:bg-slate-200`}
                               >
                                 {/* Main Content */}
-                                <div className="flex w-full items-center justify-center bg-primary75 py-2 rounded-t-md group-hover:blur-sm group-hover:opacity-70 transition-all duration-300">
+                                <div className="flex w-full items-center justify-center bg-slate-200 py-2 rounded-t-md group-hover:blur-sm group-hover:opacity-70 transition-all duration-300">
                                   <p className="font-workSans text-xl font-medium text-black">
                                     {`${secondLayerMenu.menuSerialNo} / ${secondLayerMenu.menuId}`}
                                   </p>
@@ -405,10 +405,10 @@ const MenuManagements: FC<Props> = (props) => {
                   </div>
                 ) : (
                   <div
-                    className={`relative flex flex-col items-center w-[300px] bg-primary80 rounded-md hover:bg-primary70 shadow-lg group`}
+                    className={`relative flex flex-col items-center w-[300px] bg-slate-300 rounded-md hover:bg-slate-300 shadow-lg group`}
                   >
                     {/* Main Content */}
-                    <div className="flex w-full items-center justify-center bg-primary70 py-2 rounded-t-md group-hover:blur-sm group-hover:opacity-70 transition-all duration-300">
+                    <div className="flex w-full items-center justify-center bg-slate-400 py-2 rounded-t-md group-hover:blur-sm group-hover:opacity-70 transition-all duration-300">
                       <p className="font-workSans text-xl font-medium text-black">
                         {`${parentMenu.menuSerialNo} / ${parentMenu.menuId}`}
                       </p>

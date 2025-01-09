@@ -24,7 +24,7 @@ const TableHeader: FC<TableHeaderProps> = ({
 }) => {
   return (
     <div
-      className={`flex flex-col  items-center justify-center border-r-2 border-slate-50 ${containerClassName}`}
+      className={`flex flex-col  items-center justify-center  ${containerClassName}`}
     >
       <p className="text-md font-workSans font-medium text-center my-1">
         {headerText}

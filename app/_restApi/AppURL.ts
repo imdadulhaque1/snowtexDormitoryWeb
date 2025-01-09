@@ -41,6 +41,11 @@ class AppURL {
   static floorInfoApi: string = `${this.baseURL}admin/FloorInfo`;
   static roomInfoApi: string = `${this.baseURL}admin/RoomInfo`;
 
+  // Room Managements Api
+  static roomCommonFeature: string = `${this.baseURL}admin/room/RoomCommonFeature`;
+  // static RoomCommonFeature: string = `${this.baseURL}admin/room/availablefurnitures`;
+  // static RoomCommonFeature: string = `${this.baseURL}admin/room/RoomCommonFeature`;
+
   // Get All Users
   static getUsersApi: string = `${this.baseURL}admin/user`;
 

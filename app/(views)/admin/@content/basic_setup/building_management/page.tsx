@@ -1,3 +1,4 @@
+"use client";
 import VerticalSingleInput from "@/app/_components/inputField/VerticalSingleInput";
 import retrieveToken from "@/app/_utils/handler/retrieveToken";
 import React, { FC, Suspense, useEffect, useState } from "react";

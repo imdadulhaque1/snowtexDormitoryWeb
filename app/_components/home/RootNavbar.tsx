@@ -99,7 +99,7 @@ const RootNavbar: FC<Props> = ({
 
   return (
     <ul
-      className={`flex items-center ${
+      className={`flex  items-center ${
         isShowIcon ? "justify-between" : "justify-end"
       } bg-white px-5 py-2  mx-0  shadow-lg shadow-primary90 z-50`}
     >
