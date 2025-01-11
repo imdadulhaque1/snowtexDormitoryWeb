@@ -11,6 +11,7 @@ import ReusableFeaturesCard from "@/app/_components/card/RoomFeaturesCard";
 import axios from "axios";
 import AppURL from "@/app/_restApi/AppURL";
 import { useWindowSize } from "@/app/_utils/handler/useWindowSize";
+import DeleteModal from "@/app/_components/modal/DeletedModal";
 
 interface Props {}
 
@@ -185,7 +186,6 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
       remarks: data.featureRemarks,
       createdBy: userId,
     };
-    console.log("Submitted Data: ", JSON.stringify(submittedData, null, 2));
 
     try {
       const { data } = await axios.post(
@@ -200,7 +200,8 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
       );
 
       if (data?.status === 201) {
-        toast.success(data?.message);
+        toast.success("Common features added successfully !");
+        fetchCommonFeaturesData(token);
 
         setCommonFeatures((prev) => ({
           ...prev,
@@ -215,8 +216,61 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
       console.log("Error adding common features: ", error?.message);
     }
   };
-  const updateCFFunc = async (data: any, token: string, userId: string) => {};
-  const closeToUpdateCFFunc = () => {};
+  const updateCFFunc = async (
+    updatedData: any,
+    token: string,
+    userId: string
+  ) => {
+    if (!validateCFForm()) return;
+    const submittedUpdatedData = await {
+      name: updatedData.featuresName,
+      remarks: updatedData.featureRemarks,
+      updatedBy: userId,
+    };
+
+    try {
+      const { data } = await axios.put(
+        `${AppURL.roomCommonFeature}/${updatedData.featuresId}`,
+        submittedUpdatedData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (data?.status === 200) {
+        toast.success("Common features updated successfully !");
+        fetchCommonFeaturesData(token);
+
+        setCommonFeatures((prev) => ({
+          ...prev,
+          featuresId: null,
+          featuresName: "",
+          featureRemarks: "",
+          featuresNameErrorMsg: "",
+          featureRemarksErrorMsg: "",
+          isUpdated: false,
+          isDeleted: false,
+        }));
+      }
+    } catch (error: any) {
+      console.log("Error updating common features: ", error?.message);
+    }
+  };
+  const closeToUpdateCFFunc = () => {
+    setCommonFeatures((prev) => ({
+      ...prev,
+      featuresId: null,
+      featuresName: "",
+      featureRemarks: "",
+      featuresNameErrorMsg: "",
+      featureRemarksErrorMsg: "",
+      isUpdated: false,
+    }));
+  };
+
   const cfHandleChange = (field: string, value: string) => {
     console.log("Field: ", field, " | Value: ", value);
   };
@@ -269,6 +323,99 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
   const size = useWindowSize();
   const windowWidth: any = size && size?.width;
 
+  const cfDeleteFunc = async () => {
+    const deleteData = await {
+      inactiveBy: decodeToken?.userId,
+    };
+
+    console.log(`${AppURL.roomCommonFeature}/${commonFeatures?.featuresId}`);
+
+    try {
+      const deleteRes: any = await fetch(
+        `${AppURL.roomCommonFeature}/${commonFeatures?.featuresId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${decodeToken?.token}`,
+          },
+          body: JSON.stringify(deleteData),
+        }
+      );
+      console.log("deleteRes: ", JSON.stringify(deleteRes, null, 2));
+
+      if (deleteRes.status === 200) {
+        toast.success("Common features deleted successfully !");
+        fetchCommonFeaturesData(decodeToken?.token);
+        setCommonFeatures((prev) => ({
+          ...prev,
+          commonFeatureId: null,
+          isDeleted: false,
+        }));
+      }
+    } catch (error: any) {
+      console.log("Error deleting common features: ", error?.message);
+      toast.error("Failed to delete. Please try again ! ");
+    }
+  };
+  const afDeleteFunc = () => {};
+  const bedDeleteFunc = () => {};
+  const bathroomDeleteFunc = () => {};
+  const notDeleteFunc = () => {
+    toast.error("Nothing to delete !");
+  };
+
+  const isDeleteModalVisible = commonFeatures?.isDeleted
+    ? commonFeatures?.isDeleted
+    : availableFurnitures?.isDeleted
+    ? availableFurnitures?.isDeleted
+    : bedSpecifications?.isDeleted
+    ? bedSpecifications?.isDeleted
+    : bathroomSpecifications?.isDeleted
+    ? bathroomSpecifications?.isDeleted
+    : false;
+  const deleteFunc = commonFeatures?.isDeleted
+    ? cfDeleteFunc
+    : availableFurnitures?.isDeleted
+    ? afDeleteFunc
+    : bedSpecifications?.isDeleted
+    ? bedDeleteFunc
+    : bathroomSpecifications?.isDeleted
+    ? bathroomDeleteFunc
+    : notDeleteFunc;
+  const deleteMsg = commonFeatures?.isDeleted
+    ? "You're going to delete this common features ."
+    : availableFurnitures?.isDeleted
+    ? "You're going to delete this available furnitures ."
+    : bedSpecifications?.isDeleted
+    ? "You're going to delete this bed ."
+    : bathroomSpecifications?.isDeleted
+    ? "You're going to delete this bathroom ."
+    : "Nothing to delete !";
+
+  const handleCancelToDelete = () => {
+    setCommonFeatures((prev) => ({
+      ...prev,
+      commonFeatureId: null,
+      isDeleted: false,
+    }));
+    setAvailableFurnitures((prev) => ({
+      ...prev,
+      availableFurnitureId: null,
+      isDeleted: false,
+    }));
+    setBedSpecifications((prev) => ({
+      ...prev,
+      bedId: null,
+      isDeleted: false,
+    }));
+    setBathroomSpecifications((prev) => ({
+      ...prev,
+      bathroomId: null,
+      isDeleted: false,
+    }));
+  };
+
   console.log("Window Width: ", windowWidth);
 
   return (
@@ -306,11 +453,17 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                   }))
                 }
                 onSubmit={() => {
-                  onSubmitCFFunc(
-                    commonFeatures,
-                    decodeToken?.token,
-                    decodeToken?.userId
-                  );
+                  !commonFeatures.isUpdated
+                    ? onSubmitCFFunc(
+                        commonFeatures,
+                        decodeToken?.token,
+                        decodeToken?.userId
+                      )
+                    : updateCFFunc(
+                        commonFeatures,
+                        decodeToken?.token,
+                        decodeToken?.userId
+                      );
                 }}
                 onCancel={closeToUpdateCFFunc}
                 isUpdated={commonFeatures.isUpdated}
@@ -492,7 +645,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                                 onClick={async () => {
                                   await setCommonFeatures((prev) => ({
                                     ...prev,
-                                    floorId: features?.commonFeatureId,
+                                    featuresId: features?.commonFeatureId,
                                     isDeleted: true,
                                   }));
                                 }}
@@ -888,15 +1041,27 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
             </div>
           </div>
         </div>
+        <DeleteModal
+          title="Do you want to delete ?"
+          description={deleteMsg}
+          // onConfirm={deleteFunc}
+          onConfirm={
+            commonFeatures?.isDeleted
+              ? cfDeleteFunc
+              : availableFurnitures?.isDeleted
+              ? afDeleteFunc
+              : bedSpecifications?.isDeleted
+              ? bedDeleteFunc
+              : bathroomSpecifications?.isDeleted
+              ? bathroomDeleteFunc
+              : notDeleteFunc
+          }
+          onCancel={handleCancelToDelete}
+          isVisible={isDeleteModalVisible}
+        />
       </div>
     </Suspense>
   );
 };
 
 export default RoomGoodsEntriesPage;
-
-/*
-
-Commit puerrposde 
-
- */
