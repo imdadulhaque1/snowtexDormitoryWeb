@@ -92,8 +92,9 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
 
     if (decodeToken?.token && decodeToken?.userId) {
       fetchCommonFeaturesData(decodeToken?.token);
-      // fetchFloorData(decodeToken?.token);
-      // getMenuDataFunc(decodeToken?.token, decodeToken?.userId);
+      fetchFurnitureData(decodeToken?.token);
+      fetchBedData(decodeToken?.token);
+      fetchBathroomData(decodeToken?.token);
     }
   }, [decodeToken?.token, decodeToken?.userId]);
 
@@ -177,6 +178,51 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
       }
     } catch (error: any) {
       console.log("Error fetching floor data: ", error.message);
+    }
+  };
+  const fetchFurnitureData = async (token: string) => {
+    try {
+      const { data } = await axios.get(AppURL.furnitureApi, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (data?.status === 200) {
+        setAvailableFurnitures((prev) => ({ ...prev, data: data?.data }));
+      }
+    } catch (error: any) {
+      console.log("Error fetching furniture data: ", error.message);
+    }
+  };
+  const fetchBedData = async (token: string) => {
+    try {
+      const { data } = await axios.get(AppURL.bedApi, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (data?.status === 200) {
+        setBedSpecifications((prev) => ({ ...prev, data: data?.data }));
+      }
+    } catch (error: any) {
+      console.log("Error fetching bed data: ", error.message);
+    }
+  };
+  const fetchBathroomData = async (token: string) => {
+    try {
+      const { data } = await axios.get(AppURL.bathroomApi, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (data?.status === 200) {
+        setBathroomSpecifications((prev) => ({ ...prev, data: data?.data }));
+      }
+    } catch (error: any) {
+      console.log("Error fetching bathroom data: ", error.message);
     }
   };
 
@@ -279,22 +325,102 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
     userId: string
   ) => {
     if (!validateAFForm()) return;
+
+    const submittedData = await {
+      name: furniture.furnitureName,
+      remarks: furniture.furnitureRemarks,
+      createdBy: userId,
+    };
+
+    try {
+      const { data } = await axios.post(AppURL.furnitureApi, submittedData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (data?.status === 201) {
+        toast.success("Furniture added successfully !");
+        fetchFurnitureData(token);
+
+        setAvailableFurnitures((prev) => ({
+          ...prev,
+          furnitureId: null,
+          furnitureName: "",
+          furnitureRemarks: "",
+          furnitureNameErrorMsg: "",
+          furnitureRemarksErrorMsg: "",
+        }));
+      }
+    } catch (error: any) {
+      toast.success("Failed to add furniture !");
+    }
   };
   const updateAFFunc = async (
     furniture: any,
     token: string,
     userId: string
   ) => {};
-  const closeToUpdateAFFunc = () => {};
-  const afHandleChange = (field: string, value: string) => {};
+  const closeToUpdateAFFunc = () => {
+    setAvailableFurnitures((prev) => ({
+      ...prev,
+      furnitureId: null,
+      furnitureName: "",
+      furnitureRemarks: "",
+      furnitureNameErrorMsg: "",
+      furnitureRemarksErrorMsg: "",
+      isUpdated: false,
+      isDeleted: false,
+    }));
+  };
 
   // Bed Specifications Functionalities
   const onSubmitBedFunc = async (bed: any, token: string, userId: string) => {
     if (!validateBedForm()) return;
+    const submittedData = await {
+      name: bed.bedName,
+      remarks: bed.bedRemarks,
+      createdBy: userId,
+    };
+    try {
+      const { data } = await axios.post(AppURL.bedApi, submittedData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (data?.status === 201) {
+        toast.success("Bed added successfully !");
+        fetchBedData(token);
+
+        setBedSpecifications((prev) => ({
+          ...prev,
+          bedId: null,
+          bedName: "",
+          bedRemarks: "",
+          bedNameErrorMsg: "",
+          bedRemarksErrorMsg: "",
+        }));
+      }
+    } catch (error: any) {
+      toast.success("Failed to add bed !");
+    }
   };
   const updateBedFunc = async (bed: any, token: string, userId: string) => {};
-  const closeToUpdateBedFunc = () => {};
-  const bedHandleChange = (field: string, value: string) => {};
+  const closeToUpdateBedFunc = () => {
+    setBedSpecifications((prev) => ({
+      ...prev,
+      bedId: null,
+      bedName: "",
+      bedRemarks: "",
+      bedNameErrorMsg: "",
+      bedRemarksErrorMsg: "",
+      isUpdated: false,
+      isDeleted: false,
+    }));
+  };
 
   // Bathroom Specifications Functionalities
   const onSubmitBroomFunc = async (
@@ -303,13 +429,53 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
     userId: string
   ) => {
     if (!validateBathroomForm()) return;
+    const submittedData = await {
+      name: bathroom.bathroomName,
+      remarks: bathroom.bathroomRemarks,
+      createdBy: userId,
+    };
+    try {
+      const { data } = await axios.post(AppURL.bathroomApi, submittedData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (data?.status === 201) {
+        toast.success("Bathroom added successfully !");
+        fetchBathroomData(token);
+
+        setBathroomSpecifications((prev) => ({
+          ...prev,
+          bathroomId: null,
+          bathroomName: "",
+          bathroomRemarks: "",
+          bathroomNameErrorMsg: "",
+          bathroomRemarksErrorMsg: "",
+        }));
+      }
+    } catch (error: any) {
+      toast.success("Failed to add bathroom !");
+    }
   };
   const updateBroomFunc = async (
     bathroom: any,
     token: string,
     userId: string
   ) => {};
-  const closeToUpdateBroomFunc = () => {};
+  const closeToUpdateBroomFunc = () => {
+    setBathroomSpecifications((prev) => ({
+      ...prev,
+      bathroomId: null,
+      bathroomName: "",
+      bathroomRemarks: "",
+      bathroomNameErrorMsg: "",
+      bathroomRemarksErrorMsg: "",
+      isUpdated: false,
+      isDeleted: false,
+    }));
+  };
   const bathroomHandleChange = (field: string, value: string) => {};
 
   // const isRequiredCommonFeatures = true;
@@ -439,7 +605,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
         <div
           className={`${currentWidth} h-[95%] flex flex-col   overflow-y-auto max-h-screen`}
         >
-          <div className="flex w-full max-h-[280]">
+          <div className="flex w-full ">
             <div className="w-1/4">
               <ReusableFeaturesCard
                 title="Common Features"
@@ -502,7 +668,21 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                 nameErrorMsg={availableFurnitures.furnitureNameErrorMsg}
                 remarksValue={availableFurnitures.furnitureRemarks}
                 remarksErrorMsg={availableFurnitures.furnitureRemarksErrorMsg}
-                onChange={afHandleChange}
+                nameOnChange={(e: any) =>
+                  setAvailableFurnitures((prev) => ({
+                    ...prev,
+                    furnitureName: e.target.value,
+                    furnitureNameErrorMsg: "",
+                  }))
+                }
+                remarksOnChange={(e: any) =>
+                  setAvailableFurnitures((prev) => ({
+                    ...prev,
+                    furnitureRemarks: e.target.value,
+                    furnitureRemarksErrorMsg: "",
+                  }))
+                }
+                // onChange={afHandleChange}
                 onSubmit={() => {
                   onSubmitAFFunc(
                     availableFurnitures,
@@ -530,7 +710,20 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                 nameErrorMsg={bedSpecifications.bedNameErrorMsg}
                 remarksValue={bedSpecifications.bedRemarks}
                 remarksErrorMsg={bedSpecifications.bedRemarksErrorMsg}
-                onChange={bedHandleChange}
+                nameOnChange={(e: any) =>
+                  setBedSpecifications((prev) => ({
+                    ...prev,
+                    bedName: e.target.value,
+                    bedNameErrorMsg: "",
+                  }))
+                }
+                remarksOnChange={(e: any) =>
+                  setBedSpecifications((prev) => ({
+                    ...prev,
+                    bedRemarks: e.target.value,
+                    bedRemarksErrorMsg: "",
+                  }))
+                }
                 onSubmit={() => {
                   onSubmitBedFunc(
                     bedSpecifications,
@@ -558,7 +751,20 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                 nameErrorMsg={bathroomSpecifications.bathroomNameErrorMsg}
                 remarksValue={bathroomSpecifications.bathroomRemarks}
                 remarksErrorMsg={bathroomSpecifications.bathroomRemarksErrorMsg}
-                onChange={bathroomHandleChange}
+                nameOnChange={(e: any) =>
+                  setBathroomSpecifications((prev) => ({
+                    ...prev,
+                    bathroomName: e.target.value,
+                    bathroomNameErrorMsg: "",
+                  }))
+                }
+                remarksOnChange={(e: any) =>
+                  setBathroomSpecifications((prev) => ({
+                    ...prev,
+                    bathroomRemarks: e.target.value,
+                    bathroomRemarksErrorMsg: "",
+                  }))
+                }
                 onSubmit={() => {
                   onSubmitBroomFunc(
                     bathroomSpecifications,
@@ -576,7 +782,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
             <div className="w-1/4">
               {commonFeatures?.data && commonFeatures?.data?.length > 0 && (
                 <div
-                  className={`w-[100%] h-75p bg-white p-4 my-4 mx-3 rounded-lg shadow-lg`}
+                  className={`w-[100%] h-75p bg-white p-4  mx-3 rounded-lg shadow-lg`}
                 >
                   <p className=" font-workSans text-center mb-2 text-lg font-semibold truncate">
                     Room Common features
@@ -689,7 +895,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
             <div className="w-1/4 mx-3">
               {
                 <div
-                  className={`w-[100%] h-75p bg-white p-4 my-4 mx-3 rounded-lg shadow-lg`}
+                  className={`w-[100%] h-75p bg-white p-4  mx-3 rounded-lg shadow-lg`}
                 >
                   <p className=" font-workSans text-center mb-2 text-lg font-semibold truncate">
                     Available Furnitures
@@ -813,7 +1019,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
             <div className="w-1/4 ">
               {
                 <div
-                  className={`w-[100%] h-75p bg-white p-4 my-4 mx-3 rounded-lg shadow-lg`}
+                  className={`w-[100%] h-75p bg-white p-4 mx-3 rounded-lg shadow-lg`}
                 >
                   <p className=" font-workSans text-center mb-2 text-lg font-semibold truncate">
                     Bed Specifications
@@ -936,7 +1142,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
             <div className="w-1/5 mx-3">
               {
                 <div
-                  className={`w-[100%] h-75p bg-white p-4 my-4 mx-3 rounded-lg shadow-lg`}
+                  className={`w-[100%] h-75p bg-white p-4  mx-3 rounded-lg shadow-lg`}
                 >
                   <p className=" font-workSans text-center mb-2 text-lg font-semibold truncate">
                     Bathroom Specifications
@@ -965,33 +1171,33 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                     </div>
                   </div>
 
-                  {availableFurnitures?.data &&
-                  availableFurnitures?.data?.length > 0 ? (
-                    availableFurnitures?.data?.map(
-                      (furniture: any, furnitureIndex: number) => {
-                        const isLastFurniture =
+                  {bathroomSpecifications?.data &&
+                  bathroomSpecifications?.data?.length > 0 ? (
+                    bathroomSpecifications?.data?.map(
+                      (bathroom: any, furnitureIndex: number) => {
+                        const isLastBathroom =
                           furnitureIndex ===
-                          availableFurnitures?.data.length - 1;
+                          bathroomSpecifications?.data.length - 1;
                         return (
                           <div
                             key={furnitureIndex}
                             className={`flex w-full items-center ${
-                              !isLastFurniture ? "border-b-2" : "border-b-0"
+                              !isLastBathroom ? "border-b-2" : "border-b-0"
                             } border-slate-300 py-2 px-2  bg-slate-100`}
                           >
                             <div className="flex w-1/12 items-center  justify-center border-slate-300 border-r-2">
                               <p className="text-sm font-workSans text-center">
-                                {furniture?.furnitureId}
+                                {bathroom?.bathroomId}
                               </p>
                             </div>
                             <div className=" flex  w-1/5 items-center justify-center border-slate-300 border-r-2">
                               <p className="text-sm font-workSans text-center break-words max-w-full">
-                                {furniture?.name}
+                                {bathroom?.name}
                               </p>
                             </div>
                             <div className="flex w-1/2 items-center justify-center border-slate-300 border-r-2">
                               <p className="text-sm font-workSans text-center  max-w-full">
-                                {furniture?.remarks}
+                                {bathroom?.remarks}
                               </p>
                             </div>
 
@@ -999,11 +1205,11 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                               <div className="relative group mr-3 ">
                                 <button
                                   onClick={async () => {
-                                    await setAvailableFurnitures((prev) => ({
+                                    await setBathroomSpecifications((prev) => ({
                                       ...prev,
-                                      furnitureId: furniture?.furnitureId,
-                                      furnitureName: furniture?.name,
-                                      furnitureRemarks: furniture?.remarks,
+                                      bathroomId: bathroom?.bathroomId,
+                                      bathroomName: bathroom?.name,
+                                      bathroomRemarks: bathroom?.remarks,
                                       isUpdated: true,
                                     }));
                                   }}
@@ -1025,7 +1231,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                                   onClick={async () => {
                                     await setAvailableFurnitures((prev) => ({
                                       ...prev,
-                                      furnitureId: furniture?.furnitureId,
+                                      furnitureId: bathroom?.furnitureId,
                                       isDeleted: true,
                                     }));
                                   }}
