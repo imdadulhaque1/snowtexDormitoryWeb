@@ -48,7 +48,8 @@ type DecodeToken = {
 };
 
 const Sidebar: React.FC<SidebarProps> = ({ children }) => {
-  const { menuReload, setIsMenuReload } = useAppContext();
+  const { menuReload, setIsMenuReload, getDrawerStatus, setDrawerStatus } =
+    useAppContext();
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
   const [menuItem, setMenuItem] = useState([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
@@ -127,6 +128,10 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     setOpenMenus((prev) => ({ ...prev, [title]: !prev[title] }));
   };
 
+  useEffect(() => {
+    setDrawerStatus(isDrawerOpen);
+  }, [isDrawerOpen]);
+
   const renderMenu = (items: MenuItem[], level = 1) => (
     <ul className="space-y-1">
       {items.map((item) => (
@@ -186,7 +191,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <div
-        className={`flex  h-screen bg-white transition-transform duration-500 ease-in-out border-r-2 shadow-2xl  ${
+        className={`flex fixed  h-screen bg-white transition-transform duration-500 ease-in-out border-r-2 shadow-2xl z-50  ${
           isDrawerOpen ? "w-[265]" : "w-0"
         }`}
       >
@@ -206,7 +211,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
         >
           {isDrawerOpen && (
             <div className="flex flex-col h-full">
-              <div className="flex justify-between items-center p-4 border-b">
+              <div className="flex justify-between items-center p-3 border-b ">
                 {/* <h2 className="text-lg font-semibold">MENU</h2> */}
 
                 <Link

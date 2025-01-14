@@ -10,10 +10,12 @@ import React, { FC, useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import jwtDecode from "jsonwebtoken";
 import { tokenInterface } from "@/interface/admin/decodeToken/tokenInterface";
+import { useAppContext } from "@/app/_stateManagements/contextApi";
 
 interface Props {}
 
 const MenuPermission: FC<Props> = (props) => {
+  const { getDrawerStatus } = useAppContext();
   const [roleBasedMenuSelectedItems, setRoleBasedMenuSelectedItems] = useState({
     role: null,
     menus: [],
@@ -280,7 +282,11 @@ const MenuPermission: FC<Props> = (props) => {
   };
 
   return (
-    <div className="flex flex-col   md:flex-row h-screen py-5 bg-gradient-to-b from-primary to-primary90 ">
+    <div
+      className={`flex flex-col ${
+        getDrawerStatus ? "pl-[265]" : "pl-0"
+      }  md:flex-row h-screen pb-5 `}
+    >
       <div className="flex flex-col items-center w-full md:w-48p  md:h-90p bg-white ml-3 m-2 py-5 border-2 border-primary80 rounded-lg shadow-lg">
         <p className="font-workSans text-black text-xl  text-center mb-3 pb-1 border-b-2 border-primary80 border-double">
           Role Based Menu Selected

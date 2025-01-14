@@ -10,6 +10,7 @@ export const AppProvider = ({ children }) => {
   const [getDivision, setGetDivision] = useState(null);
   const [getDistrict, setGetDistrict] = useState(null);
   const [menuReload, setMenuReload] = useState(false);
+  const [getDrawerStatus, setGetDrawerStatus] = useState(false);
 
   const setLoginInfo = useCallback(
     (value) => {
@@ -47,6 +48,12 @@ export const AppProvider = ({ children }) => {
     },
     [menuReload]
   );
+  const setDrawerStatus = useCallback(
+    (value) => {
+      setGetDrawerStatus(value);
+    },
+    [getDrawerStatus]
+  );
 
   return (
     <AppContext.Provider
@@ -63,6 +70,8 @@ export const AppProvider = ({ children }) => {
         getDistrict,
         menuReload,
         setIsMenuReload,
+        getDrawerStatus,
+        setDrawerStatus,
       }}
     >
       {children}

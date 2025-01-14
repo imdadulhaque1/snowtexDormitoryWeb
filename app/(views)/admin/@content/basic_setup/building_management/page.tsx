@@ -14,10 +14,12 @@ import { FaEdit, FaRegWindowClose } from "react-icons/fa";
 import { COLORS } from "@/app/_utils/COLORS";
 import { isValidBDTelephone } from "@/app/_utils/handler/validateBDTelephone ";
 import DeleteModal from "@/app/_components/modal/DeletedModal";
+import { useAppContext } from "@/app/_stateManagements/contextApi";
 
 interface Props {}
 
 const BuildingManagements: FC<Props> = (props) => {
+  const { getDrawerStatus } = useAppContext();
   const [fetchBuildings, setFetchBuildings] = useState<buildingsInterface[]>(
     []
   );
@@ -255,8 +257,12 @@ const BuildingManagements: FC<Props> = (props) => {
   const windowWidth: any = size && size?.width;
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <div className="flex fixed min-h-screen justify-center  bg-gradient-to-b from-primary to-primary90">
-        <div className="flex w-screen h-full ">
+      <div
+        className={`flex ${
+          getDrawerStatus ? "pl-[265]" : "pl-0"
+        } justify-cente`}
+      >
+        <div className="flex w-[100%] h-full ">
           <div
             className={`w-[30%] h-80p bg-white p-4 m-4 rounded-lg shadow-lg`}
           >
@@ -378,7 +384,7 @@ const BuildingManagements: FC<Props> = (props) => {
           </div>
           {fetchBuildings && fetchBuildings?.length > 0 && (
             <div
-              className={`w-[52%] h-80p bg-white p-4 m-4 rounded-lg shadow-lg`}
+              className={`w-[70%] h-80p bg-white p-4 m-4 rounded-lg shadow-lg`}
             >
               <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
                 <div className="flex w-1/12 items-center  justify-center border-slate-50 border-r-2">

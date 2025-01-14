@@ -1,4 +1,5 @@
-import VerticalSingleInput from "@/app/_components/inputField/VerticalSingleInput";
+"use client";
+
 import React, { FC, Suspense, useEffect, useState } from "react";
 import { MdDeleteOutline, MdOutlineFileUpload } from "react-icons/md";
 import { FaEdit, FaRegWindowClose } from "react-icons/fa";
@@ -12,10 +13,12 @@ import axios from "axios";
 import AppURL from "@/app/_restApi/AppURL";
 import { useWindowSize } from "@/app/_utils/handler/useWindowSize";
 import DeleteModal from "@/app/_components/modal/DeletedModal";
+import { useAppContext } from "@/app/_stateManagements/contextApi";
 
 interface Props {}
 
 const RoomGoodsEntriesPage: FC<Props> = (props) => {
+  const { getDrawerStatus } = useAppContext();
   const [decodeToken, setDecodeToken] = useState<tokenInterface>({
     userId: "",
     name: "",
@@ -169,8 +172,6 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Common features Data: ", JSON.stringify(data, null, 2));
-
       if (data?.status === 200) {
         setCommonFeatures((prev) => ({ ...prev, data: data?.data }));
       }
@@ -271,10 +272,6 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
     }));
   };
 
-  const cfHandleChange = (field: string, value: string) => {
-    console.log("Field: ", field, " | Value: ", value);
-  };
-
   // Available Furnitures Functionalities
   const onSubmitAFFunc = async (
     furniture: any,
@@ -328,8 +325,6 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
       inactiveBy: decodeToken?.userId,
     };
 
-    console.log(`${AppURL.roomCommonFeature}/${commonFeatures?.featuresId}`);
-
     try {
       const deleteRes: any = await fetch(
         `${AppURL.roomCommonFeature}/${commonFeatures?.featuresId}`,
@@ -342,7 +337,6 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
           body: JSON.stringify(deleteData),
         }
       );
-      console.log("deleteRes: ", JSON.stringify(deleteRes, null, 2));
 
       if (deleteRes.status === 200) {
         toast.success("Common features deleted successfully !");
@@ -416,12 +410,35 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
     }));
   };
 
-  console.log("Window Width: ", windowWidth);
+  const currentWidth = getDrawerStatus
+    ? windowWidth >= 1750
+      ? "w-[100%]"
+      : windowWidth >= 1450 && windowWidth <= 1749
+      ? "w-[95%]"
+      : "w-[95%]"
+    : windowWidth >= 1500
+    ? "w-[100%]"
+    : "w-[95%]";
+  // const currentWidth = getDrawerStatus
+  //   ? windowWidth >= 1750
+  //     ? "w-[100%]"
+  //     : windowWidth >= 1450 && windowWidth <= 1749
+  //     ? "w-[95%]"
+  //     : "w-[90%]"
+  //   : windowWidth >= 1500
+  //   ? "w-[100%]"
+  //   : "w-[95%]";
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <div className="fixed w-screen h-screen">
-        <div className="w-[88%] h-[95%] flex flex-col overflow-x-auto">
+      <div
+        className={` w-screen h-screen items-center ${
+          getDrawerStatus ? "pl-[265]" : "pl-0"
+        } overflow-auto h-screen pb-20`}
+      >
+        <div
+          className={`${currentWidth} h-[95%] flex flex-col   overflow-y-auto max-h-screen`}
+        >
           <div className="flex w-full max-h-[280]">
             <div className="w-1/4">
               <ReusableFeaturesCard
@@ -561,7 +578,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                 <div
                   className={`w-[100%] h-75p bg-white p-4 my-4 mx-3 rounded-lg shadow-lg`}
                 >
-                  <p className=" font-workSans text-center mb-2 text-lg font-semibold">
+                  <p className=" font-workSans text-center mb-2 text-lg font-semibold truncate">
                     Room Common features
                   </p>
                   <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
@@ -581,7 +598,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                       </p>
                     </div>
 
-                    <div className="flex  w-1/5  justify-center items-center">
+                    <div className="flex  w-1/5  justify-end items-center ">
                       <p className="text-md font-workSans font-medium text-center">
                         Actions
                       </p>
@@ -605,17 +622,17 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                             </p>
                           </div>
                           <div className=" flex  w-1/5 items-center justify-center border-slate-300 border-r-2">
-                            <p className="text-sm font-workSans text-center break-words max-w-full">
+                            <p className="text-sm font-workSans text-center break-words max-w-full ">
                               {features?.name}
                             </p>
                           </div>
-                          <div className="flex w-1/2 items-center justify-center border-slate-300 border-r-2">
-                            <p className="text-sm font-workSans text-center  max-w-full">
+                          <div className="flex w-1/2 items-center justify-center border-slate-300 border-r-2 px-2">
+                            <p className="text-sm font-workSans text-center  max-w-full truncate">
                               {features?.remarks}
                             </p>
                           </div>
 
-                          <div className="flex  w-1/5  justify-center items-center">
+                          <div className="flex  w-1/5  justify-end items-center">
                             <div className="relative group mr-3 ">
                               <button
                                 onClick={async () => {
@@ -674,7 +691,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                 <div
                   className={`w-[100%] h-75p bg-white p-4 my-4 mx-3 rounded-lg shadow-lg`}
                 >
-                  <p className=" font-workSans text-center mb-2 text-lg font-semibold">
+                  <p className=" font-workSans text-center mb-2 text-lg font-semibold truncate">
                     Available Furnitures
                   </p>
                   <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
@@ -694,7 +711,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                       </p>
                     </div>
 
-                    <div className="flex  w-1/5  justify-center items-center">
+                    <div className="flex  w-1/5  justify-end items-center">
                       <p className="text-md font-workSans font-medium text-center">
                         Actions
                       </p>
@@ -731,7 +748,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                               </p>
                             </div>
 
-                            <div className="flex  w-1/5  justify-center items-center">
+                            <div className="flex  w-1/5  justify-end items-center">
                               <div className="relative group mr-3 ">
                                 <button
                                   onClick={async () => {
@@ -798,7 +815,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                 <div
                   className={`w-[100%] h-75p bg-white p-4 my-4 mx-3 rounded-lg shadow-lg`}
                 >
-                  <p className=" font-workSans text-center mb-2 text-lg font-semibold">
+                  <p className=" font-workSans text-center mb-2 text-lg font-semibold truncate">
                     Bed Specifications
                   </p>
                   <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
@@ -818,7 +835,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                       </p>
                     </div>
 
-                    <div className="flex  w-1/5  justify-center items-center">
+                    <div className="flex  w-1/5  justify-end items-center">
                       <p className="text-md font-workSans font-medium text-center">
                         Actions
                       </p>
@@ -854,7 +871,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                               </p>
                             </div>
 
-                            <div className="flex  w-1/5  justify-center items-center">
+                            <div className="flex  w-1/5  justify-end items-center">
                               <div className="relative group mr-3 ">
                                 <button
                                   onClick={async () => {
@@ -921,7 +938,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                 <div
                   className={`w-[100%] h-75p bg-white p-4 my-4 mx-3 rounded-lg shadow-lg`}
                 >
-                  <p className=" font-workSans text-center mb-2 text-lg font-semibold">
+                  <p className=" font-workSans text-center mb-2 text-lg font-semibold truncate">
                     Bathroom Specifications
                   </p>
                   <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
@@ -941,7 +958,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                       </p>
                     </div>
 
-                    <div className="flex  w-1/5  justify-center items-center">
+                    <div className="flex  w-1/5  justify-end items-center">
                       <p className="text-md font-workSans font-medium text-center">
                         Actions
                       </p>
@@ -978,7 +995,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                               </p>
                             </div>
 
-                            <div className="flex  w-1/5  justify-center items-center">
+                            <div className="flex  w-1/5  justify-end items-center">
                               <div className="relative group mr-3 ">
                                 <button
                                   onClick={async () => {
@@ -1044,18 +1061,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
         <DeleteModal
           title="Do you want to delete ?"
           description={deleteMsg}
-          // onConfirm={deleteFunc}
-          onConfirm={
-            commonFeatures?.isDeleted
-              ? cfDeleteFunc
-              : availableFurnitures?.isDeleted
-              ? afDeleteFunc
-              : bedSpecifications?.isDeleted
-              ? bedDeleteFunc
-              : bathroomSpecifications?.isDeleted
-              ? bathroomDeleteFunc
-              : notDeleteFunc
-          }
+          onConfirm={deleteFunc}
           onCancel={handleCancelToDelete}
           isVisible={isDeleteModalVisible}
         />

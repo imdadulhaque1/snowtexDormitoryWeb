@@ -21,7 +21,7 @@ interface tokenInterface {
 }
 
 const CreateMenuPage: FC<Props> = (props) => {
-  const { menuReload, setIsMenuReload } = useAppContext();
+  const { menuReload, setIsMenuReload, getDrawerStatus } = useAppContext();
   const [getToken, setGetToken] = useState(null);
   const [role, setRole] = useState({
     data: [],
@@ -192,8 +192,12 @@ const CreateMenuPage: FC<Props> = (props) => {
     menuData?.htmlIcon;
 
   return (
-    <div className="flex  w-full h-screen items-center justify-center   ">
-      <div className="flex  md:w-80p flex-col bg-white justify-center gap-y-4 border border-primary80 rounded-2xl p-4">
+    <div
+      className={`flex ${
+        getDrawerStatus ? "pl-[265]" : "pl-0"
+      }  items-center  `}
+    >
+      <div className="flex  w-[80%] flex-col bg-white justify-center gap-y-4 border border-primary80 rounded-2xl p-5">
         <h1 className="text-zinc-500 font-sans text-center text-2xl">
           Create Dormitory Menu
         </h1>

@@ -8,10 +8,12 @@ import AppURL from "@/app/_restApi/AppURL";
 import axios from "axios";
 import VerticalSingleInput from "@/app/_components/inputField/VerticalSingleInput";
 import VertcialRadioBtn from "@/app/_components/radioBtn/VertcialRadioBtn";
+import { useAppContext } from "@/app/_stateManagements/contextApi";
 
 interface Props {}
 
 const RoomDetailsPage: FC<Props> = (props) => {
+  const { getDrawerStatus } = useAppContext();
   const [decodeToken, setDecodeToken] = useState<tokenInterface>({
     userId: "",
     name: "",
@@ -178,7 +180,11 @@ const RoomDetailsPage: FC<Props> = (props) => {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <div className="flex fixed min-h-screen justify-center  bg-gradient-to-b from-primary to-primary90">
+      <div
+        className={`flex  justify-center ${
+          getDrawerStatus ? "pl-[265]" : "pl-0"
+        }`}
+      >
         <div className="flex w-screen h-full ">
           <div
             className={`w-[25%] h-80p bg-white p-4 m-4 rounded-lg shadow-lg`}

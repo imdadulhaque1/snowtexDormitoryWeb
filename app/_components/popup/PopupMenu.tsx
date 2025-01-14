@@ -154,7 +154,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({
                   onClick(item.label);
                   handleClose();
                 }}
-                className={`flex items-center text-md w-full px-4 py-4 text-left text-gray-700 hover:bg-primary96 z-[1000] ${
+                className={`flex items-center text-md w-full px-4 py-4 text-left text-gray-700 hover:bg-primary95 z-[1000] ${
                   !isLastItem ? "border-b" : ""
                 } `}
               >

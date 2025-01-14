@@ -2,6 +2,8 @@ class AppURL {
   // static baseURL: string = "http://192.168.15.26:27086/";
   static baseURL: string = "https://localhost:7094/api/";
 
+
+
   // Authentication API's
   static signup: string = `${this.baseURL}auth/signup`; // .net
   static signin: string = `${this.baseURL}Auth/login`; // .net
@@ -43,8 +45,9 @@ class AppURL {
 
   // Room Managements Api
   static roomCommonFeature: string = `${this.baseURL}admin/room/RoomCommonFeature`;
-  // static RoomCommonFeature: string = `${this.baseURL}admin/room/availablefurnitures`;
-  // static RoomCommonFeature: string = `${this.baseURL}admin/room/RoomCommonFeature`;
+  static furnitureApi: string = `${this.baseURL}admin/room/RoomFurniture`;
+  static bedApi: string = `${this.baseURL}admin/room/RoomBed`;
+  static bathroomApi: string = `${this.baseURL}admin/room/RoomBathroom`;
 
   // Get All Users
   static getUsersApi: string = `${this.baseURL}admin/user`;

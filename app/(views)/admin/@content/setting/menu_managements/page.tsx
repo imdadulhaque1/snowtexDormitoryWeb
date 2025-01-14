@@ -21,7 +21,7 @@ interface tokenInterface {
 }
 
 const MenuManagements: FC<Props> = (props) => {
-  const { menuReload, setIsMenuReload } = useAppContext();
+  const { menuReload, setIsMenuReload, getDrawerStatus } = useAppContext();
   const [menuItem, setMenuItem] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState<any>(null);
@@ -160,8 +160,8 @@ const MenuManagements: FC<Props> = (props) => {
   };
 
   return (
-    <div className="flex h-screen py-5 bg-gradient-to-b from-primary to-primary90 ">
-      <div className="flex">
+    <div className={` py-5 ${getDrawerStatus ? "pl-[265]" : "pl-0"} `}>
+      <div className="flex overflow-x-auto max-h-[85vh]">
         {menuItem &&
           menuItem?.length > 0 &&
           menuItem.map((parentMenu: any, parentIndex: number) => {
