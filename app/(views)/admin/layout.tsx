@@ -12,7 +12,7 @@ const AdminLayout: FC<{ children?: ReactNode }> = async ({ children }) => {
   const isExpired = await (aspToken ? isTokenExpired(aspToken) : true);
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <div className="flex  h-screen w-screen">
+      <div className="flex fixed h-screen w-screen z-50">
         <aside className="bg-gray-100">
           <Sidebar />
         </aside>
@@ -22,7 +22,7 @@ const AdminLayout: FC<{ children?: ReactNode }> = async ({ children }) => {
             passingAuthToken={aspToken}
             isShowIcon={false}
           />
-          {children}
+          <div className="p-4">{children}</div>
         </main>
       </div>
     </Suspense>

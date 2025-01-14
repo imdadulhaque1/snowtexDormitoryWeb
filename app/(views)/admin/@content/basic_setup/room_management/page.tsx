@@ -16,10 +16,13 @@ import TableHeader from "@/app/_components/inputField/table/TableHeader";
 import { BsEyeFill } from "react-icons/bs";
 
 import PaginationUI from "@/app/_components/pagination/PaginationUI";
+import { useAppContext } from "@/app/_stateManagements/contextApi";
+import { useWindowSize } from "@/app/_utils/handler/useWindowSize";
 
 interface Props {}
 
 const RoomManagement: FC<Props> = (props) => {
+  const { getDrawerStatus } = useAppContext();
   const [decodeToken, setDecodeToken] = useState<tokenInterface>({
     userId: "",
     name: "",
@@ -385,8 +388,12 @@ const RoomManagement: FC<Props> = (props) => {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <div className="flex fixed min-h-screen justify-center  bg-gradient-to-b from-primary to-primary90">
-        <div className="flex w-screen h-full ">
+      <div
+        className={`flex  ${"w-[100%]"} justify-center ${
+          getDrawerStatus ? "pl-[265]" : "pl-0"
+        } overflow-x-auto max-h-screen`}
+      >
+        <div className={`flex  h-full w-[100%]`}>
           <div
             className={`w-[25%] h-80p bg-white p-4 m-4 rounded-lg shadow-lg`}
           >
@@ -533,7 +540,7 @@ const RoomManagement: FC<Props> = (props) => {
           </div>
 
           <div
-            className={`w-[57%] h-80p bg-white p-4 m-4 rounded-lg shadow-lg`}
+            className={`w-[75%] h-80p  p-4 m-4 rounded-lg shadow-lg bg-white`}
           >
             <div className="flex w-full items-center  px-2 rounded-t-lg bg-slate-300">
               <TableHeader

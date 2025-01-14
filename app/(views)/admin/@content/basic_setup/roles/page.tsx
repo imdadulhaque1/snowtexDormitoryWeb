@@ -8,6 +8,7 @@ import { MdDelete } from "react-icons/md";
 import jwtDecode from "jsonwebtoken";
 import AppURL from "@/app/_restApi/AppURL";
 import axios from "axios";
+import { useAppContext } from "@/app/_stateManagements/contextApi";
 
 interface Props {}
 interface rolesInterface {
@@ -23,6 +24,7 @@ interface rolesInterface {
 }
 
 const RolesPage: FC<Props> = (props) => {
+  const { getDrawerStatus } = useAppContext();
   const [roleName, setRoleName] = useState("");
 
   const [roles, setRoles] = useState({
@@ -181,7 +183,7 @@ const RolesPage: FC<Props> = (props) => {
   };
 
   return (
-    <div className="flex-col min-h-screen bg-slate-100 p-4">
+    <div className={`flex-col ${getDrawerStatus ? "pl-[265]" : "pl-0"} p-4 `}>
       <AreaSubmitForm
         addHoverText="Add Roles"
         updateHoverText="Update roles"

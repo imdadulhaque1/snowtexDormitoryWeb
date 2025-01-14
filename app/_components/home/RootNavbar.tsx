@@ -15,6 +15,7 @@ import PopupMenu from "../popup/PopupMenu";
 import retrieveToken from "@/app/_utils/handler/retrieveToken";
 import { tokenInterface } from "@/interface/admin/decodeToken/tokenInterface";
 import jwtDecode from "jsonwebtoken";
+import { useWindowSize } from "@/app/_utils/handler/useWindowSize";
 
 interface Props {
   isAuthenticateUser?: boolean;
@@ -28,7 +29,7 @@ const RootNavbar: FC<Props> = ({
   isShowIcon = true,
 }) => {
   const router = useRouter();
-  const { setToken, getToken } = useAppContext();
+  const { setToken, getToken, getDrawerStatus } = useAppContext();
 
   useEffect(() => {
     if (passingAuthToken) {
@@ -97,9 +98,12 @@ const RootNavbar: FC<Props> = ({
     }
   };
 
+  const size = useWindowSize();
+  const windowWidth: any = size && size?.width;
+
   return (
     <ul
-      className={`flex  items-center ${
+      className={`flex  items-center w-full ${
         isShowIcon ? "justify-between" : "justify-end"
       } bg-white px-5 py-2  mx-0  shadow-lg shadow-primary90 z-50`}
     >
@@ -121,41 +125,13 @@ const RootNavbar: FC<Props> = ({
         </Link>
       )}
 
-      <div className="flex  justify-center mb-2 md:mb-0">
-        {/* <li className="mr-4 flex items-center ">
-          <Link
-            href={`/dashboard`}
-            className="flex text-black text-lg md:hover:bg-primary90 py-2 px-2 rounded justify-center items-center"
-          >
-            <AiTwotoneMessage
-              color={COLORS.primary50}
-              size={25}
-              style={{ marginRight: 1 }}
-            />
-            <span className="hidden md:inline font-workSans">Message</span>
-          </Link>
-        </li>
-        <li className="mr-4 flex items-center ">
-          <Link
-            href={`/dashboard`}
-            className="flex text-black text-lg md:hover:bg-primary90 py-2 px-2 rounded justify-center items-center"
-          >
-            <IoNotificationsOutline
-              color={COLORS.primary50}
-              size={25}
-              style={{ marginRight: 1 }}
-            />
-            <span className="hidden md:inline font-workSans">
-              Notifications
-            </span>
-          </Link>
-        </li> */}
+      <div className="flex  justify-center mb-2 md:mb-0 ">
         <li className="mr-4 flex items-center ">
           <span className=" text-md font-workSans text-black">
             {decodeToken?.name ? decodeToken?.name : ""}
           </span>
         </li>
-        <div className="py-2">
+        <div className={`py-2 mr-7`}>
           <PopupMenu
             menuItems={isAuthenticateUser ? menuItems : null}
             proImg={profileImg}

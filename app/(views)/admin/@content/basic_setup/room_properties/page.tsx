@@ -1,4 +1,5 @@
-import VerticalSingleInput from "@/app/_components/inputField/VerticalSingleInput";
+"use client";
+
 import React, { FC, Suspense, useEffect, useState } from "react";
 import { MdDeleteOutline, MdOutlineFileUpload } from "react-icons/md";
 import { FaEdit, FaRegWindowClose } from "react-icons/fa";
@@ -11,10 +12,13 @@ import ReusableFeaturesCard from "@/app/_components/card/RoomFeaturesCard";
 import axios from "axios";
 import AppURL from "@/app/_restApi/AppURL";
 import { useWindowSize } from "@/app/_utils/handler/useWindowSize";
+import DeleteModal from "@/app/_components/modal/DeletedModal";
+import { useAppContext } from "@/app/_stateManagements/contextApi";
 
 interface Props {}
 
 const RoomGoodsEntriesPage: FC<Props> = (props) => {
+  const { getDrawerStatus } = useAppContext();
   const [decodeToken, setDecodeToken] = useState<tokenInterface>({
     userId: "",
     name: "",
@@ -88,8 +92,9 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
 
     if (decodeToken?.token && decodeToken?.userId) {
       fetchCommonFeaturesData(decodeToken?.token);
-      // fetchFloorData(decodeToken?.token);
-      // getMenuDataFunc(decodeToken?.token, decodeToken?.userId);
+      fetchFurnitureData(decodeToken?.token);
+      fetchBedData(decodeToken?.token);
+      fetchBathroomData(decodeToken?.token);
     }
   }, [decodeToken?.token, decodeToken?.userId]);
 
@@ -168,13 +173,56 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Common features Data: ", JSON.stringify(data, null, 2));
-
       if (data?.status === 200) {
         setCommonFeatures((prev) => ({ ...prev, data: data?.data }));
       }
     } catch (error: any) {
       console.log("Error fetching floor data: ", error.message);
+    }
+  };
+  const fetchFurnitureData = async (token: string) => {
+    try {
+      const { data } = await axios.get(AppURL.furnitureApi, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (data?.status === 200) {
+        setAvailableFurnitures((prev) => ({ ...prev, data: data?.data }));
+      }
+    } catch (error: any) {
+      console.log("Error fetching furniture data: ", error.message);
+    }
+  };
+  const fetchBedData = async (token: string) => {
+    try {
+      const { data } = await axios.get(AppURL.bedApi, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (data?.status === 200) {
+        setBedSpecifications((prev) => ({ ...prev, data: data?.data }));
+      }
+    } catch (error: any) {
+      console.log("Error fetching bed data: ", error.message);
+    }
+  };
+  const fetchBathroomData = async (token: string) => {
+    try {
+      const { data } = await axios.get(AppURL.bathroomApi, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (data?.status === 200) {
+        setBathroomSpecifications((prev) => ({ ...prev, data: data?.data }));
+      }
+    } catch (error: any) {
+      console.log("Error fetching bathroom data: ", error.message);
     }
   };
 
@@ -185,7 +233,6 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
       remarks: data.featureRemarks,
       createdBy: userId,
     };
-    console.log("Submitted Data: ", JSON.stringify(submittedData, null, 2));
 
     try {
       const { data } = await axios.post(
@@ -200,7 +247,8 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
       );
 
       if (data?.status === 201) {
-        toast.success(data?.message);
+        toast.success("Common features added successfully !");
+        fetchCommonFeaturesData(token);
 
         setCommonFeatures((prev) => ({
           ...prev,
@@ -215,10 +263,59 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
       console.log("Error adding common features: ", error?.message);
     }
   };
-  const updateCFFunc = async (data: any, token: string, userId: string) => {};
-  const closeToUpdateCFFunc = () => {};
-  const cfHandleChange = (field: string, value: string) => {
-    console.log("Field: ", field, " | Value: ", value);
+  const updateCFFunc = async (
+    updatedData: any,
+    token: string,
+    userId: string
+  ) => {
+    if (!validateCFForm()) return;
+    const submittedUpdatedData = await {
+      name: updatedData.featuresName,
+      remarks: updatedData.featureRemarks,
+      updatedBy: userId,
+    };
+
+    try {
+      const { data } = await axios.put(
+        `${AppURL.roomCommonFeature}/${updatedData.featuresId}`,
+        submittedUpdatedData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (data?.status === 200) {
+        toast.success("Common features updated successfully !");
+        fetchCommonFeaturesData(token);
+
+        setCommonFeatures((prev) => ({
+          ...prev,
+          featuresId: null,
+          featuresName: "",
+          featureRemarks: "",
+          featuresNameErrorMsg: "",
+          featureRemarksErrorMsg: "",
+          isUpdated: false,
+          isDeleted: false,
+        }));
+      }
+    } catch (error: any) {
+      console.log("Error updating common features: ", error?.message);
+    }
+  };
+  const closeToUpdateCFFunc = () => {
+    setCommonFeatures((prev) => ({
+      ...prev,
+      featuresId: null,
+      featuresName: "",
+      featureRemarks: "",
+      featuresNameErrorMsg: "",
+      featureRemarksErrorMsg: "",
+      isUpdated: false,
+    }));
   };
 
   // Available Furnitures Functionalities
@@ -228,22 +325,102 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
     userId: string
   ) => {
     if (!validateAFForm()) return;
+
+    const submittedData = await {
+      name: furniture.furnitureName,
+      remarks: furniture.furnitureRemarks,
+      createdBy: userId,
+    };
+
+    try {
+      const { data } = await axios.post(AppURL.furnitureApi, submittedData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (data?.status === 201) {
+        toast.success("Furniture added successfully !");
+        fetchFurnitureData(token);
+
+        setAvailableFurnitures((prev) => ({
+          ...prev,
+          furnitureId: null,
+          furnitureName: "",
+          furnitureRemarks: "",
+          furnitureNameErrorMsg: "",
+          furnitureRemarksErrorMsg: "",
+        }));
+      }
+    } catch (error: any) {
+      toast.success("Failed to add furniture !");
+    }
   };
   const updateAFFunc = async (
     furniture: any,
     token: string,
     userId: string
   ) => {};
-  const closeToUpdateAFFunc = () => {};
-  const afHandleChange = (field: string, value: string) => {};
+  const closeToUpdateAFFunc = () => {
+    setAvailableFurnitures((prev) => ({
+      ...prev,
+      furnitureId: null,
+      furnitureName: "",
+      furnitureRemarks: "",
+      furnitureNameErrorMsg: "",
+      furnitureRemarksErrorMsg: "",
+      isUpdated: false,
+      isDeleted: false,
+    }));
+  };
 
   // Bed Specifications Functionalities
   const onSubmitBedFunc = async (bed: any, token: string, userId: string) => {
     if (!validateBedForm()) return;
+    const submittedData = await {
+      name: bed.bedName,
+      remarks: bed.bedRemarks,
+      createdBy: userId,
+    };
+    try {
+      const { data } = await axios.post(AppURL.bedApi, submittedData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (data?.status === 201) {
+        toast.success("Bed added successfully !");
+        fetchBedData(token);
+
+        setBedSpecifications((prev) => ({
+          ...prev,
+          bedId: null,
+          bedName: "",
+          bedRemarks: "",
+          bedNameErrorMsg: "",
+          bedRemarksErrorMsg: "",
+        }));
+      }
+    } catch (error: any) {
+      toast.success("Failed to add bed !");
+    }
   };
   const updateBedFunc = async (bed: any, token: string, userId: string) => {};
-  const closeToUpdateBedFunc = () => {};
-  const bedHandleChange = (field: string, value: string) => {};
+  const closeToUpdateBedFunc = () => {
+    setBedSpecifications((prev) => ({
+      ...prev,
+      bedId: null,
+      bedName: "",
+      bedRemarks: "",
+      bedNameErrorMsg: "",
+      bedRemarksErrorMsg: "",
+      isUpdated: false,
+      isDeleted: false,
+    }));
+  };
 
   // Bathroom Specifications Functionalities
   const onSubmitBroomFunc = async (
@@ -252,13 +429,53 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
     userId: string
   ) => {
     if (!validateBathroomForm()) return;
+    const submittedData = await {
+      name: bathroom.bathroomName,
+      remarks: bathroom.bathroomRemarks,
+      createdBy: userId,
+    };
+    try {
+      const { data } = await axios.post(AppURL.bathroomApi, submittedData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (data?.status === 201) {
+        toast.success("Bathroom added successfully !");
+        fetchBathroomData(token);
+
+        setBathroomSpecifications((prev) => ({
+          ...prev,
+          bathroomId: null,
+          bathroomName: "",
+          bathroomRemarks: "",
+          bathroomNameErrorMsg: "",
+          bathroomRemarksErrorMsg: "",
+        }));
+      }
+    } catch (error: any) {
+      toast.success("Failed to add bathroom !");
+    }
   };
   const updateBroomFunc = async (
     bathroom: any,
     token: string,
     userId: string
   ) => {};
-  const closeToUpdateBroomFunc = () => {};
+  const closeToUpdateBroomFunc = () => {
+    setBathroomSpecifications((prev) => ({
+      ...prev,
+      bathroomId: null,
+      bathroomName: "",
+      bathroomRemarks: "",
+      bathroomNameErrorMsg: "",
+      bathroomRemarksErrorMsg: "",
+      isUpdated: false,
+      isDeleted: false,
+    }));
+  };
   const bathroomHandleChange = (field: string, value: string) => {};
 
   // const isRequiredCommonFeatures = true;
@@ -269,13 +486,126 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
   const size = useWindowSize();
   const windowWidth: any = size && size?.width;
 
-  console.log("Window Width: ", windowWidth);
+  const cfDeleteFunc = async () => {
+    const deleteData = await {
+      inactiveBy: decodeToken?.userId,
+    };
+
+    try {
+      const deleteRes: any = await fetch(
+        `${AppURL.roomCommonFeature}/${commonFeatures?.featuresId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${decodeToken?.token}`,
+          },
+          body: JSON.stringify(deleteData),
+        }
+      );
+
+      if (deleteRes.status === 200) {
+        toast.success("Common features deleted successfully !");
+        fetchCommonFeaturesData(decodeToken?.token);
+        setCommonFeatures((prev) => ({
+          ...prev,
+          commonFeatureId: null,
+          isDeleted: false,
+        }));
+      }
+    } catch (error: any) {
+      console.log("Error deleting common features: ", error?.message);
+      toast.error("Failed to delete. Please try again ! ");
+    }
+  };
+  const afDeleteFunc = () => {};
+  const bedDeleteFunc = () => {};
+  const bathroomDeleteFunc = () => {};
+  const notDeleteFunc = () => {
+    toast.error("Nothing to delete !");
+  };
+
+  const isDeleteModalVisible = commonFeatures?.isDeleted
+    ? commonFeatures?.isDeleted
+    : availableFurnitures?.isDeleted
+    ? availableFurnitures?.isDeleted
+    : bedSpecifications?.isDeleted
+    ? bedSpecifications?.isDeleted
+    : bathroomSpecifications?.isDeleted
+    ? bathroomSpecifications?.isDeleted
+    : false;
+  const deleteFunc = commonFeatures?.isDeleted
+    ? cfDeleteFunc
+    : availableFurnitures?.isDeleted
+    ? afDeleteFunc
+    : bedSpecifications?.isDeleted
+    ? bedDeleteFunc
+    : bathroomSpecifications?.isDeleted
+    ? bathroomDeleteFunc
+    : notDeleteFunc;
+  const deleteMsg = commonFeatures?.isDeleted
+    ? "You're going to delete this common features ."
+    : availableFurnitures?.isDeleted
+    ? "You're going to delete this available furnitures ."
+    : bedSpecifications?.isDeleted
+    ? "You're going to delete this bed ."
+    : bathroomSpecifications?.isDeleted
+    ? "You're going to delete this bathroom ."
+    : "Nothing to delete !";
+
+  const handleCancelToDelete = () => {
+    setCommonFeatures((prev) => ({
+      ...prev,
+      commonFeatureId: null,
+      isDeleted: false,
+    }));
+    setAvailableFurnitures((prev) => ({
+      ...prev,
+      availableFurnitureId: null,
+      isDeleted: false,
+    }));
+    setBedSpecifications((prev) => ({
+      ...prev,
+      bedId: null,
+      isDeleted: false,
+    }));
+    setBathroomSpecifications((prev) => ({
+      ...prev,
+      bathroomId: null,
+      isDeleted: false,
+    }));
+  };
+
+  const currentWidth = getDrawerStatus
+    ? windowWidth >= 1750
+      ? "w-[100%]"
+      : windowWidth >= 1450 && windowWidth <= 1749
+      ? "w-[95%]"
+      : "w-[95%]"
+    : windowWidth >= 1500
+    ? "w-[100%]"
+    : "w-[95%]";
+  // const currentWidth = getDrawerStatus
+  //   ? windowWidth >= 1750
+  //     ? "w-[100%]"
+  //     : windowWidth >= 1450 && windowWidth <= 1749
+  //     ? "w-[95%]"
+  //     : "w-[90%]"
+  //   : windowWidth >= 1500
+  //   ? "w-[100%]"
+  //   : "w-[95%]";
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <div className="fixed w-screen h-screen">
-        <div className="w-[88%] h-[95%] flex flex-col overflow-x-auto">
-          <div className="flex w-full max-h-[280]">
+      <div
+        className={` w-screen h-screen items-center ${
+          getDrawerStatus ? "pl-[265]" : "pl-0"
+        } overflow-auto h-screen pb-20`}
+      >
+        <div
+          className={`${currentWidth} h-[95%] flex flex-col   overflow-y-auto max-h-screen`}
+        >
+          <div className="flex w-full ">
             <div className="w-1/4">
               <ReusableFeaturesCard
                 title="Common Features"
@@ -306,11 +636,17 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                   }))
                 }
                 onSubmit={() => {
-                  onSubmitCFFunc(
-                    commonFeatures,
-                    decodeToken?.token,
-                    decodeToken?.userId
-                  );
+                  !commonFeatures.isUpdated
+                    ? onSubmitCFFunc(
+                        commonFeatures,
+                        decodeToken?.token,
+                        decodeToken?.userId
+                      )
+                    : updateCFFunc(
+                        commonFeatures,
+                        decodeToken?.token,
+                        decodeToken?.userId
+                      );
                 }}
                 onCancel={closeToUpdateCFFunc}
                 isUpdated={commonFeatures.isUpdated}
@@ -332,7 +668,21 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                 nameErrorMsg={availableFurnitures.furnitureNameErrorMsg}
                 remarksValue={availableFurnitures.furnitureRemarks}
                 remarksErrorMsg={availableFurnitures.furnitureRemarksErrorMsg}
-                onChange={afHandleChange}
+                nameOnChange={(e: any) =>
+                  setAvailableFurnitures((prev) => ({
+                    ...prev,
+                    furnitureName: e.target.value,
+                    furnitureNameErrorMsg: "",
+                  }))
+                }
+                remarksOnChange={(e: any) =>
+                  setAvailableFurnitures((prev) => ({
+                    ...prev,
+                    furnitureRemarks: e.target.value,
+                    furnitureRemarksErrorMsg: "",
+                  }))
+                }
+                // onChange={afHandleChange}
                 onSubmit={() => {
                   onSubmitAFFunc(
                     availableFurnitures,
@@ -360,7 +710,20 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                 nameErrorMsg={bedSpecifications.bedNameErrorMsg}
                 remarksValue={bedSpecifications.bedRemarks}
                 remarksErrorMsg={bedSpecifications.bedRemarksErrorMsg}
-                onChange={bedHandleChange}
+                nameOnChange={(e: any) =>
+                  setBedSpecifications((prev) => ({
+                    ...prev,
+                    bedName: e.target.value,
+                    bedNameErrorMsg: "",
+                  }))
+                }
+                remarksOnChange={(e: any) =>
+                  setBedSpecifications((prev) => ({
+                    ...prev,
+                    bedRemarks: e.target.value,
+                    bedRemarksErrorMsg: "",
+                  }))
+                }
                 onSubmit={() => {
                   onSubmitBedFunc(
                     bedSpecifications,
@@ -388,7 +751,20 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                 nameErrorMsg={bathroomSpecifications.bathroomNameErrorMsg}
                 remarksValue={bathroomSpecifications.bathroomRemarks}
                 remarksErrorMsg={bathroomSpecifications.bathroomRemarksErrorMsg}
-                onChange={bathroomHandleChange}
+                nameOnChange={(e: any) =>
+                  setBathroomSpecifications((prev) => ({
+                    ...prev,
+                    bathroomName: e.target.value,
+                    bathroomNameErrorMsg: "",
+                  }))
+                }
+                remarksOnChange={(e: any) =>
+                  setBathroomSpecifications((prev) => ({
+                    ...prev,
+                    bathroomRemarks: e.target.value,
+                    bathroomRemarksErrorMsg: "",
+                  }))
+                }
                 onSubmit={() => {
                   onSubmitBroomFunc(
                     bathroomSpecifications,
@@ -406,9 +782,9 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
             <div className="w-1/4">
               {commonFeatures?.data && commonFeatures?.data?.length > 0 && (
                 <div
-                  className={`w-[100%] h-75p bg-white p-4 my-4 mx-3 rounded-lg shadow-lg`}
+                  className={`w-[100%] h-75p bg-white p-4  mx-3 rounded-lg shadow-lg`}
                 >
-                  <p className=" font-workSans text-center mb-2 text-lg font-semibold">
+                  <p className=" font-workSans text-center mb-2 text-lg font-semibold truncate">
                     Room Common features
                   </p>
                   <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
@@ -428,7 +804,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                       </p>
                     </div>
 
-                    <div className="flex  w-1/5  justify-center items-center">
+                    <div className="flex  w-1/5  justify-end items-center ">
                       <p className="text-md font-workSans font-medium text-center">
                         Actions
                       </p>
@@ -452,17 +828,17 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                             </p>
                           </div>
                           <div className=" flex  w-1/5 items-center justify-center border-slate-300 border-r-2">
-                            <p className="text-sm font-workSans text-center break-words max-w-full">
+                            <p className="text-sm font-workSans text-center break-words max-w-full ">
                               {features?.name}
                             </p>
                           </div>
-                          <div className="flex w-1/2 items-center justify-center border-slate-300 border-r-2">
-                            <p className="text-sm font-workSans text-center  max-w-full">
+                          <div className="flex w-1/2 items-center justify-center border-slate-300 border-r-2 px-2">
+                            <p className="text-sm font-workSans text-center  max-w-full truncate">
                               {features?.remarks}
                             </p>
                           </div>
 
-                          <div className="flex  w-1/5  justify-center items-center">
+                          <div className="flex  w-1/5  justify-end items-center">
                             <div className="relative group mr-3 ">
                               <button
                                 onClick={async () => {
@@ -492,7 +868,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                                 onClick={async () => {
                                   await setCommonFeatures((prev) => ({
                                     ...prev,
-                                    floorId: features?.commonFeatureId,
+                                    featuresId: features?.commonFeatureId,
                                     isDeleted: true,
                                   }));
                                 }}
@@ -519,9 +895,9 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
             <div className="w-1/4 mx-3">
               {
                 <div
-                  className={`w-[100%] h-75p bg-white p-4 my-4 mx-3 rounded-lg shadow-lg`}
+                  className={`w-[100%] h-75p bg-white p-4  mx-3 rounded-lg shadow-lg`}
                 >
-                  <p className=" font-workSans text-center mb-2 text-lg font-semibold">
+                  <p className=" font-workSans text-center mb-2 text-lg font-semibold truncate">
                     Available Furnitures
                   </p>
                   <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
@@ -541,7 +917,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                       </p>
                     </div>
 
-                    <div className="flex  w-1/5  justify-center items-center">
+                    <div className="flex  w-1/5  justify-end items-center">
                       <p className="text-md font-workSans font-medium text-center">
                         Actions
                       </p>
@@ -578,7 +954,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                               </p>
                             </div>
 
-                            <div className="flex  w-1/5  justify-center items-center">
+                            <div className="flex  w-1/5  justify-end items-center">
                               <div className="relative group mr-3 ">
                                 <button
                                   onClick={async () => {
@@ -643,9 +1019,9 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
             <div className="w-1/4 ">
               {
                 <div
-                  className={`w-[100%] h-75p bg-white p-4 my-4 mx-3 rounded-lg shadow-lg`}
+                  className={`w-[100%] h-75p bg-white p-4 mx-3 rounded-lg shadow-lg`}
                 >
-                  <p className=" font-workSans text-center mb-2 text-lg font-semibold">
+                  <p className=" font-workSans text-center mb-2 text-lg font-semibold truncate">
                     Bed Specifications
                   </p>
                   <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
@@ -665,7 +1041,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                       </p>
                     </div>
 
-                    <div className="flex  w-1/5  justify-center items-center">
+                    <div className="flex  w-1/5  justify-end items-center">
                       <p className="text-md font-workSans font-medium text-center">
                         Actions
                       </p>
@@ -701,7 +1077,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                               </p>
                             </div>
 
-                            <div className="flex  w-1/5  justify-center items-center">
+                            <div className="flex  w-1/5  justify-end items-center">
                               <div className="relative group mr-3 ">
                                 <button
                                   onClick={async () => {
@@ -766,9 +1142,9 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
             <div className="w-1/5 mx-3">
               {
                 <div
-                  className={`w-[100%] h-75p bg-white p-4 my-4 mx-3 rounded-lg shadow-lg`}
+                  className={`w-[100%] h-75p bg-white p-4  mx-3 rounded-lg shadow-lg`}
                 >
-                  <p className=" font-workSans text-center mb-2 text-lg font-semibold">
+                  <p className=" font-workSans text-center mb-2 text-lg font-semibold truncate">
                     Bathroom Specifications
                   </p>
                   <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
@@ -788,52 +1164,52 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                       </p>
                     </div>
 
-                    <div className="flex  w-1/5  justify-center items-center">
+                    <div className="flex  w-1/5  justify-end items-center">
                       <p className="text-md font-workSans font-medium text-center">
                         Actions
                       </p>
                     </div>
                   </div>
 
-                  {availableFurnitures?.data &&
-                  availableFurnitures?.data?.length > 0 ? (
-                    availableFurnitures?.data?.map(
-                      (furniture: any, furnitureIndex: number) => {
-                        const isLastFurniture =
+                  {bathroomSpecifications?.data &&
+                  bathroomSpecifications?.data?.length > 0 ? (
+                    bathroomSpecifications?.data?.map(
+                      (bathroom: any, furnitureIndex: number) => {
+                        const isLastBathroom =
                           furnitureIndex ===
-                          availableFurnitures?.data.length - 1;
+                          bathroomSpecifications?.data.length - 1;
                         return (
                           <div
                             key={furnitureIndex}
                             className={`flex w-full items-center ${
-                              !isLastFurniture ? "border-b-2" : "border-b-0"
+                              !isLastBathroom ? "border-b-2" : "border-b-0"
                             } border-slate-300 py-2 px-2  bg-slate-100`}
                           >
                             <div className="flex w-1/12 items-center  justify-center border-slate-300 border-r-2">
                               <p className="text-sm font-workSans text-center">
-                                {furniture?.furnitureId}
+                                {bathroom?.bathroomId}
                               </p>
                             </div>
                             <div className=" flex  w-1/5 items-center justify-center border-slate-300 border-r-2">
                               <p className="text-sm font-workSans text-center break-words max-w-full">
-                                {furniture?.name}
+                                {bathroom?.name}
                               </p>
                             </div>
                             <div className="flex w-1/2 items-center justify-center border-slate-300 border-r-2">
                               <p className="text-sm font-workSans text-center  max-w-full">
-                                {furniture?.remarks}
+                                {bathroom?.remarks}
                               </p>
                             </div>
 
-                            <div className="flex  w-1/5  justify-center items-center">
+                            <div className="flex  w-1/5  justify-end items-center">
                               <div className="relative group mr-3 ">
                                 <button
                                   onClick={async () => {
-                                    await setAvailableFurnitures((prev) => ({
+                                    await setBathroomSpecifications((prev) => ({
                                       ...prev,
-                                      furnitureId: furniture?.furnitureId,
-                                      furnitureName: furniture?.name,
-                                      furnitureRemarks: furniture?.remarks,
+                                      bathroomId: bathroom?.bathroomId,
+                                      bathroomName: bathroom?.name,
+                                      bathroomRemarks: bathroom?.remarks,
                                       isUpdated: true,
                                     }));
                                   }}
@@ -855,7 +1231,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                                   onClick={async () => {
                                     await setAvailableFurnitures((prev) => ({
                                       ...prev,
-                                      furnitureId: furniture?.furnitureId,
+                                      furnitureId: bathroom?.furnitureId,
                                       isDeleted: true,
                                     }));
                                   }}
@@ -888,15 +1264,16 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
             </div>
           </div>
         </div>
+        <DeleteModal
+          title="Do you want to delete ?"
+          description={deleteMsg}
+          onConfirm={deleteFunc}
+          onCancel={handleCancelToDelete}
+          isVisible={isDeleteModalVisible}
+        />
       </div>
     </Suspense>
   );
 };
 
 export default RoomGoodsEntriesPage;
-
-/*
-
-Commit puerrposde 
-
- */
