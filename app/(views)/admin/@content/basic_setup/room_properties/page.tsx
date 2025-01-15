@@ -362,8 +362,6 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
     token: string,
     userId: string
   ) => {
-    console.log("furniture: ", JSON.stringify(furniture, null, 2));
-
     if (!validateAFForm()) return;
     const submittedData = await {
       name: furniture.furnitureName,
@@ -399,8 +397,6 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
         }));
       }
     } catch (error: any) {
-      console.log("error to update Furniture: ", error?.message);
-
       toast.error("Failed to update furniture");
     }
   };
@@ -450,7 +446,44 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
       toast.success("Failed to add bed !");
     }
   };
-  const updateBedFunc = async (bed: any, token: string, userId: string) => {};
+  const updateBedFunc = async (bed: any, token: string, userId: string) => {
+    if (!validateBedForm()) return;
+    const submittedData = await {
+      name: bed.bedName,
+      remarks: bed.bedRemarks,
+      updatedBy: userId,
+    };
+    try {
+      const { data } = await axios.put(
+        `${AppURL.bedApi}/${bed.bedId}`,
+        submittedData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (data?.status === 200) {
+        toast.success("Bed updated successfully !");
+        fetchBedData(token);
+
+        setBedSpecifications((prev) => ({
+          ...prev,
+          bedId: null,
+          bedName: "",
+          bedRemarks: "",
+          bedNameErrorMsg: "",
+          bedRemarksErrorMsg: "",
+          isUpdated: false,
+          isDeleted: false,
+        }));
+      }
+    } catch (error: any) {
+      toast.error("Failed to update bed !");
+    }
+  };
   const closeToUpdateBedFunc = () => {
     setBedSpecifications((prev) => ({
       ...prev,
@@ -505,7 +538,44 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
     bathroom: any,
     token: string,
     userId: string
-  ) => {};
+  ) => {
+    if (!validateBathroomForm()) return;
+    const submittedData = await {
+      name: bathroom.bathroomName,
+      remarks: bathroom.bathroomRemarks,
+      updatedBy: userId,
+    };
+    try {
+      const { data } = await axios.put(
+        `${AppURL.bathroomApi}/${bathroom.bathroomId}`,
+        submittedData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (data?.status === 200) {
+        toast.success("Bathroom updated successfully !");
+        fetchBathroomData(token);
+
+        setBathroomSpecifications((prev) => ({
+          ...prev,
+          bathroomId: null,
+          bathroomName: "",
+          bathroomRemarks: "",
+          bathroomNameErrorMsg: "",
+          bathroomRemarksErrorMsg: "",
+          isUpdated: false,
+          isDeleted: false,
+        }));
+      }
+    } catch (error: any) {
+      toast.error("Failed to update bathroom !");
+    }
+  };
   const closeToUpdateBroomFunc = () => {
     setBathroomSpecifications((prev) => ({
       ...prev,
@@ -518,7 +588,6 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
       isDeleted: false,
     }));
   };
-  const bathroomHandleChange = (field: string, value: string) => {};
 
   const size = useWindowSize();
   const windowWidth: any = size && size?.width;
@@ -583,12 +652,71 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
         }));
       }
     } catch (error: any) {
-      console.log("Error deleting furniture: ", error?.message);
       toast.error("Failed to delete. Please try again ! ");
     }
   };
-  const bedDeleteFunc = () => {};
-  const bathroomDeleteFunc = () => {};
+  const bedDeleteFunc = async () => {
+    const deleteData = {
+      inactiveBy: decodeToken?.userId,
+    };
+
+    try {
+      const deleteRes: any = await fetch(
+        `${AppURL.bedApi}/${bedSpecifications?.bedId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${decodeToken?.token}`,
+          },
+          body: JSON.stringify(deleteData),
+        }
+      );
+
+      if (deleteRes.status === 200) {
+        toast.success("Bed deleted successfully !");
+        fetchBedData(decodeToken?.token);
+        setBedSpecifications((prev) => ({
+          ...prev,
+          bedId: null,
+          isDeleted: false,
+        }));
+      }
+    } catch (error: any) {
+      toast.error("Failed to delete. Please try again ! ");
+    }
+  };
+  const bathroomDeleteFunc = async () => {
+    const deleteData = {
+      inactiveBy: decodeToken?.userId,
+    };
+
+    try {
+      const deleteRes: any = await fetch(
+        `${AppURL.bathroomApi}/${bathroomSpecifications?.bathroomId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${decodeToken?.token}`,
+          },
+          body: JSON.stringify(deleteData),
+        }
+      );
+
+      if (deleteRes.status === 200) {
+        toast.success("Bathroom deleted successfully !");
+        fetchBathroomData(decodeToken?.token);
+        setBathroomSpecifications((prev) => ({
+          ...prev,
+          bathroomId: null,
+          isDeleted: false,
+        }));
+      }
+    } catch (error: any) {
+      toast.error("Failed to delete. Please try again ! ");
+    }
+  };
   const notDeleteFunc = () => {
     toast.error("Nothing to delete !");
   };
@@ -922,11 +1050,6 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                     availableFurnitures?.data?.length > 0 ? (
                       availableFurnitures?.data?.map(
                         (furniture: any, furnitureIndex: number) => {
-                          console.log(
-                            "furniture: ",
-                            JSON.stringify(furniture, null, 2)
-                          );
-
                           const isLastFurniture =
                             furnitureIndex ===
                             availableFurnitures?.data.length - 1;
@@ -1051,11 +1174,17 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                     }))
                   }
                   onSubmit={() => {
-                    onSubmitBedFunc(
-                      bedSpecifications,
-                      decodeToken?.token,
-                      decodeToken?.userId
-                    );
+                    !bedSpecifications?.isUpdated
+                      ? onSubmitBedFunc(
+                          bedSpecifications,
+                          decodeToken?.token,
+                          decodeToken?.userId
+                        )
+                      : updateBedFunc(
+                          bedSpecifications,
+                          decodeToken?.token,
+                          decodeToken?.userId
+                        );
                   }}
                   onCancel={closeToUpdateBedFunc}
                   isUpdated={bedSpecifications.isUpdated}
@@ -1219,11 +1348,17 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                     }))
                   }
                   onSubmit={() => {
-                    onSubmitBroomFunc(
-                      bathroomSpecifications,
-                      decodeToken?.token,
-                      decodeToken?.userId
-                    );
+                    !bathroomSpecifications.isUpdated
+                      ? onSubmitBroomFunc(
+                          bathroomSpecifications,
+                          decodeToken?.token,
+                          decodeToken?.userId
+                        )
+                      : updateBroomFunc(
+                          bathroomSpecifications,
+                          decodeToken?.token,
+                          decodeToken?.userId
+                        );
                   }}
                   onCancel={closeToUpdateBroomFunc}
                   isUpdated={bathroomSpecifications.isUpdated}
@@ -1270,6 +1405,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                           const isLastBathroom =
                             furnitureIndex ===
                             bathroomSpecifications?.data.length - 1;
+
                           return (
                             <div
                               key={furnitureIndex}
@@ -1323,11 +1459,13 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                                 <div className="relative group ">
                                   <button
                                     onClick={async () => {
-                                      await setAvailableFurnitures((prev) => ({
-                                        ...prev,
-                                        furnitureId: bathroom?.furnitureId,
-                                        isDeleted: true,
-                                      }));
+                                      await setBathroomSpecifications(
+                                        (prev) => ({
+                                          ...prev,
+                                          bathroomId: bathroom?.bathroomId,
+                                          isDeleted: true,
+                                        })
+                                      );
                                     }}
                                   >
                                     <MdDeleteOutline
