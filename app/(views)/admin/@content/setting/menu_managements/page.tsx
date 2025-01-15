@@ -160,8 +160,12 @@ const MenuManagements: FC<Props> = (props) => {
   };
 
   return (
-    <div className={` py-5 ${getDrawerStatus ? "pl-[265]" : "pl-0"} `}>
-      <div className="flex overflow-x-auto max-h-[85vh]">
+    <div
+      className={`pb-5 ${
+        getDrawerStatus ? "pl-[265]" : "pl-0"
+      }  w-screen h-screen `}
+    >
+      <div className="flex overflow-auto overflow-y-auto  max-w-[100%]  h-[92%] pr-10  mb-96">
         {menuItem &&
           menuItem?.length > 0 &&
           menuItem.map((parentMenu: any, parentIndex: number) => {

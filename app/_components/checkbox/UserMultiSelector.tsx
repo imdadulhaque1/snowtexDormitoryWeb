@@ -93,7 +93,7 @@ const UserMultiSelector: React.FC<UserSelectorProps> = React.memo(
               className="w-4 h-4 cursor-pointer"
             />
             <span
-              className={`font-workSans text-sm ${
+              className={`font-workSans text-sm truncate  ${
                 hoveredUser === user.userId ? "text-blue-600" : "text-black"
               }`}
             >

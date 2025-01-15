@@ -278,11 +278,11 @@ const FloorManagement: FC<Props> = (props) => {
       <div
         className={`flex ${
           getDrawerStatus ? "pl-[265]" : "pl-0"
-        } min-h-screen justify-center`}
+        } max-h-screen justify-center overflow-auto pb-52`}
       >
-        <div className="flex w-[100%] h-full ">
+        <div className="flex flex-col lg:flex-row w-full h-full ">
           <div
-            className={`w-[30%] h-80p bg-white p-4 m-4 rounded-lg shadow-lg`}
+            className={`w-[97%] lg:w-[30%] h-80p bg-white p-4 m-4 rounded-lg shadow-lg`}
           >
             <VerticalSingleInput
               label="Floor Name"
@@ -404,9 +404,9 @@ const FloorManagement: FC<Props> = (props) => {
               )}
             </div>
           </div>
-          {floorData?.data && floorData?.data?.length > 0 && (
+          {
             <div
-              className={`w-[70%] h-80p bg-white p-4 m-4 rounded-lg shadow-lg`}
+              className={`w-[97%] lg:w-[70%] h-80p bg-white p-4 m-4 rounded-lg shadow-lg`}
             >
               <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
                 <div className="flex w-1/12 items-center  justify-center border-slate-50 border-r-2">
@@ -436,88 +436,96 @@ const FloorManagement: FC<Props> = (props) => {
                 </div>
               </div>
 
-              {floorData?.data?.map((floor: any, floorIndex: number) => {
-                const isLastFloor = floorIndex === floorData?.data.length - 1;
-                return (
-                  <div
-                    key={floorIndex}
-                    className={`flex w-full items-center ${
-                      !isLastFloor ? "border-b-2" : "border-b-0"
-                    } border-slate-300 py-2 px-2  bg-slate-100`}
-                  >
-                    <div className="flex w-1/12 items-center  justify-center border-slate-300 border-r-2">
-                      <p className="text-md font-workSans text-center">
-                        {floor?.floorId}
-                      </p>
-                    </div>
-                    <div className=" flex  w-1/5 items-center justify-center border-slate-300 border-r-2">
-                      <p className="text-md font-workSans text-center break-words max-w-full">
-                        {floor?.floorName}
-                      </p>
-                    </div>
-                    <div className="flex w-1/3 items-center justify-center border-slate-300 border-r-2">
-                      <p className="text-md font-workSans text-center break-words max-w-full">
-                        {floor?.floorDescription}
-                      </p>
-                    </div>
-                    <div className="flex  w-1/5  justify-center items-center border-slate-300 border-r-2">
-                      <p className="text-md font-workSans text-center break-words max-w-full">
-                        {floor?.buildingName}
-                      </p>
-                    </div>
-                    <div className="flex  w-1/5  justify-center items-center">
-                      <div className="relative group mr-3">
-                        <button
-                          onClick={async () => {
-                            await setFloorData((prev) => ({
-                              ...prev,
-                              floorId: floor?.floorId,
-                              floorName: floor?.floorName,
-                              floorDescription: floor?.floorDescription,
-                              buildingId: floor?.buildingId,
-                              isUpdated: true,
-                            }));
-                          }}
-                        >
-                          <FaEdit
-                            color={COLORS.primary80}
-                            size={28}
-                            className="cursor-pointer  shadow-xl shadow-white"
-                          />
-                        </button>
-
-                        <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full  px-2 py-1 text-xs text-black  opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
-                          Update Floor
-                        </span>
+              {floorData?.data && floorData?.data?.length > 0 ? (
+                floorData?.data?.map((floor: any, floorIndex: number) => {
+                  const isLastFloor = floorIndex === floorData?.data.length - 1;
+                  return (
+                    <div
+                      key={floorIndex}
+                      className={`flex w-full items-center ${
+                        !isLastFloor ? "border-b-2" : "border-b-0"
+                      } border-slate-300 py-2 px-2  bg-slate-100`}
+                    >
+                      <div className="flex w-1/12 items-center  justify-center border-slate-300 border-r-2">
+                        <p className="text-md font-workSans text-center">
+                          {floor?.floorId}
+                        </p>
                       </div>
+                      <div className=" flex  w-1/5 items-center justify-center border-slate-300 border-r-2">
+                        <p className="text-md font-workSans text-center break-words max-w-full">
+                          {floor?.floorName}
+                        </p>
+                      </div>
+                      <div className="flex w-1/3 items-center justify-center border-slate-300 border-r-2">
+                        <p className="text-md font-workSans text-center break-words max-w-full">
+                          {floor?.floorDescription}
+                        </p>
+                      </div>
+                      <div className="flex  w-1/5  justify-center items-center border-slate-300 border-r-2">
+                        <p className="text-md font-workSans text-center break-words max-w-full">
+                          {floor?.buildingName}
+                        </p>
+                      </div>
+                      <div className="flex  w-1/5  justify-center items-center">
+                        <div className="relative group mr-3">
+                          <button
+                            onClick={async () => {
+                              await setFloorData((prev) => ({
+                                ...prev,
+                                floorId: floor?.floorId,
+                                floorName: floor?.floorName,
+                                floorDescription: floor?.floorDescription,
+                                buildingId: floor?.buildingId,
+                                isUpdated: true,
+                              }));
+                            }}
+                          >
+                            <FaEdit
+                              color={COLORS.primary80}
+                              size={28}
+                              className="cursor-pointer  shadow-xl shadow-white"
+                            />
+                          </button>
 
-                      <div className="relative group ">
-                        <button
-                          onClick={async () => {
-                            await setFloorData((prev) => ({
-                              ...prev,
-                              floorId: floor?.floorId,
-                              isDeleted: true,
-                            }));
-                          }}
-                        >
-                          <MdDeleteOutline
-                            color={COLORS.errorColor}
-                            size={30}
-                            className="cursor-pointer  shadow-xl shadow-white"
-                          />
-                        </button>
+                          <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full  px-2 py-1 text-xs text-black  opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
+                            Update Floor
+                          </span>
+                        </div>
 
-                        <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full  px-2 py-1 text-xs text-black  opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
-                          Delete Floor
-                        </span>
+                        <div className="relative group ">
+                          <button
+                            onClick={async () => {
+                              await setFloorData((prev) => ({
+                                ...prev,
+                                floorId: floor?.floorId,
+                                isDeleted: true,
+                              }));
+                            }}
+                          >
+                            <MdDeleteOutline
+                              color={COLORS.errorColor}
+                              size={30}
+                              className="cursor-pointer  shadow-xl shadow-white"
+                            />
+                          </button>
+
+                          <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full  px-2 py-1 text-xs text-black  opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
+                            Delete Floor
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              ) : (
+                <div>
+                  <h3 className="text-center font-workSans text-md mt-4 text-red-500">
+                    Floor data not found !
+                  </h3>
+                </div>
+              )}
             </div>
-          )}
+          }
         </div>
         <DeleteModal
           title="Do you want to delete ?"
