@@ -361,7 +361,49 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
     furniture: any,
     token: string,
     userId: string
-  ) => {};
+  ) => {
+    console.log("furniture: ", JSON.stringify(furniture, null, 2));
+
+    if (!validateAFForm()) return;
+    const submittedData = await {
+      name: furniture.furnitureName,
+      remarks: furniture.furnitureRemarks,
+      updatedBy: userId,
+    };
+
+    try {
+      const { data } = await axios.put(
+        `${AppURL.furnitureApi}/${furniture.furnitureId}`,
+        submittedData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (data?.status === 200) {
+        toast.success("Furniture updated successfully !");
+        fetchFurnitureData(token);
+
+        setAvailableFurnitures((prev) => ({
+          ...prev,
+          furnitureId: null,
+          furnitureName: "",
+          furnitureRemarks: "",
+          furnitureNameErrorMsg: "",
+          furnitureRemarksErrorMsg: "",
+          isUpdated: false,
+          isDeleted: false,
+        }));
+      }
+    } catch (error: any) {
+      console.log("error to update Furniture: ", error?.message);
+
+      toast.error("Failed to update furniture");
+    }
+  };
   const closeToUpdateAFFunc = () => {
     setAvailableFurnitures((prev) => ({
       ...prev,
@@ -513,7 +555,38 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
       toast.error("Failed to delete. Please try again ! ");
     }
   };
-  const afDeleteFunc = () => {};
+  const afDeleteFunc = async () => {
+    const deleteData = {
+      inactiveBy: decodeToken?.userId,
+    };
+
+    try {
+      const deleteRes: any = await fetch(
+        `${AppURL.furnitureApi}/${availableFurnitures?.furnitureId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${decodeToken?.token}`,
+          },
+          body: JSON.stringify(deleteData),
+        }
+      );
+
+      if (deleteRes.status === 200) {
+        toast.success("Furniture deleted successfully !");
+        fetchFurnitureData(decodeToken?.token);
+        setAvailableFurnitures((prev) => ({
+          ...prev,
+          availableFurnitureId: null,
+          isDeleted: false,
+        }));
+      }
+    } catch (error: any) {
+      console.log("Error deleting furniture: ", error?.message);
+      toast.error("Failed to delete. Please try again ! ");
+    }
+  };
   const bedDeleteFunc = () => {};
   const bathroomDeleteFunc = () => {};
   const notDeleteFunc = () => {
@@ -580,15 +653,6 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
     : windowWidth >= 1500
     ? "w-[100%]"
     : "w-[97%]";
-  // const currentWidth = getDrawerStatus
-  //   ? windowWidth >= 1750
-  //     ? "w-[100%]"
-  //     : windowWidth >= 1450 && windowWidth <= 1749
-  //     ? "w-[95%]"
-  //     : "w-[90%]"
-  //   : windowWidth >= 1500
-  //   ? "w-[100%]"
-  //   : "w-[95%]";
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -805,11 +869,17 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                   }
                   // onChange={afHandleChange}
                   onSubmit={() => {
-                    onSubmitAFFunc(
-                      availableFurnitures,
-                      decodeToken?.token,
-                      decodeToken?.userId
-                    );
+                    !availableFurnitures.isUpdated
+                      ? onSubmitAFFunc(
+                          availableFurnitures,
+                          decodeToken?.token,
+                          decodeToken?.userId
+                        )
+                      : updateAFFunc(
+                          availableFurnitures,
+                          decodeToken?.token,
+                          decodeToken?.userId
+                        );
                   }}
                   onCancel={closeToUpdateAFFunc}
                   isUpdated={availableFurnitures.isUpdated}
@@ -852,6 +922,11 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                     availableFurnitures?.data?.length > 0 ? (
                       availableFurnitures?.data?.map(
                         (furniture: any, furnitureIndex: number) => {
+                          console.log(
+                            "furniture: ",
+                            JSON.stringify(furniture, null, 2)
+                          );
+
                           const isLastFurniture =
                             furnitureIndex ===
                             availableFurnitures?.data.length - 1;
@@ -864,7 +939,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                             >
                               <div className="flex w-1/12 items-center  justify-center border-slate-300 border-r-2">
                                 <p className="text-sm font-workSans text-center">
-                                  {furniture?.furnitureId}
+                                  {furniture?.availableFurnitureId}
                                 </p>
                               </div>
                               <div className=" flex  w-1/5 items-center justify-center border-slate-300 border-r-2">
@@ -884,7 +959,8 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                                     onClick={async () => {
                                       await setAvailableFurnitures((prev) => ({
                                         ...prev,
-                                        furnitureId: furniture?.furnitureId,
+                                        furnitureId:
+                                          furniture?.availableFurnitureId,
                                         furnitureName: furniture?.name,
                                         furnitureRemarks: furniture?.remarks,
                                         isUpdated: true,
@@ -908,7 +984,8 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                                     onClick={async () => {
                                       await setAvailableFurnitures((prev) => ({
                                         ...prev,
-                                        furnitureId: furniture?.furnitureId,
+                                        furnitureId:
+                                          furniture?.availableFurnitureId,
                                         isDeleted: true,
                                       }));
                                     }}
