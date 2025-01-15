@@ -260,11 +260,11 @@ const BuildingManagements: FC<Props> = (props) => {
       <div
         className={`flex ${
           getDrawerStatus ? "pl-[265]" : "pl-0"
-        } justify-cente`}
+        }  max-h-screen justify-center overflow-auto pb-52`}
       >
-        <div className="flex w-[100%] h-full ">
+        <div className="flex flex-col lg:flex-row w-full h-full ">
           <div
-            className={`w-[30%] h-80p bg-white p-4 m-4 rounded-lg shadow-lg`}
+            className={`w-[97%] lg:w-[30%] h-80p bg-white p-4 m-4 rounded-lg shadow-lg`}
           >
             <VerticalSingleInput
               label="Building Name"
@@ -382,39 +382,40 @@ const BuildingManagements: FC<Props> = (props) => {
               )}
             </div>
           </div>
-          {fetchBuildings && fetchBuildings?.length > 0 && (
-            <div
-              className={`w-[70%] h-80p bg-white p-4 m-4 rounded-lg shadow-lg`}
-            >
-              <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
-                <div className="flex w-1/12 items-center  justify-center border-slate-50 border-r-2">
-                  <p className="text-md font-workSans font-medium text-center ">
-                    Id
-                  </p>
-                </div>
-                <div className=" flex  w-1/5 items-center justify-center border-slate-50 border-r-2">
-                  <p className="text-md font-workSans font-medium text-center">
-                    Name
-                  </p>
-                </div>
-                <div className="flex w-1/3 items-center justify-center border-slate-50 border-r-2">
-                  <p className="text-md font-workSans font-medium text-center">
-                    Address
-                  </p>
-                </div>
-                <div className="flex  w-1/5  justify-center items-center border-slate-50 border-r-2">
-                  <p className="text-md font-workSans font-medium text-center">
-                    Contact No
-                  </p>
-                </div>
-                <div className="flex  w-1/5  justify-center items-center">
-                  <p className="text-md font-workSans font-medium text-center">
-                    Actions
-                  </p>
-                </div>
-              </div>
 
-              {fetchBuildings?.map((building: any, buildingsIndex: number) => {
+          <div
+            className={`w-[97%] lg:w-[70%] h-80p bg-white p-4 m-4 rounded-lg shadow-lg`}
+          >
+            <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
+              <div className="flex w-1/12 items-center  justify-center border-slate-50 border-r-2">
+                <p className="text-md font-workSans font-medium text-center ">
+                  Id
+                </p>
+              </div>
+              <div className=" flex  w-1/5 items-center justify-center border-slate-50 border-r-2">
+                <p className="text-md font-workSans font-medium text-center">
+                  Name
+                </p>
+              </div>
+              <div className="flex w-1/3 items-center justify-center border-slate-50 border-r-2">
+                <p className="text-md font-workSans font-medium text-center">
+                  Address
+                </p>
+              </div>
+              <div className="flex  w-1/5  justify-center items-center border-slate-50 border-r-2">
+                <p className="text-md font-workSans font-medium text-center">
+                  Contact No
+                </p>
+              </div>
+              <div className="flex  w-1/5  justify-center items-center">
+                <p className="text-md font-workSans font-medium text-center">
+                  Actions
+                </p>
+              </div>
+            </div>
+
+            {fetchBuildings && fetchBuildings?.length > 0 ? (
+              fetchBuildings?.map((building: any, buildingsIndex: number) => {
                 const isLastBuilding =
                   buildingsIndex === fetchBuildings.length - 1;
                 return (
@@ -494,9 +495,15 @@ const BuildingManagements: FC<Props> = (props) => {
                     </div>
                   </div>
                 );
-              })}
-            </div>
-          )}
+              })
+            ) : (
+              <div>
+                <h3 className="text-center font-workSans text-md mt-4 text-red-500">
+                  Buildings data not found !
+                </h3>
+              </div>
+            )}
+          </div>
         </div>
 
         <DeleteModal

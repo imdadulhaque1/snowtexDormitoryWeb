@@ -285,9 +285,9 @@ const MenuPermission: FC<Props> = (props) => {
     <div
       className={`flex flex-col ${
         getDrawerStatus ? "pl-[265]" : "pl-0"
-      }  md:flex-row h-screen pb-5 `}
+      } flex flex-col xl:flex-row   h-screen pb-52 xl:pb-5   overflow-auto `}
     >
-      <div className="flex flex-col items-center w-full md:w-48p  md:h-90p bg-white ml-3 m-2 py-5 border-2 border-primary80 rounded-lg shadow-lg">
+      <div className="flex flex-col items-center w-full xl:w-48p  h-100p lg:h-90p bg-white ml-3 m-2 py-5 border-2 border-primary80 rounded-lg shadow-lg">
         <p className="font-workSans text-black text-xl  text-center mb-3 pb-1 border-b-2 border-primary80 border-double">
           Role Based Menu Selected
         </p>
@@ -345,7 +345,7 @@ const MenuPermission: FC<Props> = (props) => {
         </button>
       </div>
 
-      <div className="flex flex-col items-center w-full md:w-48p md:h-90p  bg-white ml-3 m-2 py-5 border-2 border-primary80 rounded-lg shadow-lg">
+      <div className="flex flex-col items-center w-full xl:w-48p h-100p lg:h-90p  bg-white ml-3 m-2 py-5 border-2 border-primary80 rounded-lg shadow-lg">
         <p className="font-workSans text-black text-xl  text-center mb-3 pb-1 border-b-2 border-primary80 border-double">
           Role Based User Permissions
         </p>

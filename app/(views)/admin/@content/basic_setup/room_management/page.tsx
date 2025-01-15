@@ -391,11 +391,11 @@ const RoomManagement: FC<Props> = (props) => {
       <div
         className={`flex  ${"w-[100%]"} justify-center ${
           getDrawerStatus ? "pl-[265]" : "pl-0"
-        } overflow-x-auto max-h-screen`}
+        } max-h-screen justify-center overflow-auto pb-52`}
       >
-        <div className={`flex  h-full w-[100%]`}>
+        <div className={`flex flex-col xl:flex-row w-full h-full`}>
           <div
-            className={`w-[25%] h-80p bg-white p-4 m-4 rounded-lg shadow-lg`}
+            className={`w-[97%] xl:w-[25%] h-80p bg-white p-4 m-4 rounded-lg shadow-lg`}
           >
             <p className=" text-lg font-workSans text-center uppercase font-semibold">
               Room Entries
@@ -540,7 +540,7 @@ const RoomManagement: FC<Props> = (props) => {
           </div>
 
           <div
-            className={`w-[75%] h-80p  p-4 m-4 rounded-lg shadow-lg bg-white`}
+            className={` w-[97%] xl:w-[75%]  h-80p  p-4 m-4 rounded-lg shadow-lg bg-white`}
           >
             <div className="flex w-full items-center  px-2 rounded-t-lg bg-slate-300">
               <TableHeader
