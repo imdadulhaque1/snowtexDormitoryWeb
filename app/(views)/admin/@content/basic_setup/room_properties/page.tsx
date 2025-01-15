@@ -361,7 +361,45 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
     furniture: any,
     token: string,
     userId: string
-  ) => {};
+  ) => {
+    if (!validateAFForm()) return;
+    const submittedData = await {
+      name: furniture.furnitureName,
+      remarks: furniture.furnitureRemarks,
+      updatedBy: userId,
+    };
+
+    try {
+      const { data } = await axios.put(
+        `${AppURL.furnitureApi}/${furniture.furnitureId}`,
+        submittedData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (data?.status === 200) {
+        toast.success("Furniture updated successfully !");
+        fetchFurnitureData(token);
+
+        setAvailableFurnitures((prev) => ({
+          ...prev,
+          furnitureId: null,
+          furnitureName: "",
+          furnitureRemarks: "",
+          furnitureNameErrorMsg: "",
+          furnitureRemarksErrorMsg: "",
+          isUpdated: false,
+          isDeleted: false,
+        }));
+      }
+    } catch (error: any) {
+      toast.error("Failed to update furniture");
+    }
+  };
   const closeToUpdateAFFunc = () => {
     setAvailableFurnitures((prev) => ({
       ...prev,
@@ -408,7 +446,44 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
       toast.success("Failed to add bed !");
     }
   };
-  const updateBedFunc = async (bed: any, token: string, userId: string) => {};
+  const updateBedFunc = async (bed: any, token: string, userId: string) => {
+    if (!validateBedForm()) return;
+    const submittedData = await {
+      name: bed.bedName,
+      remarks: bed.bedRemarks,
+      updatedBy: userId,
+    };
+    try {
+      const { data } = await axios.put(
+        `${AppURL.bedApi}/${bed.bedId}`,
+        submittedData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (data?.status === 200) {
+        toast.success("Bed updated successfully !");
+        fetchBedData(token);
+
+        setBedSpecifications((prev) => ({
+          ...prev,
+          bedId: null,
+          bedName: "",
+          bedRemarks: "",
+          bedNameErrorMsg: "",
+          bedRemarksErrorMsg: "",
+          isUpdated: false,
+          isDeleted: false,
+        }));
+      }
+    } catch (error: any) {
+      toast.error("Failed to update bed !");
+    }
+  };
   const closeToUpdateBedFunc = () => {
     setBedSpecifications((prev) => ({
       ...prev,
@@ -463,7 +538,44 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
     bathroom: any,
     token: string,
     userId: string
-  ) => {};
+  ) => {
+    if (!validateBathroomForm()) return;
+    const submittedData = await {
+      name: bathroom.bathroomName,
+      remarks: bathroom.bathroomRemarks,
+      updatedBy: userId,
+    };
+    try {
+      const { data } = await axios.put(
+        `${AppURL.bathroomApi}/${bathroom.bathroomId}`,
+        submittedData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (data?.status === 200) {
+        toast.success("Bathroom updated successfully !");
+        fetchBathroomData(token);
+
+        setBathroomSpecifications((prev) => ({
+          ...prev,
+          bathroomId: null,
+          bathroomName: "",
+          bathroomRemarks: "",
+          bathroomNameErrorMsg: "",
+          bathroomRemarksErrorMsg: "",
+          isUpdated: false,
+          isDeleted: false,
+        }));
+      }
+    } catch (error: any) {
+      toast.error("Failed to update bathroom !");
+    }
+  };
   const closeToUpdateBroomFunc = () => {
     setBathroomSpecifications((prev) => ({
       ...prev,
@@ -476,7 +588,6 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
       isDeleted: false,
     }));
   };
-  const bathroomHandleChange = (field: string, value: string) => {};
 
   const size = useWindowSize();
   const windowWidth: any = size && size?.width;
@@ -513,9 +624,99 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
       toast.error("Failed to delete. Please try again ! ");
     }
   };
-  const afDeleteFunc = () => {};
-  const bedDeleteFunc = () => {};
-  const bathroomDeleteFunc = () => {};
+  const afDeleteFunc = async () => {
+    const deleteData = {
+      inactiveBy: decodeToken?.userId,
+    };
+
+    try {
+      const deleteRes: any = await fetch(
+        `${AppURL.furnitureApi}/${availableFurnitures?.furnitureId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${decodeToken?.token}`,
+          },
+          body: JSON.stringify(deleteData),
+        }
+      );
+
+      if (deleteRes.status === 200) {
+        toast.success("Furniture deleted successfully !");
+        fetchFurnitureData(decodeToken?.token);
+        setAvailableFurnitures((prev) => ({
+          ...prev,
+          availableFurnitureId: null,
+          isDeleted: false,
+        }));
+      }
+    } catch (error: any) {
+      toast.error("Failed to delete. Please try again ! ");
+    }
+  };
+  const bedDeleteFunc = async () => {
+    const deleteData = {
+      inactiveBy: decodeToken?.userId,
+    };
+
+    try {
+      const deleteRes: any = await fetch(
+        `${AppURL.bedApi}/${bedSpecifications?.bedId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${decodeToken?.token}`,
+          },
+          body: JSON.stringify(deleteData),
+        }
+      );
+
+      if (deleteRes.status === 200) {
+        toast.success("Bed deleted successfully !");
+        fetchBedData(decodeToken?.token);
+        setBedSpecifications((prev) => ({
+          ...prev,
+          bedId: null,
+          isDeleted: false,
+        }));
+      }
+    } catch (error: any) {
+      toast.error("Failed to delete. Please try again ! ");
+    }
+  };
+  const bathroomDeleteFunc = async () => {
+    const deleteData = {
+      inactiveBy: decodeToken?.userId,
+    };
+
+    try {
+      const deleteRes: any = await fetch(
+        `${AppURL.bathroomApi}/${bathroomSpecifications?.bathroomId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${decodeToken?.token}`,
+          },
+          body: JSON.stringify(deleteData),
+        }
+      );
+
+      if (deleteRes.status === 200) {
+        toast.success("Bathroom deleted successfully !");
+        fetchBathroomData(decodeToken?.token);
+        setBathroomSpecifications((prev) => ({
+          ...prev,
+          bathroomId: null,
+          isDeleted: false,
+        }));
+      }
+    } catch (error: any) {
+      toast.error("Failed to delete. Please try again ! ");
+    }
+  };
   const notDeleteFunc = () => {
     toast.error("Nothing to delete !");
   };
@@ -580,15 +781,6 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
     : windowWidth >= 1500
     ? "w-[100%]"
     : "w-[97%]";
-  // const currentWidth = getDrawerStatus
-  //   ? windowWidth >= 1750
-  //     ? "w-[100%]"
-  //     : windowWidth >= 1450 && windowWidth <= 1749
-  //     ? "w-[95%]"
-  //     : "w-[90%]"
-  //   : windowWidth >= 1500
-  //   ? "w-[100%]"
-  //   : "w-[95%]";
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -805,11 +997,17 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                   }
                   // onChange={afHandleChange}
                   onSubmit={() => {
-                    onSubmitAFFunc(
-                      availableFurnitures,
-                      decodeToken?.token,
-                      decodeToken?.userId
-                    );
+                    !availableFurnitures.isUpdated
+                      ? onSubmitAFFunc(
+                          availableFurnitures,
+                          decodeToken?.token,
+                          decodeToken?.userId
+                        )
+                      : updateAFFunc(
+                          availableFurnitures,
+                          decodeToken?.token,
+                          decodeToken?.userId
+                        );
                   }}
                   onCancel={closeToUpdateAFFunc}
                   isUpdated={availableFurnitures.isUpdated}
@@ -864,7 +1062,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                             >
                               <div className="flex w-1/12 items-center  justify-center border-slate-300 border-r-2">
                                 <p className="text-sm font-workSans text-center">
-                                  {furniture?.furnitureId}
+                                  {furniture?.availableFurnitureId}
                                 </p>
                               </div>
                               <div className=" flex  w-1/5 items-center justify-center border-slate-300 border-r-2">
@@ -884,7 +1082,8 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                                     onClick={async () => {
                                       await setAvailableFurnitures((prev) => ({
                                         ...prev,
-                                        furnitureId: furniture?.furnitureId,
+                                        furnitureId:
+                                          furniture?.availableFurnitureId,
                                         furnitureName: furniture?.name,
                                         furnitureRemarks: furniture?.remarks,
                                         isUpdated: true,
@@ -908,7 +1107,8 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                                     onClick={async () => {
                                       await setAvailableFurnitures((prev) => ({
                                         ...prev,
-                                        furnitureId: furniture?.furnitureId,
+                                        furnitureId:
+                                          furniture?.availableFurnitureId,
                                         isDeleted: true,
                                       }));
                                     }}
@@ -974,11 +1174,17 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                     }))
                   }
                   onSubmit={() => {
-                    onSubmitBedFunc(
-                      bedSpecifications,
-                      decodeToken?.token,
-                      decodeToken?.userId
-                    );
+                    !bedSpecifications?.isUpdated
+                      ? onSubmitBedFunc(
+                          bedSpecifications,
+                          decodeToken?.token,
+                          decodeToken?.userId
+                        )
+                      : updateBedFunc(
+                          bedSpecifications,
+                          decodeToken?.token,
+                          decodeToken?.userId
+                        );
                   }}
                   onCancel={closeToUpdateBedFunc}
                   isUpdated={bedSpecifications.isUpdated}
@@ -1142,11 +1348,17 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                     }))
                   }
                   onSubmit={() => {
-                    onSubmitBroomFunc(
-                      bathroomSpecifications,
-                      decodeToken?.token,
-                      decodeToken?.userId
-                    );
+                    !bathroomSpecifications.isUpdated
+                      ? onSubmitBroomFunc(
+                          bathroomSpecifications,
+                          decodeToken?.token,
+                          decodeToken?.userId
+                        )
+                      : updateBroomFunc(
+                          bathroomSpecifications,
+                          decodeToken?.token,
+                          decodeToken?.userId
+                        );
                   }}
                   onCancel={closeToUpdateBroomFunc}
                   isUpdated={bathroomSpecifications.isUpdated}
@@ -1193,6 +1405,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                           const isLastBathroom =
                             furnitureIndex ===
                             bathroomSpecifications?.data.length - 1;
+
                           return (
                             <div
                               key={furnitureIndex}
@@ -1246,11 +1459,13 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                                 <div className="relative group ">
                                   <button
                                     onClick={async () => {
-                                      await setAvailableFurnitures((prev) => ({
-                                        ...prev,
-                                        furnitureId: bathroom?.furnitureId,
-                                        isDeleted: true,
-                                      }));
+                                      await setBathroomSpecifications(
+                                        (prev) => ({
+                                          ...prev,
+                                          bathroomId: bathroom?.bathroomId,
+                                          isDeleted: true,
+                                        })
+                                      );
                                     }}
                                   >
                                     <MdDeleteOutline
