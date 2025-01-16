@@ -568,7 +568,7 @@ const RoomManagement: FC<Props> = (props) => {
           </div>
 
           <div
-            className={` w-[97%] xl:w-[75%]  h-80p  p-4 ml-3 rounded-lg shadow-lg bg-white`}
+            className={` w-[97%] xl:w-[75%]  h-80p  p-4 xl:ml-3 mt-4 xl:mt-0 rounded-lg shadow-lg bg-white`}
           >
             <div className="flex w-full items-center  px-2 rounded-t-lg bg-slate-300">
               <TableHeader
