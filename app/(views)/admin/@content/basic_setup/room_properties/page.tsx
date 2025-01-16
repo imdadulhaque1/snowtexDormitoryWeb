@@ -14,6 +14,7 @@ import AppURL from "@/app/_restApi/AppURL";
 import { useWindowSize } from "@/app/_utils/handler/useWindowSize";
 import DeleteModal from "@/app/_components/modal/DeletedModal";
 import { useAppContext } from "@/app/_stateManagements/contextApi";
+import PaginationUI from "@/app/_components/pagination/PaginationUI";
 
 interface Props {}
 
@@ -66,6 +67,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
     isUpdated: false,
     isDeleted: false,
   });
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const fetchAndDecodeToken = async () => {
@@ -97,6 +99,19 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
       fetchBathroomData(decodeToken?.token);
     }
   }, [decodeToken?.token, decodeToken?.userId]);
+
+  const handlePageChange = async (newPage: number) => {
+    try {
+      setCurrentPage(newPage); // Update current page
+    } catch (error) {
+      console.error("Error updating page:", error);
+    }
+  };
+  // const totalPages = roomData.noOfRooms
+  //   ? Math.ceil(roomData.noOfRooms / pageSize)
+  //   : 0;
+
+  const totalPages = 5;
 
   const validateCFForm = () => {
     let isValid = true;
@@ -790,9 +805,9 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
         } max-h-screen justify-center pr-6`}
       >
         <div
-          className={` flex flex-col 2xl:flex-row max-h-screen ${currentWidth} h-[95%] flex   overflow-auto pb-20 pr-2`}
+          className={` flex flex-col 2xl:flex-row max-h-screen ${currentWidth} h-[91%] flex overflow-auto pb-20 pr-2`}
         >
-          <div className="flex w-[97%] 2xl:w-[49%] mr-6">
+          <div className="flex w-[97%] 2xl:w-[49%] mr-6 ">
             <div className="flex flex-col w-[50%]">
               <div className="w-full">
                 <ReusableFeaturesCard
@@ -958,6 +973,13 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                       </h3>
                     </div>
                   )}
+                  {totalPages > 1 && (
+                    <PaginationUI
+                      totalPages={totalPages}
+                      currentPage={currentPage}
+                      onPageChange={handlePageChange}
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -1012,134 +1034,140 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                 />
               </div>
               <div className="w-full mx-3">
-                {
-                  <div
-                    className={`w-[100%] h-75p bg-white p-4  mx-3 rounded-lg shadow-lg`}
-                  >
-                    <p className=" font-workSans text-center mb-2 text-lg font-semibold truncate">
-                      Available Furnitures
-                    </p>
-                    <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
-                      <div className="flex w-1/12 items-center  justify-center border-slate-50 border-r-2">
-                        <p className="text-md font-workSans font-medium text-center ">
-                          Id
-                        </p>
-                      </div>
-                      <div className=" flex  w-1/5 items-center justify-center border-slate-50 border-r-2">
-                        <p className="text-md font-workSans font-medium text-center">
-                          Name
-                        </p>
-                      </div>
-                      <div className="flex w-1/2 items-center justify-center border-slate-50 border-r-2">
-                        <p className="text-md font-workSans font-medium text-center">
-                          Remarks
-                        </p>
-                      </div>
-
-                      <div className="flex  w-1/5  justify-end items-center">
-                        <p className="text-md font-workSans font-medium text-center">
-                          Actions
-                        </p>
-                      </div>
+                <div
+                  className={`w-[100%] mx-3 h-75p bg-white p-4 rounded-lg shadow-lg`}
+                >
+                  <p className=" font-workSans text-center mb-2 text-lg font-semibold truncate">
+                    Available Furnitures
+                  </p>
+                  <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
+                    <div className="flex w-1/12 items-center  justify-center border-slate-50 border-r-2">
+                      <p className="text-md font-workSans font-medium text-center ">
+                        Id
+                      </p>
+                    </div>
+                    <div className=" flex  w-1/5 items-center justify-center border-slate-50 border-r-2">
+                      <p className="text-md font-workSans font-medium text-center">
+                        Name
+                      </p>
+                    </div>
+                    <div className="flex w-1/2 items-center justify-center border-slate-50 border-r-2">
+                      <p className="text-md font-workSans font-medium text-center">
+                        Remarks
+                      </p>
                     </div>
 
-                    {availableFurnitures?.data &&
-                    availableFurnitures?.data?.length > 0 ? (
-                      availableFurnitures?.data?.map(
-                        (furniture: any, furnitureIndex: number) => {
-                          const isLastFurniture =
-                            furnitureIndex ===
-                            availableFurnitures?.data.length - 1;
-                          return (
-                            <div
-                              key={furnitureIndex}
-                              className={`flex w-full items-center ${
-                                !isLastFurniture ? "border-b-2" : "border-b-0"
-                              } border-slate-300 py-2 px-2  bg-slate-100`}
-                            >
-                              <div className="flex w-1/12 items-center  justify-center border-slate-300 border-r-2">
-                                <p className="text-sm font-workSans text-center">
-                                  {furniture?.availableFurnitureId}
-                                </p>
+                    <div className="flex  w-1/5  justify-end items-center">
+                      <p className="text-md font-workSans font-medium text-center">
+                        Actions
+                      </p>
+                    </div>
+                  </div>
+
+                  {availableFurnitures?.data &&
+                  availableFurnitures?.data?.length > 0 ? (
+                    availableFurnitures?.data?.map(
+                      (furniture: any, furnitureIndex: number) => {
+                        const isLastFurniture =
+                          furnitureIndex ===
+                          availableFurnitures?.data.length - 1;
+                        return (
+                          <div
+                            key={furnitureIndex}
+                            className={`flex w-full items-center ${
+                              !isLastFurniture ? "border-b-2" : "border-b-0"
+                            } border-slate-300 py-2 px-2  bg-slate-100`}
+                          >
+                            <div className="flex w-1/12 items-center  justify-center border-slate-300 border-r-2">
+                              <p className="text-sm font-workSans text-center">
+                                {furniture?.availableFurnitureId}
+                              </p>
+                            </div>
+                            <div className=" flex  w-1/5 items-center justify-center border-slate-300 border-r-2">
+                              <p className="text-sm font-workSans text-center break-words max-w-full">
+                                {furniture?.name}
+                              </p>
+                            </div>
+                            <div className="flex w-1/2 items-center justify-center border-slate-300 border-r-2">
+                              <p className="text-sm font-workSans text-center  max-w-full">
+                                {furniture?.remarks}
+                              </p>
+                            </div>
+
+                            <div className="flex  w-1/5  justify-end items-center">
+                              <div className="relative group mr-3 ">
+                                <button
+                                  onClick={async () => {
+                                    await setAvailableFurnitures((prev) => ({
+                                      ...prev,
+                                      furnitureId:
+                                        furniture?.availableFurnitureId,
+                                      furnitureName: furniture?.name,
+                                      furnitureRemarks: furniture?.remarks,
+                                      isUpdated: true,
+                                    }));
+                                  }}
+                                >
+                                  <FaEdit
+                                    color={COLORS.primary80}
+                                    size={25}
+                                    className="cursor-pointer  shadow-xl shadow-white"
+                                  />
+                                </button>
+
+                                <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full  px-2 py-1 text-xs text-black  opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
+                                  Update Furniture
+                                </span>
                               </div>
-                              <div className=" flex  w-1/5 items-center justify-center border-slate-300 border-r-2">
-                                <p className="text-sm font-workSans text-center break-words max-w-full">
-                                  {furniture?.name}
-                                </p>
-                              </div>
-                              <div className="flex w-1/2 items-center justify-center border-slate-300 border-r-2">
-                                <p className="text-sm font-workSans text-center  max-w-full">
-                                  {furniture?.remarks}
-                                </p>
-                              </div>
 
-                              <div className="flex  w-1/5  justify-end items-center">
-                                <div className="relative group mr-3 ">
-                                  <button
-                                    onClick={async () => {
-                                      await setAvailableFurnitures((prev) => ({
-                                        ...prev,
-                                        furnitureId:
-                                          furniture?.availableFurnitureId,
-                                        furnitureName: furniture?.name,
-                                        furnitureRemarks: furniture?.remarks,
-                                        isUpdated: true,
-                                      }));
-                                    }}
-                                  >
-                                    <FaEdit
-                                      color={COLORS.primary80}
-                                      size={25}
-                                      className="cursor-pointer  shadow-xl shadow-white"
-                                    />
-                                  </button>
+                              <div className="relative group ">
+                                <button
+                                  onClick={async () => {
+                                    await setAvailableFurnitures((prev) => ({
+                                      ...prev,
+                                      furnitureId:
+                                        furniture?.availableFurnitureId,
+                                      isDeleted: true,
+                                    }));
+                                  }}
+                                >
+                                  <MdDeleteOutline
+                                    color={COLORS.errorColor}
+                                    size={28}
+                                    className="cursor-pointer  shadow-xl shadow-white"
+                                  />
+                                </button>
 
-                                  <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full  px-2 py-1 text-xs text-black  opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
-                                    Update Furniture
-                                  </span>
-                                </div>
-
-                                <div className="relative group ">
-                                  <button
-                                    onClick={async () => {
-                                      await setAvailableFurnitures((prev) => ({
-                                        ...prev,
-                                        furnitureId:
-                                          furniture?.availableFurnitureId,
-                                        isDeleted: true,
-                                      }));
-                                    }}
-                                  >
-                                    <MdDeleteOutline
-                                      color={COLORS.errorColor}
-                                      size={28}
-                                      className="cursor-pointer  shadow-xl shadow-white"
-                                    />
-                                  </button>
-
-                                  <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full  px-2 py-1 text-xs text-black  opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
-                                    Delete Furniture
-                                  </span>
-                                </div>
+                                <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full  px-2 py-1 text-xs text-black  opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
+                                  Delete Furniture
+                                </span>
                               </div>
                             </div>
-                          );
-                        }
-                      )
-                    ) : (
-                      <div>
-                        <h3 className="text-center font-workSans text-md mt-4 text-red-500">
-                          Data not found !
-                        </h3>
-                      </div>
-                    )}
-                  </div>
-                }
+                          </div>
+                        );
+                      }
+                    )
+                  ) : (
+                    <div>
+                      <h3 className="text-center font-workSans text-md mt-4 text-red-500">
+                        Data not found !
+                      </h3>
+                    </div>
+                  )}
+
+                  {totalPages > 1 && (
+                    <PaginationUI
+                      totalPages={totalPages}
+                      currentPage={currentPage}
+                      onPageChange={handlePageChange}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="flex w-[97%] 2xl:w-[48%]">
+          <div className="flex w-[97%] 2xl:w-[48%] ">
             <div className="flex flex-col w-[50%]">
               <div className="w-full">
                 <ReusableFeaturesCard
@@ -1189,127 +1217,128 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                 />
               </div>
 
-              <div className="w-full">
-                {
-                  <div
-                    className={`w-[100%] h-75p bg-white p-4 mx-3 rounded-lg shadow-lg`}
-                  >
-                    <p className=" font-workSans text-center mb-2 text-lg font-semibold truncate">
-                      Bed Specifications
+              <div
+                className={`w-full h-75p bg-white p-4 mx-3 rounded-lg shadow-lg`}
+              >
+                <p className=" font-workSans text-center mb-2 text-lg font-semibold truncate">
+                  Bed Specifications
+                </p>
+                <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
+                  <div className="flex w-1/12 items-center  justify-center border-slate-50 border-r-2">
+                    <p className="text-md font-workSans font-medium text-center ">
+                      Id
                     </p>
-                    <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
-                      <div className="flex w-1/12 items-center  justify-center border-slate-50 border-r-2">
-                        <p className="text-md font-workSans font-medium text-center ">
-                          Id
-                        </p>
-                      </div>
-                      <div className=" flex  w-1/5 items-center justify-center border-slate-50 border-r-2">
-                        <p className="text-md font-workSans font-medium text-center">
-                          Name
-                        </p>
-                      </div>
-                      <div className="flex w-1/2 items-center justify-center border-slate-50 border-r-2">
-                        <p className="text-md font-workSans font-medium text-center">
-                          Remarks
-                        </p>
-                      </div>
-
-                      <div className="flex  w-1/5  justify-end items-center">
-                        <p className="text-md font-workSans font-medium text-center">
-                          Actions
-                        </p>
-                      </div>
-                    </div>
-
-                    {bedSpecifications?.data &&
-                    bedSpecifications?.data?.length > 0 ? (
-                      bedSpecifications?.data?.map(
-                        (bed: any, bedIndex: number) => {
-                          const isLastBed =
-                            bedIndex === bedSpecifications?.data.length - 1;
-                          return (
-                            <div
-                              key={bedIndex}
-                              className={`flex w-full items-center ${
-                                !isLastBed ? "border-b-2" : "border-b-0"
-                              } border-slate-300 py-2 px-2  bg-slate-100`}
-                            >
-                              <div className="flex w-1/12 items-center  justify-center border-slate-300 border-r-2">
-                                <p className="text-sm font-workSans text-center">
-                                  {bed?.bedId}
-                                </p>
-                              </div>
-                              <div className=" flex  w-1/5 items-center justify-center border-slate-300 border-r-2">
-                                <p className="text-sm font-workSans text-center break-words max-w-full">
-                                  {bed?.name}
-                                </p>
-                              </div>
-                              <div className="flex w-1/2 items-center justify-center border-slate-300 border-r-2">
-                                <p className="text-sm font-workSans text-center  max-w-full">
-                                  {bed?.remarks}
-                                </p>
-                              </div>
-
-                              <div className="flex  w-1/5  justify-end items-center">
-                                <div className="relative group mr-3 ">
-                                  <button
-                                    onClick={async () => {
-                                      await setBedSpecifications((prev) => ({
-                                        ...prev,
-                                        bedId: bed?.bedId,
-                                        bedName: bed?.name,
-                                        bedRemarks: bed?.remarks,
-                                        isUpdated: true,
-                                      }));
-                                    }}
-                                  >
-                                    <FaEdit
-                                      color={COLORS.primary80}
-                                      size={25}
-                                      className="cursor-pointer  shadow-xl shadow-white"
-                                    />
-                                  </button>
-
-                                  <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full  px-2 py-1 text-xs text-black  opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
-                                    Update Bed
-                                  </span>
-                                </div>
-
-                                <div className="relative group ">
-                                  <button
-                                    onClick={async () => {
-                                      await setBedSpecifications((prev) => ({
-                                        ...prev,
-                                        bedId: bed?.bedId,
-                                        isDeleted: true,
-                                      }));
-                                    }}
-                                  >
-                                    <MdDeleteOutline
-                                      color={COLORS.errorColor}
-                                      size={28}
-                                      className="cursor-pointer  shadow-xl shadow-white"
-                                    />
-                                  </button>
-
-                                  <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full  px-2 py-1 text-xs text-black  opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
-                                    Delete Bed
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        }
-                      )
-                    ) : (
-                      <div>
-                        <h3 className="text-center font-workSans text-md mt-4 text-red-500">
-                          Data not found !
-                        </h3>
-                      </div>
-                    )}
                   </div>
-                }
+                  <div className=" flex  w-1/5 items-center justify-center border-slate-50 border-r-2">
+                    <p className="text-md font-workSans font-medium text-center">
+                      Name
+                    </p>
+                  </div>
+                  <div className="flex w-1/2 items-center justify-center border-slate-50 border-r-2">
+                    <p className="text-md font-workSans font-medium text-center">
+                      Remarks
+                    </p>
+                  </div>
+
+                  <div className="flex  w-1/5  justify-end items-center">
+                    <p className="text-md font-workSans font-medium text-center">
+                      Actions
+                    </p>
+                  </div>
+                </div>
+
+                {bedSpecifications?.data &&
+                bedSpecifications?.data?.length > 0 ? (
+                  bedSpecifications?.data?.map((bed: any, bedIndex: number) => {
+                    const isLastBed =
+                      bedIndex === bedSpecifications?.data.length - 1;
+                    return (
+                      <div
+                        key={bedIndex}
+                        className={`flex w-full items-center ${
+                          !isLastBed ? "border-b-2" : "border-b-0"
+                        } border-slate-300 py-2 px-2  bg-slate-100`}
+                      >
+                        <div className="flex w-1/12 items-center  justify-center border-slate-300 border-r-2">
+                          <p className="text-sm font-workSans text-center">
+                            {bed?.bedId}
+                          </p>
+                        </div>
+                        <div className=" flex  w-1/5 items-center justify-center border-slate-300 border-r-2">
+                          <p className="text-sm font-workSans text-center break-words max-w-full">
+                            {bed?.name}
+                          </p>
+                        </div>
+                        <div className="flex w-1/2 items-center justify-center border-slate-300 border-r-2">
+                          <p className="text-sm font-workSans text-center  max-w-full">
+                            {bed?.remarks}
+                          </p>
+                        </div>
+
+                        <div className="flex  w-1/5  justify-end items-center">
+                          <div className="relative group mr-3 ">
+                            <button
+                              onClick={async () => {
+                                await setBedSpecifications((prev) => ({
+                                  ...prev,
+                                  bedId: bed?.bedId,
+                                  bedName: bed?.name,
+                                  bedRemarks: bed?.remarks,
+                                  isUpdated: true,
+                                }));
+                              }}
+                            >
+                              <FaEdit
+                                color={COLORS.primary80}
+                                size={25}
+                                className="cursor-pointer  shadow-xl shadow-white"
+                              />
+                            </button>
+
+                            <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full  px-2 py-1 text-xs text-black  opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
+                              Update Bed
+                            </span>
+                          </div>
+
+                          <div className="relative group ">
+                            <button
+                              onClick={async () => {
+                                await setBedSpecifications((prev) => ({
+                                  ...prev,
+                                  bedId: bed?.bedId,
+                                  isDeleted: true,
+                                }));
+                              }}
+                            >
+                              <MdDeleteOutline
+                                color={COLORS.errorColor}
+                                size={28}
+                                className="cursor-pointer  shadow-xl shadow-white"
+                              />
+                            </button>
+
+                            <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full  px-2 py-1 text-xs text-black  opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
+                              Delete Bed
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div>
+                    <h3 className="text-center font-workSans text-md mt-4 text-red-500">
+                      Data not found !
+                    </h3>
+                  </div>
+                )}
+                {totalPages > 1 && (
+                  <PaginationUI
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                    onPageChange={handlePageChange}
+                  />
+                )}
               </div>
             </div>
             <div className="flex flex-col w-[50%]">
@@ -1364,132 +1393,133 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
               </div>
 
               <div className="w-full mx-3">
-                {
-                  <div
-                    className={`w-[100%] h-75p bg-white p-4  mx-3 rounded-lg shadow-lg`}
-                  >
-                    <p className=" font-workSans text-center mb-2 text-lg font-semibold truncate">
-                      Bathroom Specifications
-                    </p>
-                    <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
-                      <div className="flex w-1/12 items-center  justify-center border-slate-50 border-r-2">
-                        <p className="text-md font-workSans font-medium text-center ">
-                          Id
-                        </p>
-                      </div>
-                      <div className=" flex  w-1/5 items-center justify-center border-slate-50 border-r-2">
-                        <p className="text-md font-workSans font-medium text-center">
-                          Name
-                        </p>
-                      </div>
-                      <div className="flex w-1/2 items-center justify-center border-slate-50 border-r-2">
-                        <p className="text-md font-workSans font-medium text-center">
-                          Remarks
-                        </p>
-                      </div>
-
-                      <div className="flex  w-1/5  justify-end items-center">
-                        <p className="text-md font-workSans font-medium text-center">
-                          Actions
-                        </p>
-                      </div>
+                <div
+                  className={`w-[100%] h-75p bg-white p-4  mx-3 rounded-lg shadow-lg`}
+                >
+                  <p className=" font-workSans text-center mb-2 text-lg font-semibold truncate">
+                    Bathroom Specifications
+                  </p>
+                  <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
+                    <div className="flex w-1/12 items-center  justify-center border-slate-50 border-r-2">
+                      <p className="text-md font-workSans font-medium text-center ">
+                        Id
+                      </p>
+                    </div>
+                    <div className=" flex  w-1/5 items-center justify-center border-slate-50 border-r-2">
+                      <p className="text-md font-workSans font-medium text-center">
+                        Name
+                      </p>
+                    </div>
+                    <div className="flex w-1/2 items-center justify-center border-slate-50 border-r-2">
+                      <p className="text-md font-workSans font-medium text-center">
+                        Remarks
+                      </p>
                     </div>
 
-                    {bathroomSpecifications?.data &&
-                    bathroomSpecifications?.data?.length > 0 ? (
-                      bathroomSpecifications?.data?.map(
-                        (bathroom: any, furnitureIndex: number) => {
-                          const isLastBathroom =
-                            furnitureIndex ===
-                            bathroomSpecifications?.data.length - 1;
+                    <div className="flex  w-1/5  justify-end items-center">
+                      <p className="text-md font-workSans font-medium text-center">
+                        Actions
+                      </p>
+                    </div>
+                  </div>
 
-                          return (
-                            <div
-                              key={furnitureIndex}
-                              className={`flex w-full items-center ${
-                                !isLastBathroom ? "border-b-2" : "border-b-0"
-                              } border-slate-300 py-2 px-2  bg-slate-100`}
-                            >
-                              <div className="flex w-1/12 items-center  justify-center border-slate-300 border-r-2">
-                                <p className="text-sm font-workSans text-center">
-                                  {bathroom?.bathroomId}
-                                </p>
+                  {bathroomSpecifications?.data &&
+                  bathroomSpecifications?.data?.length > 0 ? (
+                    bathroomSpecifications?.data?.map(
+                      (bathroom: any, furnitureIndex: number) => {
+                        const isLastBathroom =
+                          furnitureIndex ===
+                          bathroomSpecifications?.data.length - 1;
+
+                        return (
+                          <div
+                            key={furnitureIndex}
+                            className={`flex w-full items-center ${
+                              !isLastBathroom ? "border-b-2" : "border-b-0"
+                            } border-slate-300 py-2 px-2  bg-slate-100`}
+                          >
+                            <div className="flex w-1/12 items-center  justify-center border-slate-300 border-r-2">
+                              <p className="text-sm font-workSans text-center">
+                                {bathroom?.bathroomId}
+                              </p>
+                            </div>
+                            <div className=" flex  w-1/5 items-center justify-center border-slate-300 border-r-2">
+                              <p className="text-sm font-workSans text-center break-words max-w-full">
+                                {bathroom?.name}
+                              </p>
+                            </div>
+                            <div className="flex w-1/2 items-center justify-center border-slate-300 border-r-2">
+                              <p className="text-sm font-workSans text-center  max-w-full">
+                                {bathroom?.remarks}
+                              </p>
+                            </div>
+
+                            <div className="flex  w-1/5  justify-end items-center">
+                              <div className="relative group mr-3 ">
+                                <button
+                                  onClick={async () => {
+                                    await setBathroomSpecifications((prev) => ({
+                                      ...prev,
+                                      bathroomId: bathroom?.bathroomId,
+                                      bathroomName: bathroom?.name,
+                                      bathroomRemarks: bathroom?.remarks,
+                                      isUpdated: true,
+                                    }));
+                                  }}
+                                >
+                                  <FaEdit
+                                    color={COLORS.primary80}
+                                    size={25}
+                                    className="cursor-pointer  shadow-xl shadow-white"
+                                  />
+                                </button>
+
+                                <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full  px-2 py-1 text-xs text-black  opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
+                                  Update Furniture
+                                </span>
                               </div>
-                              <div className=" flex  w-1/5 items-center justify-center border-slate-300 border-r-2">
-                                <p className="text-sm font-workSans text-center break-words max-w-full">
-                                  {bathroom?.name}
-                                </p>
-                              </div>
-                              <div className="flex w-1/2 items-center justify-center border-slate-300 border-r-2">
-                                <p className="text-sm font-workSans text-center  max-w-full">
-                                  {bathroom?.remarks}
-                                </p>
-                              </div>
 
-                              <div className="flex  w-1/5  justify-end items-center">
-                                <div className="relative group mr-3 ">
-                                  <button
-                                    onClick={async () => {
-                                      await setBathroomSpecifications(
-                                        (prev) => ({
-                                          ...prev,
-                                          bathroomId: bathroom?.bathroomId,
-                                          bathroomName: bathroom?.name,
-                                          bathroomRemarks: bathroom?.remarks,
-                                          isUpdated: true,
-                                        })
-                                      );
-                                    }}
-                                  >
-                                    <FaEdit
-                                      color={COLORS.primary80}
-                                      size={25}
-                                      className="cursor-pointer  shadow-xl shadow-white"
-                                    />
-                                  </button>
+                              <div className="relative group ">
+                                <button
+                                  onClick={async () => {
+                                    await setBathroomSpecifications((prev) => ({
+                                      ...prev,
+                                      bathroomId: bathroom?.bathroomId,
+                                      isDeleted: true,
+                                    }));
+                                  }}
+                                >
+                                  <MdDeleteOutline
+                                    color={COLORS.errorColor}
+                                    size={28}
+                                    className="cursor-pointer  shadow-xl shadow-white"
+                                  />
+                                </button>
 
-                                  <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full  px-2 py-1 text-xs text-black  opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
-                                    Update Furniture
-                                  </span>
-                                </div>
-
-                                <div className="relative group ">
-                                  <button
-                                    onClick={async () => {
-                                      await setBathroomSpecifications(
-                                        (prev) => ({
-                                          ...prev,
-                                          bathroomId: bathroom?.bathroomId,
-                                          isDeleted: true,
-                                        })
-                                      );
-                                    }}
-                                  >
-                                    <MdDeleteOutline
-                                      color={COLORS.errorColor}
-                                      size={28}
-                                      className="cursor-pointer  shadow-xl shadow-white"
-                                    />
-                                  </button>
-
-                                  <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full  px-2 py-1 text-xs text-black  opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
-                                    Delete Furniture
-                                  </span>
-                                </div>
+                                <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full  px-2 py-1 text-xs text-black  opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
+                                  Delete Furniture
+                                </span>
                               </div>
                             </div>
-                          );
-                        }
-                      )
-                    ) : (
-                      <div>
-                        <h3 className="text-center font-workSans text-md mt-4 text-red-500">
-                          Data not found !
-                        </h3>
-                      </div>
-                    )}
-                  </div>
-                }
+                          </div>
+                        );
+                      }
+                    )
+                  ) : (
+                    <div>
+                      <h3 className="text-center font-workSans text-md mt-4 text-red-500">
+                        Data not found !
+                      </h3>
+                    </div>
+                  )}
+                  {totalPages > 1 && (
+                    <PaginationUI
+                      totalPages={totalPages}
+                      currentPage={currentPage}
+                      onPageChange={handlePageChange}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </div>
