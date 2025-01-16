@@ -264,7 +264,7 @@ const BuildingManagements: FC<Props> = (props) => {
       >
         <div className="flex flex-col lg:flex-row w-full h-full ">
           <div
-            className={`w-[97%] lg:w-[30%] h-80p bg-white p-4 m-4 rounded-lg shadow-lg`}
+            className={`w-[97%] lg:w-[30%] h-80p bg-white p-4 rounded-lg shadow-lg`}
           >
             <VerticalSingleInput
               label="Building Name"
@@ -384,7 +384,7 @@ const BuildingManagements: FC<Props> = (props) => {
           </div>
 
           <div
-            className={`w-[97%] lg:w-[70%] h-80p bg-white p-4 m-4 rounded-lg shadow-lg`}
+            className={`w-[97%] lg:w-[70%] h-80p bg-white p-4 ml-3 rounded-lg shadow-lg`}
           >
             <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
               <div className="flex w-1/12 items-center  justify-center border-slate-50 border-r-2">

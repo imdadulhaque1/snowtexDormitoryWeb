@@ -14,10 +14,11 @@ import toast from "react-hot-toast";
 import DeleteModal from "@/app/_components/modal/DeletedModal";
 import TableHeader from "@/app/_components/inputField/table/TableHeader";
 import { BsEyeFill } from "react-icons/bs";
+import { MdAddCircle } from "react-icons/md";
 
 import PaginationUI from "@/app/_components/pagination/PaginationUI";
 import { useAppContext } from "@/app/_stateManagements/contextApi";
-import { useWindowSize } from "@/app/_utils/handler/useWindowSize";
+import AddRoomDetailsModal from "@/app/_components/modal/AddRoomDetailsModal";
 
 interface Props {}
 
@@ -55,6 +56,23 @@ const RoomManagement: FC<Props> = (props) => {
     floorIdErrorMsg: "",
     buildingIdErrorMsg: "",
   });
+
+  const [roomDetails, setRoomDetails] = useState({
+    isOpenARDModal: false,
+    isOpenVRDModal: false,
+    roomDetailId: null,
+    roomId: null,
+    roomDimensions: "",
+    roomSide: null,
+    attachedBelconi: null,
+    attachedToilet: null,
+    commonfeatures: [],
+    availableFurnituries: [],
+    bedSpecifications: [],
+    bathroomSpecifications: [],
+    roomImages: [],
+  });
+
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
@@ -151,8 +169,6 @@ const RoomManagement: FC<Props> = (props) => {
         },
       });
       if (data?.status === 200) {
-        console.log(JSON.stringify(data?.data, null, 2));
-
         setRoomData((prev) => ({
           ...prev,
           data: data?.data,
@@ -217,7 +233,6 @@ const RoomManagement: FC<Props> = (props) => {
       floorId: roomData.floorId,
       createdBy: userId,
     };
-    console.log("submitRoomData: ", JSON.stringify(submitRoomData, null, 2));
 
     try {
       const { data } = await axios.post(AppURL.roomInfoApi, submitRoomData, {
@@ -319,8 +334,6 @@ const RoomManagement: FC<Props> = (props) => {
       inactiveBy: decodeToken?.userId,
     };
     if (roomData?.roomId && decodeToken?.userId) {
-      console.log(`${AppURL.roomInfoApi}/${roomData?.roomId}`);
-
       try {
         const response: any = await fetch(
           `${AppURL.roomInfoApi}/${roomData?.roomId}`,
@@ -333,8 +346,6 @@ const RoomManagement: FC<Props> = (props) => {
             body: JSON.stringify(deleteData),
           }
         );
-
-        console.log("response: ", JSON.stringify(response, null, 2));
 
         if (response?.status === 200) {
           toast.success("Room deleted successfully !");
@@ -384,7 +395,26 @@ const RoomManagement: FC<Props> = (props) => {
     fetchRoomFunc(decodeToken?.token, currentPage);
   }, [currentPage]);
 
-  console.log("Current PAge : ", currentPage);
+  const addRoomDetails = async (roomId: number) => {
+    console.log("Room Id: ", roomId);
+  };
+  const cancelToAddRoomDetailFunc = async () => {
+    await setRoomDetails({
+      isOpenARDModal: false,
+      isOpenVRDModal: false,
+      roomDetailId: null,
+      roomId: null,
+      roomDimensions: "",
+      roomSide: null,
+      attachedBelconi: null,
+      attachedToilet: null,
+      commonfeatures: [],
+      availableFurnituries: [],
+      bedSpecifications: [],
+      bathroomSpecifications: [],
+      roomImages: [],
+    });
+  };
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -395,7 +425,7 @@ const RoomManagement: FC<Props> = (props) => {
       >
         <div className={`flex flex-col xl:flex-row w-full h-full`}>
           <div
-            className={`w-[97%] xl:w-[25%] h-80p bg-white p-4 m-4 rounded-lg shadow-lg`}
+            className={`w-[97%] xl:w-[25%] h-80p bg-white p-4 rounded-lg shadow-lg`}
           >
             <p className=" text-lg font-workSans text-center uppercase font-semibold">
               Room Entries
@@ -466,8 +496,6 @@ const RoomManagement: FC<Props> = (props) => {
                     parseInt(option.value) === parseInt(roomData?.floorId)
                 )}
                 onSelect={(value) => {
-                  console.log("value: ", value);
-
                   setRoomData((prev: any) => ({
                     ...prev,
                     floorId: value,
@@ -540,12 +568,12 @@ const RoomManagement: FC<Props> = (props) => {
           </div>
 
           <div
-            className={` w-[97%] xl:w-[75%]  h-80p  p-4 m-4 rounded-lg shadow-lg bg-white`}
+            className={` w-[97%] xl:w-[75%]  h-80p  p-4 ml-3 rounded-lg shadow-lg bg-white`}
           >
             <div className="flex w-full items-center  px-2 rounded-t-lg bg-slate-300">
               <TableHeader
                 headerText="Details"
-                containerClassName="w-1/12 "
+                containerClassName="w-1/6"
                 hasSearch={false}
               />
               <TableHeader
@@ -609,8 +637,7 @@ const RoomManagement: FC<Props> = (props) => {
 
             {/* Scrollable Rows */}
             <div className="max-h-80p overflow-y-auto">
-              {roomData?.data &&
-                roomData?.data?.length > 0 &&
+              {roomData?.data && roomData?.data?.length > 0 ? (
                 roomData?.data?.map((room: any, roomIndex: number) => {
                   const isLastRoom = roomIndex === roomData?.data.length - 1;
                   return (
@@ -620,7 +647,7 @@ const RoomManagement: FC<Props> = (props) => {
                         !isLastRoom ? "border-b-2" : "border-b-0"
                       } border-slate-300 py-2 px-3 bg-slate-100`}
                     >
-                      <div className="flex w-1/12 items-center justify-center border-slate-300 border-r-2">
+                      <div className="flex w-1/6 items-center justify-evenly border-slate-300 border-r-2">
                         <div className="relative group mr-2 mt-1">
                           <button
                             onClick={async () => {
@@ -628,13 +655,33 @@ const RoomManagement: FC<Props> = (props) => {
                             }}
                           >
                             <BsEyeFill
-                              // color={COLORS.borderColor}
                               size={28}
-                              className="cursor-pointer text-slate-400 shadow-xl shadow-white"
+                              className="cursor-pointer text-slate-400 hover:text-slate-500 shadow-xl shadow-white"
                             />
                           </button>
                           <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full px-2 py-1 text-xs text-black opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
-                            Room details
+                            View details
+                          </span>
+                        </div>
+
+                        <div className="relative group mr-2 mt-1">
+                          <button
+                            onClick={async () => {
+                              setRoomDetails((prev) => ({
+                                ...prev,
+                                roomId: room?.roomId,
+                                isOpenARDModal: true,
+                              }));
+                              // await addRoomDetails(room?.roomId);
+                            }}
+                          >
+                            <MdAddCircle
+                              size={28}
+                              className="cursor-pointer text-primary75 shadow-xl shadow-white hover:text-primary50"
+                            />
+                          </button>
+                          <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full px-2 py-1 text-xs text-black opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
+                            Add room details
                           </span>
                         </div>
                       </div>
@@ -711,14 +758,23 @@ const RoomManagement: FC<Props> = (props) => {
                       </div>
                     </div>
                   );
-                })}
+                })
+              ) : (
+                <div>
+                  <h3 className="text-center font-workSans text-md mt-4 text-red-500">
+                    Room data not found !
+                  </h3>
+                </div>
+              )}
             </div>
 
-            <PaginationUI
-              totalPages={totalPages}
-              currentPage={currentPage}
-              onPageChange={handlePageChange}
-            />
+            {totalPages > 1 && (
+              <PaginationUI
+                totalPages={totalPages}
+                currentPage={currentPage}
+                onPageChange={handlePageChange}
+              />
+            )}
           </div>
         </div>
         <DeleteModal
@@ -727,6 +783,14 @@ const RoomManagement: FC<Props> = (props) => {
           onConfirm={deleteFunc}
           onCancel={handleCancel}
           isVisible={roomData?.isDeleted}
+        />
+
+        <AddRoomDetailsModal
+          title="Add Room Details"
+          onConfirm={deleteFunc}
+          onCancel={cancelToAddRoomDetailFunc}
+          isVisible={roomDetails?.isOpenARDModal}
+          naviagteRoomId={roomDetails?.roomId}
         />
       </div>
     </Suspense>
