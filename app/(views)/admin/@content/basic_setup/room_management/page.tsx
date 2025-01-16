@@ -667,7 +667,6 @@ const RoomManagement: FC<Props> = (props) => {
                         <div className="relative group mr-2 mt-1">
                           <button
                             onClick={async () => {
-                              console.log("Add Room Details....!");
                               setRoomDetails((prev) => ({
                                 ...prev,
                                 roomId: room?.roomId,
@@ -791,6 +790,7 @@ const RoomManagement: FC<Props> = (props) => {
           onConfirm={deleteFunc}
           onCancel={cancelToAddRoomDetailFunc}
           isVisible={roomDetails?.isOpenARDModal}
+          naviagteRoomId={roomDetails?.roomId}
         />
       </div>
     </Suspense>

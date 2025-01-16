@@ -52,7 +52,7 @@ const ImgPicker: FC<ImgPickerProps> = ({
         imageChanged={handleImageChange}
       />
       {images && images?.length > 0 && (
-        <div className="flex gap-2 overflow-x-auto mt-4 px-2">
+        <div className="flex gap-2 overflow-x-auto px-2">
           {images.map((image, index) => (
             <div
               key={index}

@@ -14,6 +14,7 @@ import SearchableInput from "../inputField/SearchableInput";
 import toast from "react-hot-toast";
 interface DeleteModalProps {
   title: string;
+  naviagteRoomId: number;
   onConfirm: () => void;
   onCancel: () => void;
   isVisible: boolean;
@@ -24,6 +25,7 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
   onConfirm,
   onCancel,
   isVisible,
+  naviagteRoomId,
 }) => {
   if (!isVisible) return null;
   const [decodeToken, setDecodeToken] = useState<tokenInterface>({
@@ -51,6 +53,7 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
     roomDimension: "",
     roomSideId: 0,
     roomBelconiId: 0,
+    attachedBathroomId: 0,
     commonFeatures: [],
     availableFurnitures: [],
     bedSpecification: [],
@@ -164,14 +167,17 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
   const handleBelconiRadioBtnChange = (value: number) => {
     setRoomDetails((prev: any) => ({ ...prev, roomBelconiId: value }));
   };
+  const handleABRadioBtnChange = (value: number) => {
+    setRoomDetails((prev: any) => ({ ...prev, attachedBathroomId: value }));
+  };
 
+  // Common features
   const handleDataSelect = (id: number | string) => {
     setRoomDetails((prev: any) => ({
       ...prev,
       commonFeatures: [...new Set([...prev.commonFeatures, id])],
     }));
   };
-
   const handleDataRemove = (id: number | string) => {
     setRoomDetails((prev: any) => ({
       ...prev,
@@ -180,11 +186,7 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
       ),
     }));
   };
-
-  const handleManualAdd = async (name: string) => {
-    // const newFeature: any = { id: Date.now(), name };
-    // fetchData?.commonFeatures.push(newFeature);
-    // handleDataSelect(newFeature.id);
+  const handleManualfeatureAdd = async (name: string) => {
     try {
       const submittedData = {
         name,
@@ -214,14 +216,125 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
     }
   };
 
-  // console.log(
-  //   "fetchData?.commonFeatures: ",
-  //   JSON.stringify(fetchData, null, 2)
-  // );
+  // Available Furnitures functionality
+  const furnitureDataSelect = (id: number | string) => {
+    setRoomDetails((prev: any) => ({
+      ...prev,
+      availableFurnitures: [...new Set([...prev.availableFurnitures, id])],
+    }));
+  };
+  const furnitureDataRemove = (id: number | string) => {
+    setRoomDetails((prev: any) => ({
+      ...prev,
+      availableFurnitures: prev.availableFurnitures.filter(
+        (furnitureId: any) => furnitureId !== id
+      ),
+    }));
+  };
+  const manualFurnitureAdd = async (name: string) => {
+    try {
+      const submittedData = {
+        name,
+        remarks: "Manually furniture added",
+        createdBy: decodeToken?.userId,
+      };
+      const { data } = await axios.post(AppURL.furnitureApi, submittedData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${decodeToken?.token}`,
+        },
+      });
+
+      if (data?.status === 201) {
+        toast.success("Furniture manually added successfully!");
+        fetchFurnitureData(decodeToken?.token);
+      }
+    } catch (error: any) {
+      console.error("Error adding furniture: ", error.message);
+    }
+  };
+
+  // Bed Specifications functionality
+  const bedDataSelect = (id: number | string) => {
+    setRoomDetails((prev: any) => ({
+      ...prev,
+      bedSpecification: [...new Set([...prev.bedSpecification, id])],
+    }));
+  };
+  const bedDataRemove = (id: number | string) => {
+    setRoomDetails((prev: any) => ({
+      ...prev,
+      bedSpecification: prev.bedSpecification.filter(
+        (bedId: any) => bedId !== id
+      ),
+    }));
+  };
+  const manualBedAdd = async (name: string) => {
+    try {
+      const submittedData = {
+        name,
+        remarks: "Manually bed added",
+        createdBy: decodeToken?.userId,
+      };
+      const { data } = await axios.post(AppURL.bedApi, submittedData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${decodeToken?.token}`,
+        },
+      });
+
+      if (data?.status === 201) {
+        toast.success("Bed manually added successfully!");
+        fetchBedData(decodeToken?.token);
+      }
+    } catch (error: any) {
+      console.error("Error adding bed: ", error.message);
+    }
+  };
+
+  // Bathroom Specifications functionality
+  const bathroomDataSelect = (id: number | string) => {
+    setRoomDetails((prev: any) => ({
+      ...prev,
+      bathroomSpecification: [...new Set([...prev.bathroomSpecification, id])],
+    }));
+  };
+  const bathroomDataRemove = (id: number | string) => {
+    setRoomDetails((prev: any) => ({
+      ...prev,
+      bathroomSpecification: prev.bathroomSpecification.filter(
+        (bedId: any) => bedId !== id
+      ),
+    }));
+  };
+  const manualBathroomAdd = async (name: string) => {
+    try {
+      const submittedData = {
+        name,
+        remarks: "Manually bed added",
+        createdBy: decodeToken?.userId,
+      };
+      const { data } = await axios.post(AppURL.bathroomApi, submittedData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${decodeToken?.token}`,
+        },
+      });
+
+      if (data?.status === 201) {
+        toast.success("Bathroom manually added successfully!");
+        fetchBathroomData(decodeToken?.token);
+      }
+    } catch (error: any) {
+      console.error("Error adding bathroom: ", error.message);
+    }
+  };
+
+  console.log("roomDetails: ", JSON.stringify(roomDetails, null, 2));
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-xl">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-xl max-h-[92%] overflow-auto my-5">
         <h2 className="text-lg font-workSans font-semibold uppercase mb-4 text-center">
           {title}
         </h2>
@@ -238,6 +351,7 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
               setRoomDetails((prev: any) => ({
                 ...prev,
                 roomDimension: e.target.value,
+                roomId: naviagteRoomId,
                 roomDimensionErrorMsg: "",
               }))
             }
@@ -245,7 +359,7 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
             required
           />
         </div>
-        <div className="my-3">
+        <div>
           <label className=" text-black text-sm font-workSans mb-1">
             Room Side
           </label>
@@ -305,6 +419,28 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
             />
           </div>
         </div>
+        <div>
+          <label className=" text-black text-sm font-workSans mb-1">
+            Attached Bathroom
+          </label>
+          <div className="flex  bg-primary95 border-2 border-slate-200 rounded-lg p-2">
+            <VertcialRadioBtn
+              label="Yes"
+              value={1}
+              name="attachedBathroom"
+              checked={roomDetails?.attachedBathroomId === 1}
+              onChange={handleABRadioBtnChange}
+            />
+            <VertcialRadioBtn
+              label="No"
+              value={2}
+              name="attachedBathroom"
+              checked={roomDetails?.attachedBathroomId === 2}
+              onChange={handleABRadioBtnChange}
+              className="mx-5"
+            />
+          </div>
+        </div>
 
         <div className="my-3">
           <SearchableInput
@@ -312,11 +448,56 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
             selectedData={roomDetails?.commonFeatures}
             onDataSelect={handleDataSelect}
             onDataRemove={handleDataRemove}
-            onManualAdd={handleManualAdd}
+            onManualAdd={handleManualfeatureAdd}
             label="Common Features"
             placeholder="Add rooms common features..."
             notMatchingMsg="Not matching common features found"
             idKey="commonFeatureId"
+            nameKey="name"
+          />
+        </div>
+
+        <div>
+          <SearchableInput
+            options={fetchData?.availableFurnitures}
+            selectedData={roomDetails?.availableFurnitures}
+            onDataSelect={furnitureDataSelect}
+            onDataRemove={furnitureDataRemove}
+            onManualAdd={manualFurnitureAdd}
+            label="Available Furniture"
+            placeholder="Add room's available furniture..."
+            notMatchingMsg="Not matching available furniture found"
+            idKey="availableFurnitureId"
+            nameKey="name"
+          />
+        </div>
+
+        <div className="my-3">
+          <SearchableInput
+            options={fetchData?.bedSpecification}
+            selectedData={roomDetails?.bedSpecification}
+            onDataSelect={bedDataSelect}
+            onDataRemove={bedDataRemove}
+            onManualAdd={manualBedAdd}
+            label="Bed Specifications"
+            placeholder="Add bed specifications..."
+            notMatchingMsg="Not matching bed specifications found"
+            idKey="bedId"
+            nameKey="name"
+          />
+        </div>
+
+        <div>
+          <SearchableInput
+            options={fetchData?.bathroomSpecification}
+            selectedData={roomDetails?.bathroomSpecification}
+            onDataSelect={bathroomDataSelect}
+            onDataRemove={bathroomDataRemove}
+            onManualAdd={manualBathroomAdd}
+            label="Bathroom Specifications"
+            placeholder="Add bathroom specifications..."
+            notMatchingMsg="Not matching bathroom specifications found"
+            idKey="bathroomId"
             nameKey="name"
           />
         </div>

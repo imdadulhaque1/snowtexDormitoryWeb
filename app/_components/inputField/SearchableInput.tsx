@@ -63,7 +63,7 @@ const SearchableInput: FC<SearchableInputProps> = ({
   };
 
   return (
-    <div className="mb-5">
+    <div>
       {label && (
         <label className="text-black text-sm font-workSans mb-1">{label}</label>
       )}
@@ -78,7 +78,7 @@ const SearchableInput: FC<SearchableInputProps> = ({
               <button
                 key={id}
                 onClick={() => handleTagRemoval(id)}
-                className="flex items-center bg-primary90 text-black font-workSans text-sm px-3 py-1 mr-1 my-1 rounded-full hover:bg-errorLight85"
+                className="flex items-center bg-primary90 text-black font-workSans text-sm px-3 py-1 mr-1 my-1 rounded-full hover:bg-errorLight85 border-2 border-slate-300"
               >
                 {selectedOption[resolvedNameKey]}
               </button>
