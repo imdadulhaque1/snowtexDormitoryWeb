@@ -7,9 +7,9 @@ import { MdDelete } from "react-icons/md";
 import { COLORS } from "@/app/_utils/COLORS";
 
 interface ImgPickerProps {
-  initialImages?: string[]; // URLs of preloaded images
-  onImagesChange: (images: string[]) => void; // Callback to get the selected images
-  singleSelection?: boolean; // Enable single or multiple selection
+  initialImages?: string[];
+  onImagesChange: (images: string[]) => void;
+  singleSelection?: boolean;
 }
 
 const ImgPicker: FC<ImgPickerProps> = ({
@@ -43,8 +43,6 @@ const ImgPicker: FC<ImgPickerProps> = ({
     darkMode: false,
     rtl: false,
   };
-
-  console.log("images?.length: ", JSON.stringify(images, null, 2));
 
   return (
     <div className="flex  items-center h-full bg-gray-100 p-4">

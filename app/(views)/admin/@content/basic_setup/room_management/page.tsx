@@ -169,8 +169,6 @@ const RoomManagement: FC<Props> = (props) => {
         },
       });
       if (data?.status === 200) {
-        console.log(JSON.stringify(data?.data, null, 2));
-
         setRoomData((prev) => ({
           ...prev,
           data: data?.data,
@@ -235,7 +233,6 @@ const RoomManagement: FC<Props> = (props) => {
       floorId: roomData.floorId,
       createdBy: userId,
     };
-    console.log("submitRoomData: ", JSON.stringify(submitRoomData, null, 2));
 
     try {
       const { data } = await axios.post(AppURL.roomInfoApi, submitRoomData, {
@@ -337,8 +334,6 @@ const RoomManagement: FC<Props> = (props) => {
       inactiveBy: decodeToken?.userId,
     };
     if (roomData?.roomId && decodeToken?.userId) {
-      console.log(`${AppURL.roomInfoApi}/${roomData?.roomId}`);
-
       try {
         const response: any = await fetch(
           `${AppURL.roomInfoApi}/${roomData?.roomId}`,
@@ -351,8 +346,6 @@ const RoomManagement: FC<Props> = (props) => {
             body: JSON.stringify(deleteData),
           }
         );
-
-        console.log("response: ", JSON.stringify(response, null, 2));
 
         if (response?.status === 200) {
           toast.success("Room deleted successfully !");
@@ -503,8 +496,6 @@ const RoomManagement: FC<Props> = (props) => {
                     parseInt(option.value) === parseInt(roomData?.floorId)
                 )}
                 onSelect={(value) => {
-                  console.log("value: ", value);
-
                   setRoomData((prev: any) => ({
                     ...prev,
                     floorId: value,
@@ -807,23 +798,3 @@ const RoomManagement: FC<Props> = (props) => {
 };
 
 export default RoomManagement;
-
-/*
-
-roomDetailId: <number>
-roomId: <number>
-roomDimensions: <Text>
-roomSide: <radio button>
-attachedBelconi: <radio button>
-attachedToilet: <radio button>
-
-commonfeatures:[]
-availableFurnituries:[]
-bedSpecifications:[]
-bathroomSpecifications:[]
-roomImages:[]
-
-
-
-
-*/
