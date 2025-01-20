@@ -1,0 +1,11 @@
+export const modalStyles = {
+  overlay:
+    "fixed inset-0 flex items-center justify-center  bg-black bg-opacity-50 z-50",
+  container:
+    "bg-white rounded-lg shadow-lg p-6 w-100p max-w-5xl max-h-[92%] overflow-auto my-5 mx-3",
+  title: "text-lg font-workSans font-semibold uppercase mb-4 text-center",
+  detailsLabel: "font-workSans",
+  detailsTxt: "font-workSans",
+  buttonStyle:
+    "py-2 text-md text-gray-700 font-workSans bg-gray-200 rounded hover:bg-gray-300",
+};

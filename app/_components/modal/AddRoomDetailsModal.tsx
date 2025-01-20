@@ -15,17 +15,21 @@ import toast from "react-hot-toast";
 interface DeleteModalProps {
   title: string;
   naviagteRoomId: number;
-  onConfirm: () => void;
+  navigateFloorId: number;
+  navigateBuildingId: number;
+  // onConfirm: () => void;
   onCancel: () => void;
   isVisible: boolean;
 }
 
 const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
   title,
-  onConfirm,
+  // onConfirm,
   onCancel,
   isVisible,
   naviagteRoomId,
+  navigateFloorId,
+  navigateBuildingId,
 }) => {
   if (!isVisible) return null;
   const [decodeToken, setDecodeToken] = useState<tokenInterface>({
@@ -47,8 +51,9 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
   const [roomDetails, setRoomDetails] = useState<any>({
     detailsData: [],
     roomDetailsId: null,
-    roomImgs: [],
     roomId: null,
+    floorId: null,
+    buildingId: null,
     roomName: "",
     roomDimension: "",
     roomSideId: 0,
@@ -330,7 +335,68 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
     }
   };
 
-  console.log("roomDetails: ", JSON.stringify(roomDetails, null, 2));
+  const onRoomDetailsSubmitFunc = async (
+    roomData: any,
+    userId: any,
+    token: string
+  ) => {
+    try {
+      const submittedData = {
+        roomId: roomData?.roomId,
+        floorId: roomData?.floorId,
+        buildingId: roomData?.buildingId,
+        roomDimension: roomData?.roomDimension,
+        roomSideId: roomData?.roomSideId,
+        roomBelconiId: roomData?.roomBelconiId,
+        attachedBathroomId: roomData?.attachedBathroomId,
+        commonFeatures: roomData?.commonFeatures,
+        availableFurnitures: roomData?.availableFurnitures,
+        bedSpecification: roomData?.bedSpecification,
+        bathroomSpecification: roomData?.bathroomSpecification,
+        roomImages: roomData?.roomImages,
+        createdBy: userId,
+      };
+
+      console.log("Submitted data: ", JSON.stringify(submittedData, null, 2));
+
+      const { data } = await axios.post(AppURL.roomDetailsApi, submittedData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("data: ", JSON.stringify(data, null, 2));
+
+      toast.success("Room details added successfully!");
+
+      if (data?.status === 201) {
+        toast.success("Room details added successfully!");
+        setRoomDetails((prev: any) => ({
+          ...prev,
+          roomDimension: "",
+          roomSideId: 0,
+          roomBelconiId: 0,
+          attachedBathroomId: 0,
+          commonFeatures: [],
+          availableFurnitures: [],
+          bedSpecification: [],
+          bathroomSpecification: [],
+          roomIdErrorMsg: "",
+          roomDimensionErrorMsg: "",
+          roomSideIdErrorMsg: "",
+        }));
+      } else if (data?.status === 409) {
+        toast.error("Room details already exist");
+      }
+    } catch (error: any) {
+      if (error?.status === 409) {
+        toast.error("Room details already exist");
+      } else {
+        toast.error("Failed to add room details. Please try again.");
+      }
+      console.log("Error adding room details: ", error.message);
+    }
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -352,6 +418,8 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
                 ...prev,
                 roomDimension: e.target.value,
                 roomId: naviagteRoomId,
+                floorId: navigateFloorId,
+                buildingId: navigateBuildingId,
                 roomDimensionErrorMsg: "",
               }))
             }
@@ -508,8 +576,13 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
           </label>
           <ImgPicker
             initialImages={[]}
-            onImagesChange={(images) => {
-              console.log("Images length: ", JSON.stringify(images, null, 2));
+            onImagesChange={async (images) => {
+              await setRoomDetails((prev: any) => ({
+                ...prev,
+                roomImages: images,
+              }));
+              console.log("Images length: ", images?.length);
+              // console.log("Images length: ", JSON.stringify(images, null, 2));
             }}
             singleSelection={false}
           />
@@ -523,7 +596,16 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
             No
           </button>
           <button
-            onClick={onConfirm}
+            onClick={() => {
+              roomDetails &&
+                decodeToken?.userId &&
+                decodeToken?.token &&
+                onRoomDetailsSubmitFunc(
+                  roomDetails,
+                  decodeToken?.userId,
+                  decodeToken?.token
+                );
+            }}
             className="flex-1 py-2  text-white text-md font-workSans bg-primary75 hover:bg-primary50 rounded "
           >
             Submit

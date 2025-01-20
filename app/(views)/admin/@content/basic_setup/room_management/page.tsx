@@ -19,6 +19,7 @@ import { MdAddCircle } from "react-icons/md";
 import PaginationUI from "@/app/_components/pagination/PaginationUI";
 import { useAppContext } from "@/app/_stateManagements/contextApi";
 import AddRoomDetailsModal from "@/app/_components/modal/AddRoomDetailsModal";
+import ViewRoomDetailsModal from "@/app/_components/modal/ViewRoomDetailsModal";
 
 interface Props {}
 
@@ -62,6 +63,9 @@ const RoomManagement: FC<Props> = (props) => {
     isOpenVRDModal: false,
     roomDetailId: null,
     roomId: null,
+    floorId: null,
+    buildingId: null,
+    selectedRoom: null,
     roomDimensions: "",
     roomSide: null,
     attachedBelconi: null,
@@ -161,6 +165,8 @@ const RoomManagement: FC<Props> = (props) => {
     // https://localhost:7094/api/admin/RoomInfo?name=test&buildingName=sc&floorName=c&sortOrder=asc&page=1&pageSize=10
     const getRoomApi = `${AppURL.roomInfoApi}?name=${searchKey?.roomName}&buildingName=${searchKey?.buildingName}&floorName=${searchKey?.floorName}&page=${noOfPage}&pageSize=10`;
 
+    console.log("getRoomApi: ", getRoomApi);
+
     try {
       const { data } = await axios.get(getRoomApi, {
         headers: {
@@ -169,6 +175,7 @@ const RoomManagement: FC<Props> = (props) => {
         },
       });
       if (data?.status === 200) {
+        // console.log("roomData?.data: ", JSON.stringify(data, null, 2));
         setRoomData((prev) => ({
           ...prev,
           data: data?.data,
@@ -395,15 +402,16 @@ const RoomManagement: FC<Props> = (props) => {
     fetchRoomFunc(decodeToken?.token, currentPage);
   }, [currentPage]);
 
-  const addRoomDetails = async (roomId: number) => {
-    console.log("Room Id: ", roomId);
-  };
   const cancelToAddRoomDetailFunc = async () => {
-    await setRoomDetails({
+    await setRoomDetails((prev) => ({
+      ...prev,
       isOpenARDModal: false,
       isOpenVRDModal: false,
       roomDetailId: null,
       roomId: null,
+      floorId: null,
+      buildingId: null,
+      selectedRoom: null,
       roomDimensions: "",
       roomSide: null,
       attachedBelconi: null,
@@ -413,7 +421,43 @@ const RoomManagement: FC<Props> = (props) => {
       bedSpecifications: [],
       bathroomSpecifications: [],
       roomImages: [],
-    });
+    }));
+  };
+
+  const getRoomDetailsFunc = async (
+    roomId: number,
+    floorId: number,
+    buildingId: number,
+    userId: any,
+    token: string
+  ) => {
+    try {
+      const { data } = await axios.get(
+        `${AppURL.roomDetailsApi}?userId=${userId}&buildingId=${buildingId}&floorId=${floorId}&roomId=${roomId}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Room Details: ", JSON.stringify(data, null, 2));
+
+      if (data?.status === 200) {
+        await setRoomDetails((prev) => ({
+          ...prev,
+          selectedRoom: data?.data,
+          isOpenVRDModal: true,
+        }));
+      }
+    } catch (error: any) {
+      if (error?.status === 404) {
+        toast.error("Room details not found !");
+      } else {
+        toast.error("Failed to fetch room details !");
+      }
+    }
   };
 
   return (
@@ -568,7 +612,7 @@ const RoomManagement: FC<Props> = (props) => {
           </div>
 
           <div
-            className={` w-[97%] xl:w-[75%]  h-80p  p-4 ml-3 rounded-lg shadow-lg bg-white`}
+            className={` w-[97%] xl:w-[75%]  h-80p  p-4 xl:ml-3 mt-4 xl:mt-0 rounded-lg shadow-lg bg-white`}
           >
             <div className="flex w-full items-center  px-2 rounded-t-lg bg-slate-300">
               <TableHeader
@@ -650,8 +694,16 @@ const RoomManagement: FC<Props> = (props) => {
                       <div className="flex w-1/6 items-center justify-evenly border-slate-300 border-r-2">
                         <div className="relative group mr-2 mt-1">
                           <button
-                            onClick={async () => {
-                              console.log("Room View....!");
+                            onClick={() => {
+                              decodeToken?.userId &&
+                                decodeToken?.token &&
+                                getRoomDetailsFunc(
+                                  room?.roomId,
+                                  room?.floorId,
+                                  room?.buildingId,
+                                  decodeToken?.userId,
+                                  decodeToken?.token
+                                );
                             }}
                           >
                             <BsEyeFill
@@ -667,11 +719,19 @@ const RoomManagement: FC<Props> = (props) => {
                         <div className="relative group mr-2 mt-1">
                           <button
                             onClick={async () => {
-                              setRoomDetails((prev) => ({
+                              await setRoomDetails((prev) => ({
                                 ...prev,
                                 roomId: room?.roomId,
-                                isOpenARDModal: true,
+                                floorId: room?.floorId,
+                                buildingId: room?.buildingId,
                               }));
+
+                              setTimeout(() => {
+                                setRoomDetails((prev) => ({
+                                  ...prev,
+                                  isOpenARDModal: true,
+                                }));
+                              }, 500);
                               // await addRoomDetails(room?.roomId);
                             }}
                           >
@@ -784,14 +844,25 @@ const RoomManagement: FC<Props> = (props) => {
           onCancel={handleCancel}
           isVisible={roomData?.isDeleted}
         />
-
-        <AddRoomDetailsModal
-          title="Add Room Details"
-          onConfirm={deleteFunc}
-          onCancel={cancelToAddRoomDetailFunc}
-          isVisible={roomDetails?.isOpenARDModal}
-          naviagteRoomId={roomDetails?.roomId}
-        />
+        {roomDetails?.roomId &&
+          roomDetails?.floorId &&
+          roomDetails?.buildingId && (
+            <AddRoomDetailsModal
+              title="Add Room Details"
+              onCancel={cancelToAddRoomDetailFunc}
+              isVisible={roomDetails?.isOpenARDModal}
+              naviagteRoomId={roomDetails?.roomId}
+              navigateFloorId={roomDetails?.floorId}
+              navigateBuildingId={roomDetails?.buildingId}
+            />
+          )}
+        {roomDetails?.selectedRoom && (
+          <ViewRoomDetailsModal
+            onCancel={cancelToAddRoomDetailFunc}
+            isVisible={roomDetails?.isOpenVRDModal}
+            selectedRoom={roomDetails?.selectedRoom}
+          />
+        )}
       </div>
     </Suspense>
   );
