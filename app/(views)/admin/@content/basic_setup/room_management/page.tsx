@@ -165,8 +165,6 @@ const RoomManagement: FC<Props> = (props) => {
     // https://localhost:7094/api/admin/RoomInfo?name=test&buildingName=sc&floorName=c&sortOrder=asc&page=1&pageSize=10
     const getRoomApi = `${AppURL.roomInfoApi}?name=${searchKey?.roomName}&buildingName=${searchKey?.buildingName}&floorName=${searchKey?.floorName}&page=${noOfPage}&pageSize=10`;
 
-    console.log("getRoomApi: ", getRoomApi);
-
     try {
       const { data } = await axios.get(getRoomApi, {
         headers: {
