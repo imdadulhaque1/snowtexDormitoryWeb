@@ -365,9 +365,6 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("data: ", JSON.stringify(data, null, 2));
-
-      toast.success("Room details added successfully!");
 
       if (data?.status === 201) {
         toast.success("Room details added successfully!");
