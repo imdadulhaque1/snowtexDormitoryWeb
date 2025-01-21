@@ -242,28 +242,98 @@ const ViewRoomDetailsModal: FC<Props> = (props) => {
         </div>
         {activeFeature?.isCommonFeature && (
           <div>
-            <p className="font-workSans text-black">Common Features Showing</p>
+            {room?.commonFeatures && room?.commonFeatures?.length > 0 ? (
+              <div className="border border-gray-300 rounded-md p-4">
+                {room?.commonFeatures.map((feature: any, index: number) => {
+                  return (
+                    <ul
+                      key={index}
+                      className="flex items-center list-disc ml-4"
+                    >
+                      <li className="font-workSans text-black">
+                        {feature?.name}
+                      </li>
+                    </ul>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="font-workSans text-errorColor">No data founds !</p>
+            )}
           </div>
         )}
         {activeFeature?.isFurniture && (
           <div>
-            <p className="font-workSans text-black">
-              Available Furnitures Showing
-            </p>
+            {room?.availableFurnitures &&
+            room?.availableFurnitures?.length > 0 ? (
+              <div className="border border-gray-300 rounded-md p-4">
+                {room?.availableFurnitures.map(
+                  (furniture: any, index: number) => {
+                    return (
+                      <ul
+                        key={index}
+                        className="flex items-center list-disc ml-4"
+                      >
+                        <li className="font-workSans text-black">
+                          {furniture?.name}
+                        </li>
+                      </ul>
+                    );
+                  }
+                )}
+              </div>
+            ) : (
+              <p className="font-workSans text-errorColor">
+                No furniture founds !
+              </p>
+            )}
           </div>
         )}
         {activeFeature?.isBed && (
           <div>
-            <p className="font-workSans text-black">
-              Bed Specifications Showing
-            </p>
+            {room?.bedSpecification && room?.bedSpecification?.length > 0 ? (
+              <div className="border border-gray-300 rounded-md p-4">
+                {room?.bedSpecification.map((bed: any, bedIndex: number) => {
+                  return (
+                    <ul
+                      key={bedIndex}
+                      className="flex items-center list-disc ml-4"
+                    >
+                      <li className="font-workSans text-black">{bed?.name}</li>
+                    </ul>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="font-workSans text-errorColor">No bed founds !</p>
+            )}
           </div>
         )}
         {activeFeature?.isBathroom && (
           <div>
-            <p className="font-workSans text-black">
-              Bathroom Specifications Showing
-            </p>
+            {room?.bathroomSpecification &&
+            room?.bathroomSpecification?.length > 0 ? (
+              <div className="border border-gray-300 rounded-md p-4">
+                {room?.bathroomSpecification.map(
+                  (bathroom: any, bathroomIndex: number) => {
+                    return (
+                      <ul
+                        key={bathroomIndex}
+                        className="flex items-center list-disc ml-4"
+                      >
+                        <li className="font-workSans text-black">
+                          {bathroom?.name}
+                        </li>
+                      </ul>
+                    );
+                  }
+                )}
+              </div>
+            ) : (
+              <p className="font-workSans text-errorColor">
+                No bathroom founds !
+              </p>
+            )}
           </div>
         )}
 
