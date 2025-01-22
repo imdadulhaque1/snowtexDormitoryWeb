@@ -863,8 +863,9 @@ const RoomManagement: FC<Props> = (props) => {
           </div>
         </div>
         <DeleteModal
-          title="Do you want to delete ?"
-          description="You're going to delete this room ."
+          title="Do you want to delete?"
+          description="You're going to delete this room. "
+          noteMsg="Related room details also be unavailable."
           onConfirm={deleteFunc}
           onCancel={handleCancel}
           isVisible={roomData?.isDeleted}

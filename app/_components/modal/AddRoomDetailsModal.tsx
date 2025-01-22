@@ -10,7 +10,10 @@ import axios from "axios";
 import VertcialRadioBtn from "../radioBtn/VertcialRadioBtn";
 import VerticalSingleInput from "../inputField/VerticalSingleInput";
 import SearchableInput from "../inputField/SearchableInput";
+import { MdClear } from "react-icons/md";
+import { IoClose } from "react-icons/io5";
 import toast from "react-hot-toast";
+import { COLORS } from "@/app/_utils/COLORS";
 interface DeleteModalProps {
   title: string;
   naviagteRoomId: number;
@@ -58,6 +61,7 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
     roomName: "",
     roomDimension: "",
     roomSideId: 0,
+    bedSpecificationId: null,
     roomBelconiId: 0,
     attachedBathroomId: 0,
     commonFeatures: [],
@@ -212,6 +216,9 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
 
   const handleCFRadioBtnChange = (value: number) => {
     setRoomDetails((prev: any) => ({ ...prev, roomSideId: value }));
+  };
+  const handleBedRadioBtnChange = (value: number) => {
+    setRoomDetails((prev: any) => ({ ...prev, bedSpecificationId: value }));
   };
   const handleBelconiRadioBtnChange = (value: number) => {
     setRoomDetails((prev: any) => ({ ...prev, roomBelconiId: value }));
@@ -552,10 +559,21 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-xl max-h-[92%] overflow-auto my-5">
-        <h2 className="text-lg font-workSans font-semibold uppercase mb-4 text-center">
-          {title}
-        </h2>
+        <div className="flex w-full items-center justify-center mb-4 ">
+          <h2 className="text-lg font-workSans font-semibold uppercase  text-center w-100p ">
+            {title}
+          </h2>
 
+          <button
+            className="flex items-end justify-end bg-slate-50 border-2 hover:border-red-700 rounded-full"
+            onClick={onCancel}
+          >
+            <IoClose
+              size={35}
+              className="cursor-pointer text-errorColor shadow-xl shadow-white hover:text-red-600"
+            />
+          </button>
+        </div>
         <div className="my-3">
           <VerticalSingleInput
             label="Room Dimensions"
@@ -613,6 +631,50 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
               checked={roomDetails?.roomSideId === 4}
               onChange={handleCFRadioBtnChange}
             />
+          </div>
+        </div>
+
+        <div className="mt-3">
+          <label className=" text-black text-sm font-workSans mb-1">
+            Bed Specifications
+          </label>
+          <div className="flex flex-col bg-primary95 border-2 border-slate-200 rounded-lg p-2 gap-y-4">
+            <div className="flex w-100p">
+              <VertcialRadioBtn
+                label="Single: 92 cm (36 in) wide"
+                value={1}
+                name="bedSpecification"
+                checked={roomDetails?.bedSpecificationId === 1}
+                onChange={handleBedRadioBtnChange}
+                className="w-50p"
+              />
+              <VertcialRadioBtn
+                label="Double: 137 cm (54 in) wide"
+                value={2}
+                name="bedSpecification"
+                checked={roomDetails?.bedSpecificationId === 2}
+                onChange={handleBedRadioBtnChange}
+                className="w-50p"
+              />
+            </div>
+            <div className="flex w-100p">
+              <VertcialRadioBtn
+                label="Queen: 152 cm (60 in) wide"
+                value={3}
+                name="bedSpecification"
+                checked={roomDetails?.bedSpecificationId === 3}
+                onChange={handleBedRadioBtnChange}
+                className="w-50p"
+              />
+              <VertcialRadioBtn
+                label="King: 183 cm (72 in) wide"
+                value={4}
+                name="bedSpecification"
+                checked={roomDetails?.bedSpecificationId === 4}
+                onChange={handleBedRadioBtnChange}
+                className="w-50p"
+              />
+            </div>
           </div>
         </div>
 
@@ -691,7 +753,7 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
           />
         </div>
 
-        <div className="my-3">
+        {/* <div className="my-3">
           <SearchableInput
             options={fetchData?.bedSpecification}
             selectedData={roomDetails?.bedSpecification}
@@ -704,7 +766,7 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
             idKey="bedId"
             nameKey="name"
           />
-        </div>
+        </div> */}
 
         <div>
           <SearchableInput

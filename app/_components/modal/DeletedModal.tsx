@@ -4,6 +4,7 @@ import { MdDeleteOutline } from "react-icons/md";
 interface DeleteModalProps {
   title: string;
   description: string;
+  noteMsg?: string;
   onConfirm: () => void;
   onCancel: () => void;
   isVisible: boolean;
@@ -12,6 +13,7 @@ interface DeleteModalProps {
 const DeleteModal: React.FC<DeleteModalProps> = ({
   title,
   description,
+  noteMsg,
   onConfirm,
   onCancel,
   isVisible,
@@ -34,6 +36,14 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
         <p className="text-sm font-workSans text-gray-700 mt-2">
           {description}
         </p>
+        {noteMsg && (
+          <div className="flex items-center">
+            <p className="text-sm font-workSans font-semibold text-red-600 mt-2">
+              Note:{" "}
+            </p>
+            <p className="text-sm font-workSans text-red-600 mt-2">{noteMsg}</p>
+          </div>
+        )}
         <div className="flex justify-between mt-6 space-x-4">
           <button
             onClick={onCancel}
