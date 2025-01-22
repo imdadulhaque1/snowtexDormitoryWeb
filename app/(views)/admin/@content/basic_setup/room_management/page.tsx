@@ -427,7 +427,9 @@ const RoomManagement: FC<Props> = (props) => {
     floorId: number,
     buildingId: number,
     userId: any,
-    token: string
+    token: string,
+    isView: boolean,
+    isUpdate: boolean
   ) => {
     try {
       const { data } = await axios.get(
@@ -440,20 +442,32 @@ const RoomManagement: FC<Props> = (props) => {
         }
       );
 
-      console.log("Room Details: ", JSON.stringify(data, null, 2));
-
       if (data?.status === 200) {
-        await setRoomDetails((prev) => ({
+        await setRoomDetails((prev: any) => ({
           ...prev,
           selectedRoom: data?.data,
-          isOpenVRDModal: true,
+          roomId: roomId,
+          floorId: floorId,
+          buildingId: buildingId,
+          isOpenVRDModal: isView,
+          isOpenARDModal: isUpdate,
         }));
       }
     } catch (error: any) {
-      if (error?.status === 404) {
+      isUpdate &&
+        setRoomDetails((prev: any) => ({
+          ...prev,
+          selectedRoom: null,
+          roomId: roomId,
+          floorId: floorId,
+          buildingId: buildingId,
+          isOpenVRDModal: isView,
+          isOpenARDModal: isUpdate,
+        }));
+      if (!isUpdate && error?.status === 404) {
         toast.error("Room details not found !");
       } else {
-        toast.error("Failed to fetch room details !");
+        !isUpdate && toast.error("Failed to fetch room details !");
       }
     }
   };
@@ -700,7 +714,9 @@ const RoomManagement: FC<Props> = (props) => {
                                   room?.floorId,
                                   room?.buildingId,
                                   decodeToken?.userId,
-                                  decodeToken?.token
+                                  decodeToken?.token,
+                                  true,
+                                  false
                                 );
                             }}
                           >
@@ -717,19 +733,30 @@ const RoomManagement: FC<Props> = (props) => {
                         <div className="relative group mr-2 mt-1">
                           <button
                             onClick={async () => {
-                              await setRoomDetails((prev) => ({
-                                ...prev,
-                                roomId: room?.roomId,
-                                floorId: room?.floorId,
-                                buildingId: room?.buildingId,
-                              }));
+                              // await setRoomDetails((prev) => ({
+                              //   ...prev,
+                              //   roomId: room?.roomId,
+                              //   floorId: room?.floorId,
+                              //   buildingId: room?.buildingId,
+                              // }));
 
-                              setTimeout(() => {
-                                setRoomDetails((prev) => ({
-                                  ...prev,
-                                  isOpenARDModal: true,
-                                }));
-                              }, 500);
+                              // setTimeout(() => {
+                              //   setRoomDetails((prev) => ({
+                              //     ...prev,
+                              //     isOpenARDModal: true,
+                              //   }));
+                              // }, 500);
+                              decodeToken?.userId &&
+                                decodeToken?.token &&
+                                getRoomDetailsFunc(
+                                  room?.roomId,
+                                  room?.floorId,
+                                  room?.buildingId,
+                                  decodeToken?.userId,
+                                  decodeToken?.token,
+                                  false,
+                                  true
+                                );
                               // await addRoomDetails(room?.roomId);
                             }}
                           >
@@ -852,6 +879,9 @@ const RoomManagement: FC<Props> = (props) => {
               naviagteRoomId={roomDetails?.roomId}
               navigateFloorId={roomDetails?.floorId}
               navigateBuildingId={roomDetails?.buildingId}
+              updatedRoomDetails={
+                roomDetails?.selectedRoom ? roomDetails?.selectedRoom[0] : null
+              }
             />
           )}
         {roomDetails?.selectedRoom && (
