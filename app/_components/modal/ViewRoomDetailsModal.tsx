@@ -79,7 +79,7 @@ const ViewRoomDetailsModal: FC<Props> = (props) => {
   return (
     <div className={modalStyles.overlay}>
       <div className={`${modalStyles.container} w-screen`}>
-        <h2 className={modalStyles.title}>View Room Details</h2>
+        <h2 className={modalStyles.title}>{room?.roomName} Details</h2>
         <div className="flex space-x-4">
           <div className="relative w-[250] h-80">
             <div
@@ -166,7 +166,7 @@ const ViewRoomDetailsModal: FC<Props> = (props) => {
                   key={imgIndex}
                   src={`${AppURL.imgURL}${imgURL}`}
                   alt="Picture of the room"
-                  className={`w-28 h-20 object-fill border-2 ${
+                  className={`w-20 h-16 object-fill border-2 ${
                     `${AppURL.imgURL}${imgURL}` == zoomStyle?.activeImgURL
                       ? "border-primary65 shadow-xl shadow-primary90"
                       : "border-gray-300"

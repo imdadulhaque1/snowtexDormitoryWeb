@@ -1,7 +1,6 @@
 "use client";
-import { COLORS } from "@/app/_utils/COLORS";
+
 import React, { useEffect, useState } from "react";
-import { MdDeleteOutline } from "react-icons/md";
 import ImgPicker from "../imgField/ImgPicker";
 import retrieveToken from "@/app/_utils/handler/retrieveToken";
 import jwtDecode from "jsonwebtoken";
@@ -20,6 +19,7 @@ interface DeleteModalProps {
   // onConfirm: () => void;
   onCancel: () => void;
   isVisible: boolean;
+  updatedRoomDetails?: any;
 }
 
 const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
@@ -30,6 +30,7 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
   naviagteRoomId,
   navigateFloorId,
   navigateBuildingId,
+  updatedRoomDetails,
 }) => {
   if (!isVisible) return null;
   const [decodeToken, setDecodeToken] = useState<tokenInterface>({
@@ -101,6 +102,49 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
       fetchBathroomData(decodeToken?.token);
     }
   }, [decodeToken?.token, decodeToken?.userId]);
+
+  useEffect(() => {
+    if (updatedRoomDetails) {
+      setRoomDetails((prev: any) => ({
+        ...prev,
+        roomDetailsId: updatedRoomDetails?.roomDetailsId,
+        roomId: updatedRoomDetails?.roomId,
+        floorId: updatedRoomDetails?.floorId,
+        buildingId: updatedRoomDetails?.buildingId,
+        roomName: updatedRoomDetails?.roomName,
+        roomDimension: updatedRoomDetails?.roomDimension,
+        roomSideId: updatedRoomDetails?.roomSideId,
+        roomBelconiId: updatedRoomDetails?.roomBelconiId,
+        attachedBathroomId: updatedRoomDetails?.attachedBathroomId,
+        commonFeatures:
+          updatedRoomDetails?.commonFeatures?.length > 0
+            ? updatedRoomDetails?.commonFeatures.map(
+                (feature: any) => feature.commonFeaturesId
+              )
+            : [],
+        availableFurnitures:
+          updatedRoomDetails?.availableFurnitures?.length > 0
+            ? updatedRoomDetails?.availableFurnitures.map(
+                (furniture: any) => furniture.availableFurnitureId
+              )
+            : [],
+        bedSpecification:
+          updatedRoomDetails?.bedSpecification?.length > 0
+            ? updatedRoomDetails?.bedSpecification.map((bed: any) => bed.bedId)
+            : [],
+        bathroomSpecification:
+          updatedRoomDetails?.bathroomSpecification?.length > 0
+            ? updatedRoomDetails?.bathroomSpecification.map(
+                (bathroom: any) => bathroom.bathroomId
+              )
+            : [],
+        roomImages:
+          updatedRoomDetails?.roomImages?.length > 0
+            ? updatedRoomDetails?.roomImages
+            : [],
+      }));
+    }
+  }, [updatedRoomDetails]);
 
   const fetchCommonFeaturesData = async (token: string) => {
     try {
@@ -353,11 +397,14 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
         availableFurnitures: roomData?.availableFurnitures,
         bedSpecification: roomData?.bedSpecification,
         bathroomSpecification: roomData?.bathroomSpecification,
-        roomImages: roomData?.roomImages,
+        roomImages:
+          roomData?.roomImages?.length > 0
+            ? roomData?.roomImages
+                ?.filter((img: any) => img !== null && img !== "")
+                .map((img: any) => img)
+            : [],
         createdBy: userId,
       };
-
-      console.log("Submitted data: ", JSON.stringify(submittedData, null, 2));
 
       const { data } = await axios.post(AppURL.roomDetailsApi, submittedData, {
         headers: {
@@ -378,6 +425,7 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
           availableFurnitures: [],
           bedSpecification: [],
           bathroomSpecification: [],
+          roomImages: [],
           roomIdErrorMsg: "",
           roomDimensionErrorMsg: "",
           roomSideIdErrorMsg: "",
@@ -392,6 +440,66 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
         toast.error("Failed to add room details. Please try again.");
       }
       console.log("Error adding room details: ", error.message);
+    }
+  };
+
+  const onRoomDetailsUpdateFunc = async (
+    roomData: any,
+    userId: any,
+    token: string,
+    roomDetailsId: any
+  ) => {
+    try {
+      const submittedData = {
+        roomDimension: roomData?.roomDimension,
+        roomSideId: roomData?.roomSideId,
+        roomBelconiId: roomData?.roomBelconiId,
+        attachedBathroomId: roomData?.attachedBathroomId,
+        commonFeatures: roomData?.commonFeatures,
+        availableFurnitures: roomData?.availableFurnitures,
+        bedSpecification: roomData?.bedSpecification,
+        bathroomSpecification: roomData?.bathroomSpecification,
+        roomImages:
+          roomData?.roomImages?.length > 0
+            ? roomData?.roomImages
+                ?.filter((img: any) => img !== null && img !== "")
+                .map((img: any) => img.split("/").pop())
+            : [],
+
+        updatedBy: userId,
+      };
+
+      const { data } = await axios.put(
+        `${AppURL.roomDetailsApi}/${roomDetailsId}`,
+        submittedData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (data?.status === 200) {
+        toast.success("Room details updated successfully!");
+        setRoomDetails((prev: any) => ({
+          ...prev,
+          roomDimension: "",
+          roomSideId: 0,
+          roomBelconiId: 0,
+          attachedBathroomId: 0,
+          commonFeatures: [],
+          availableFurnitures: [],
+          bedSpecification: [],
+          bathroomSpecification: [],
+          roomImages: [],
+          roomIdErrorMsg: "",
+          roomDimensionErrorMsg: "",
+          roomSideIdErrorMsg: "",
+        }));
+      }
+    } catch (error: any) {
+      toast.error("Failed to updated room details. Please try again.");
     }
   };
 
@@ -572,14 +680,16 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
             Room Images
           </label>
           <ImgPicker
-            initialImages={[]}
+            initialImages={
+              updatedRoomDetails?.roomImages?.length > 0
+                ? updatedRoomDetails?.roomImages
+                : []
+            }
             onImagesChange={async (images) => {
               await setRoomDetails((prev: any) => ({
                 ...prev,
                 roomImages: images,
               }));
-              console.log("Images length: ", images?.length);
-              // console.log("Images length: ", JSON.stringify(images, null, 2));
             }}
             singleSelection={false}
           />
@@ -590,22 +700,28 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
             onClick={onCancel}
             className="flex-1 py-2 text-md text-gray-700 font-workSans bg-gray-200 rounded hover:bg-gray-300"
           >
-            No
+            {updatedRoomDetails ? "Cancel to Update" : "No"}
           </button>
           <button
             onClick={() => {
-              roomDetails &&
-                decodeToken?.userId &&
-                decodeToken?.token &&
-                onRoomDetailsSubmitFunc(
-                  roomDetails,
-                  decodeToken?.userId,
-                  decodeToken?.token
-                );
+              if (decodeToken?.userId && decodeToken?.token) {
+                updatedRoomDetails && roomDetails?.roomDetailsId
+                  ? onRoomDetailsUpdateFunc(
+                      roomDetails,
+                      decodeToken?.userId,
+                      decodeToken?.token,
+                      roomDetails?.roomDetailsId
+                    )
+                  : onRoomDetailsSubmitFunc(
+                      roomDetails,
+                      decodeToken?.userId,
+                      decodeToken?.token
+                    );
+              }
             }}
             className="flex-1 py-2  text-white text-md font-workSans bg-primary75 hover:bg-primary50 rounded "
           >
-            Submit
+            {updatedRoomDetails ? "Update Room Details" : "Submit"}
           </button>
         </div>
       </div>

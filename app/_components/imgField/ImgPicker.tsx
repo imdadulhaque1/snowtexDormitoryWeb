@@ -5,6 +5,7 @@ import ReactImagePickerEditor, {
 import "react-image-picker-editor/dist/index.css";
 import { MdDelete } from "react-icons/md";
 import { COLORS } from "@/app/_utils/COLORS";
+import AppURL from "@/app/_restApi/AppURL";
 
 interface ImgPickerProps {
   initialImages?: string[];
@@ -51,31 +52,67 @@ const ImgPicker: FC<ImgPickerProps> = ({
         imageSrcProp=""
         imageChanged={handleImageChange}
       />
+
       {images && images?.length > 0 && (
         <div className="flex gap-2 overflow-x-auto px-2">
-          {images.map((image, index) => (
-            <div
-              key={index}
-              className="relative border-2 rounded-lg bg-opacity-75 w-24 h-16 flex-shrink-0"
-            >
-              <img
-                src={image}
-                alt={`Selected ${index + 1}`}
-                className="w-full h-full object-cover rounded-md shadow-md bg-opacity-65"
-              />
-              <button
-                onClick={async () => {
-                  await handleImageRemove(index);
-                }}
-                className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-md opacity-0 hover:opacity-100 transition-opacity"
-              >
-                <MdDelete
-                  size={24}
-                  className="text-red-600 cursor-pointer hover:text-red-600"
-                />
-              </button>
-            </div>
-          ))}
+          {images.map((img, index) => {
+            const imgActualURL =
+              img && !img.startsWith("data:image") && `${AppURL.imgURL}${img}`;
+
+            return (
+              <>
+                {img && img.startsWith("data:image") ? (
+                  <div
+                    key={index}
+                    className="relative border-2 rounded-lg bg-opacity-75 w-24 h-16 flex-shrink-0"
+                  >
+                    <img
+                      src={img}
+                      alt={`Selected ${index + 1}`}
+                      className="w-full h-full object-cover rounded-md shadow-md bg-opacity-65"
+                    />
+                    <button
+                      onClick={async () => {
+                        await handleImageRemove(index);
+                      }}
+                      className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-md opacity-0 hover:opacity-100 transition-opacity"
+                    >
+                      <MdDelete
+                        size={24}
+                        className="text-red-600 cursor-pointer hover:text-red-600"
+                      />
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    {img && !img.startsWith("data:image") && (
+                      <div
+                        key={index}
+                        className="relative border-2 rounded-lg bg-opacity-75 w-24 h-16 flex-shrink-0"
+                      >
+                        <img
+                          src={imgActualURL}
+                          alt={`Selected ${index + 1}`}
+                          className="w-full h-full object-cover rounded-md shadow-md bg-opacity-65"
+                        />
+                        <button
+                          onClick={async () => {
+                            await handleImageRemove(index);
+                          }}
+                          className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-md opacity-0 hover:opacity-100 transition-opacity"
+                        >
+                          <MdDelete
+                            size={24}
+                            className="text-red-600 cursor-pointer hover:text-red-600"
+                          />
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )}
+              </>
+            );
+          })}
         </div>
       )}
     </div>
