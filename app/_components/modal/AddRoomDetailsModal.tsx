@@ -503,6 +503,52 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
     }
   };
 
+  const roomDetailsDeleteFunc = async (
+    userId: any,
+    token: string,
+    roomDetailsId: any
+  ) => {
+    const deleteData = await {
+      inactiveBy: userId,
+    };
+    try {
+      const deleteRes = await fetch(
+        `${AppURL.roomDetailsApi}/${roomDetailsId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(deleteData),
+        }
+      );
+
+      if (deleteRes?.status === 200) {
+        toast.success("Room details deleted successfully!");
+        setRoomDetails((prev: any) => ({
+          ...prev,
+          roomDimension: "",
+          roomSideId: 0,
+          roomBelconiId: 0,
+          attachedBathroomId: 0,
+          commonFeatures: [],
+          availableFurnitures: [],
+          bedSpecification: [],
+          bathroomSpecification: [],
+          roomImages: [],
+          roomIdErrorMsg: "",
+          roomDimensionErrorMsg: "",
+          roomSideIdErrorMsg: "",
+        }));
+      } else if (deleteRes?.status === 404) {
+        toast.error("Room details not found");
+      }
+    } catch (error: any) {
+      toast.error("Failed to delete room details. Please try again.");
+    }
+  };
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-xl max-h-[92%] overflow-auto my-5">
@@ -700,7 +746,7 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
             onClick={onCancel}
             className="flex-1 py-2 text-md text-gray-700 font-workSans bg-gray-200 rounded hover:bg-gray-300"
           >
-            {updatedRoomDetails ? "Cancel to Update" : "No"}
+            {updatedRoomDetails ? "Cancel" : "No"}
           </button>
           <button
             onClick={() => {
@@ -719,10 +765,30 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
                     );
               }
             }}
-            className="flex-1 py-2  text-white text-md font-workSans bg-primary75 hover:bg-primary50 rounded "
+            className="flex-1 py-2  text-gray-700 text-md font-workSans bg-primary75 hover:bg-primary50 rounded "
           >
-            {updatedRoomDetails ? "Update Room Details" : "Submit"}
+            {updatedRoomDetails ? "Update" : "Submit"}
           </button>
+          {updatedRoomDetails && roomDetails?.roomDetailsId && (
+            <button
+              onClick={() => {
+                if (decodeToken?.userId && decodeToken?.token) {
+                  updatedRoomDetails && roomDetails?.roomDetailsId
+                    ? roomDetailsDeleteFunc(
+                        decodeToken?.userId,
+                        decodeToken?.token,
+                        roomDetails?.roomDetailsId
+                      )
+                    : toast.error(
+                        "Failed to delete room details. Please try again."
+                      );
+                }
+              }}
+              className="flex-1 py-2  text-gray-700 text-md font-workSans bg-errorLight85 hover:bg-errorColor rounded "
+            >
+              Delete
+            </button>
+          )}
         </div>
       </div>
     </div>
