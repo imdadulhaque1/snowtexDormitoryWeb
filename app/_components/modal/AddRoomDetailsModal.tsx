@@ -107,6 +107,11 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
     }
   }, [decodeToken?.token, decodeToken?.userId]);
 
+  console.log(
+    "updatedRoomDetails: ",
+    JSON.stringify(updatedRoomDetails, null, 2)
+  );
+
   useEffect(() => {
     if (updatedRoomDetails) {
       setRoomDetails((prev: any) => ({
@@ -114,6 +119,7 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
         roomDetailsId: updatedRoomDetails?.roomDetailsId,
         roomId: updatedRoomDetails?.roomId,
         floorId: updatedRoomDetails?.floorId,
+        bedSpecificationId: updatedRoomDetails?.bedSpecificationId,
         buildingId: updatedRoomDetails?.buildingId,
         roomName: updatedRoomDetails?.roomName,
         roomDimension: updatedRoomDetails?.roomDimension,
@@ -398,11 +404,11 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
         buildingId: roomData?.buildingId,
         roomDimension: roomData?.roomDimension,
         roomSideId: roomData?.roomSideId,
+        bedSpecificationId: roomData?.bedSpecificationId,
         roomBelconiId: roomData?.roomBelconiId,
         attachedBathroomId: roomData?.attachedBathroomId,
         commonFeatures: roomData?.commonFeatures,
         availableFurnitures: roomData?.availableFurnitures,
-        bedSpecification: roomData?.bedSpecification,
         bathroomSpecification: roomData?.bathroomSpecification,
         roomImages:
           roomData?.roomImages?.length > 0
@@ -412,6 +418,8 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
             : [],
         createdBy: userId,
       };
+
+      console.log("submittedData: ", JSON.stringify(submittedData, null, 2));
 
       const { data } = await axios.post(AppURL.roomDetailsApi, submittedData, {
         headers: {
@@ -460,17 +468,22 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
       const submittedData = {
         roomDimension: roomData?.roomDimension,
         roomSideId: roomData?.roomSideId,
+        bedSpecificationId: roomData?.bedSpecificationId,
         roomBelconiId: roomData?.roomBelconiId,
         attachedBathroomId: roomData?.attachedBathroomId,
         commonFeatures: roomData?.commonFeatures,
         availableFurnitures: roomData?.availableFurnitures,
-        bedSpecification: roomData?.bedSpecification,
         bathroomSpecification: roomData?.bathroomSpecification,
         roomImages:
           roomData?.roomImages?.length > 0
             ? roomData?.roomImages
                 ?.filter((img: any) => img !== null && img !== "")
-                .map((img: any) => img.split("/").pop())
+                .map((img: any) => {
+                  if (img.startsWith("data:image/")) {
+                    return img;
+                  }
+                  return img.split("images/").pop();
+                })
             : [],
 
         updatedBy: userId,
@@ -493,6 +506,7 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
           ...prev,
           roomDimension: "",
           roomSideId: 0,
+          bedSpecificationId: 0,
           roomBelconiId: 0,
           attachedBathroomId: 0,
           commonFeatures: [],
@@ -558,7 +572,7 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-xl max-h-[92%] overflow-auto my-5">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-xl max-h-[97%] overflow-auto my-5">
         <div className="flex w-full items-center justify-center mb-4 ">
           <h2 className="text-lg font-workSans font-semibold uppercase  text-center w-100p ">
             {title}
@@ -638,43 +652,29 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
           <label className=" text-black text-sm font-workSans mb-1">
             Bed Specifications
           </label>
-          <div className="flex flex-col bg-primary95 border-2 border-slate-200 rounded-lg p-2 gap-y-4">
-            <div className="flex w-100p">
-              <VertcialRadioBtn
-                label="Single: 92 cm (36 in) wide"
-                value={1}
-                name="bedSpecification"
-                checked={roomDetails?.bedSpecificationId === 1}
-                onChange={handleBedRadioBtnChange}
-                className="w-50p"
-              />
-              <VertcialRadioBtn
-                label="Double: 137 cm (54 in) wide"
-                value={2}
-                name="bedSpecification"
-                checked={roomDetails?.bedSpecificationId === 2}
-                onChange={handleBedRadioBtnChange}
-                className="w-50p"
-              />
-            </div>
-            <div className="flex w-100p">
-              <VertcialRadioBtn
-                label="Queen: 152 cm (60 in) wide"
-                value={3}
-                name="bedSpecification"
-                checked={roomDetails?.bedSpecificationId === 3}
-                onChange={handleBedRadioBtnChange}
-                className="w-50p"
-              />
-              <VertcialRadioBtn
-                label="King: 183 cm (72 in) wide"
-                value={4}
-                name="bedSpecification"
-                checked={roomDetails?.bedSpecificationId === 4}
-                onChange={handleBedRadioBtnChange}
-                className="w-50p"
-              />
-            </div>
+          <div className="flex items-center justify-between flex-wrap bg-primary95 border-2 border-slate-200 rounded-lg p-2 gap-y-4">
+            {fetchData?.bedSpecification &&
+              fetchData?.bedSpecification?.length > 0 &&
+              fetchData?.bedSpecification?.map((bed: any, bedIndex: number) => {
+                return (
+                  <div key={bedIndex} className="relative group">
+                    <VertcialRadioBtn
+                      label={bed?.name}
+                      value={bed?.bedId}
+                      name="bedSpecificationId"
+                      checked={roomDetails?.bedSpecificationId === bed?.bedId}
+                      onChange={handleBedRadioBtnChange}
+                      className="z-10"
+                    />
+                    {/* Tooltip */}
+                    {bed?.remarks && (
+                      <div className="absolute hidden group-hover:block bg-gray-500 text-white font-workSans text-xs rounded-lg px-2 py-1 shadow-lg w-max z-20 -top-8 left-1/2 transform -translate-x-1/2">
+                        {bed?.remarks}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
           </div>
         </div>
 
@@ -794,6 +794,8 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
                 : []
             }
             onImagesChange={async (images) => {
+              console.log("images: ", images);
+
               await setRoomDetails((prev: any) => ({
                 ...prev,
                 roomImages: images,

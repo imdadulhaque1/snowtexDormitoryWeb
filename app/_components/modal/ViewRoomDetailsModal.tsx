@@ -3,18 +3,22 @@
 import AppURL from "@/app/_restApi/AppURL";
 import { modalStyles } from "@/app/_utils/comStyle/admin/basicSetup/room/roomStye";
 import React, { FC, useEffect, useState } from "react";
-import Typical from "react-typical";
 import TypingAnimation from "../animatedTxt/TypingAnimation";
-import toast from "react-hot-toast";
+import { IoClose } from "react-icons/io5";
+import axios from "axios";
 
 interface Props {
   selectedRoom: any;
   onCancel: () => void;
   isVisible?: boolean;
+  token?: string;
 }
 
 const ViewRoomDetailsModal: FC<Props> = (props) => {
   if (!props?.isVisible) return null;
+  const [fetchData, setFetchData] = useState({
+    bedData: [],
+  });
 
   const room = props.selectedRoom[0];
   const [zoomStyle, setZoomStyle] = useState({
@@ -61,6 +65,28 @@ const ViewRoomDetailsModal: FC<Props> = (props) => {
     }));
   };
 
+  useEffect(() => {
+    if (props.token) {
+      fetchBedData(props.token);
+    }
+  }, [props.token]);
+
+  const fetchBedData = async (token: string) => {
+    try {
+      const { data } = await axios.get(AppURL.bedApi, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (data?.status === 200) {
+        setFetchData((prev) => ({ ...prev, bedData: data?.data }));
+      }
+    } catch (error: any) {
+      console.log("Error fetching bed data: ", error.message);
+    }
+  };
+
   const isAvailable = true;
   const roomSideTxt =
     room?.roomSideId == 1
@@ -76,10 +102,32 @@ const ViewRoomDetailsModal: FC<Props> = (props) => {
     room?.roomBelconiId == 1 ? "Attached Belconi" : "Haven't Attached Belconi";
   const attatchedbathroomTxt = room?.attachedBathroomId == 1 ? "Yes" : "No";
 
+  const bedSpecificationArr: any =
+    fetchData?.bedData &&
+    fetchData?.bedData?.length > 0 &&
+    fetchData?.bedData?.filter(
+      (b: any) => b?.bedId == props?.selectedRoom[0]?.bedSpecificationId
+    );
+
   return (
     <div className={modalStyles.overlay}>
       <div className={`${modalStyles.container} w-screen`}>
-        <h2 className={modalStyles.title}>{room?.roomName} Details</h2>
+        <div className="flex w-full items-center justify-center mb-4 ">
+          <h2 className={`w-100p text-center ${modalStyles.title}`}>
+            {room?.roomName} Details
+          </h2>
+
+          <button
+            className="flex items-end justify-end bg-slate-50 border-2 hover:border-red-700 rounded-full"
+            onClick={props.onCancel}
+          >
+            <IoClose
+              size={35}
+              className="cursor-pointer text-errorColor shadow-xl shadow-white hover:text-red-600"
+            />
+          </button>
+        </div>
+
         <div className="flex space-x-4">
           <div className="relative w-[250] h-80">
             <div
@@ -145,6 +193,10 @@ const ViewRoomDetailsModal: FC<Props> = (props) => {
               <ComView label="Room Side" value={roomSideTxt} />
               <ComView label="Belconi Status" value={haveBelconiTxt} />
               <ComView label="Attached Bathroom" value={attatchedbathroomTxt} />
+              <ComView
+                label="Bed Specifications"
+                value={`${bedSpecificationArr[0]?.name} (${bedSpecificationArr[0]?.remarks})`}
+              />
             </div>
           </div>
         </div>
@@ -209,7 +261,7 @@ const ViewRoomDetailsModal: FC<Props> = (props) => {
                 : "bg-slate-200"
             }  hover:bg-slate-400 hover:border-slate-400 hover:text-white mr-4`}
           />
-          <ClickBtn
+          {/* <ClickBtn
             label="Bed Specification"
             onClick={() => {
               setActiveFeature({
@@ -222,7 +274,7 @@ const ViewRoomDetailsModal: FC<Props> = (props) => {
             className={`${
               activeFeature?.isBed ? "bg-slate-400 text-white" : "bg-slate-200"
             } hover:bg-slate-400 hover:border-slate-400 hover:text-white mr-4`}
-          />
+          /> */}
           <ClickBtn
             label="Bathroom Specification"
             onClick={() => {
@@ -289,7 +341,7 @@ const ViewRoomDetailsModal: FC<Props> = (props) => {
             )}
           </div>
         )}
-        {activeFeature?.isBed && (
+        {/* {activeFeature?.isBed && (
           <div>
             {room?.bedSpecification && room?.bedSpecification?.length > 0 ? (
               <div className="border border-gray-300 rounded-md p-4">
@@ -308,7 +360,7 @@ const ViewRoomDetailsModal: FC<Props> = (props) => {
               <p className="font-workSans text-errorColor">No bed founds !</p>
             )}
           </div>
-        )}
+        )} */}
         {activeFeature?.isBathroom && (
           <div>
             {room?.bathroomSpecification &&
