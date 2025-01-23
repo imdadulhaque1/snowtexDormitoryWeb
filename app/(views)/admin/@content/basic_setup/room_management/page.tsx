@@ -14,7 +14,7 @@ import toast from "react-hot-toast";
 import DeleteModal from "@/app/_components/modal/DeletedModal";
 import TableHeader from "@/app/_components/inputField/table/TableHeader";
 import { BsEyeFill } from "react-icons/bs";
-import { MdAddCircle } from "react-icons/md";
+import { MdAddCircle, MdOutlineSystemUpdateAlt } from "react-icons/md";
 
 import PaginationUI from "@/app/_components/pagination/PaginationUI";
 import { useAppContext } from "@/app/_stateManagements/contextApi";
@@ -184,6 +184,8 @@ const RoomManagement: FC<Props> = (props) => {
       console.log("Error fetching room data: ", error);
     }
   };
+
+  console.log("fetch Room Data: ", JSON.stringify(roomData?.data, null, 2));
 
   const handleBuildingChange = (buildingId: string) => {
     setRoomData((prev: any) => ({
@@ -722,7 +724,11 @@ const RoomManagement: FC<Props> = (props) => {
                           >
                             <BsEyeFill
                               size={28}
-                              className="cursor-pointer text-slate-400 hover:text-slate-500 shadow-xl shadow-white"
+                              className={`cursor-pointer ${
+                                room?.haveRoomDetails
+                                  ? "text-slate-400 hover:text-slate-500"
+                                  : "text-slate-300"
+                              }  shadow-xl shadow-white`}
                             />
                           </button>
                           <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full px-2 py-1 text-xs text-black opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
@@ -733,19 +739,6 @@ const RoomManagement: FC<Props> = (props) => {
                         <div className="relative group mr-2 mt-1">
                           <button
                             onClick={async () => {
-                              // await setRoomDetails((prev) => ({
-                              //   ...prev,
-                              //   roomId: room?.roomId,
-                              //   floorId: room?.floorId,
-                              //   buildingId: room?.buildingId,
-                              // }));
-
-                              // setTimeout(() => {
-                              //   setRoomDetails((prev) => ({
-                              //     ...prev,
-                              //     isOpenARDModal: true,
-                              //   }));
-                              // }, 500);
                               decodeToken?.userId &&
                                 decodeToken?.token &&
                                 getRoomDetailsFunc(
@@ -757,16 +750,24 @@ const RoomManagement: FC<Props> = (props) => {
                                   false,
                                   true
                                 );
-                              // await addRoomDetails(room?.roomId);
                             }}
                           >
-                            <MdAddCircle
-                              size={28}
-                              className="cursor-pointer text-primary75 shadow-xl shadow-white hover:text-primary50"
-                            />
+                            {room?.haveRoomDetails ? (
+                              <MdOutlineSystemUpdateAlt
+                                size={28}
+                                className="cursor-pointer text-green-600 hover:text-green-700 shadow-xl shadow-white "
+                              />
+                            ) : (
+                              <MdAddCircle
+                                size={28}
+                                className={`cursor-pointer text-primary75 hover:text-primary50  shadow-xl shadow-white `}
+                              />
+                            )}
                           </button>
                           <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full px-2 py-1 text-xs text-black opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
-                            Add room details
+                            {room?.haveRoomDetails
+                              ? "Upadte room details"
+                              : "Add room details"}
                           </span>
                         </div>
                       </div>
@@ -863,8 +864,9 @@ const RoomManagement: FC<Props> = (props) => {
           </div>
         </div>
         <DeleteModal
-          title="Do you want to delete ?"
-          description="You're going to delete this room ."
+          title="Do you want to delete?"
+          description="You're going to delete this room. "
+          noteMsg="Related room details also be unavailable."
           onConfirm={deleteFunc}
           onCancel={handleCancel}
           isVisible={roomData?.isDeleted}
@@ -886,6 +888,7 @@ const RoomManagement: FC<Props> = (props) => {
           )}
         {roomDetails?.selectedRoom && (
           <ViewRoomDetailsModal
+            token={decodeToken?.token}
             onCancel={cancelToAddRoomDetailFunc}
             isVisible={roomDetails?.isOpenVRDModal}
             selectedRoom={roomDetails?.selectedRoom}

@@ -1089,7 +1089,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                               </p>
                             </div>
                             <div className="flex w-1/2 items-center justify-center border-slate-300 border-r-2">
-                              <p className="text-sm font-workSans text-center  max-w-full">
+                              <p className="text-sm font-workSans text-center  max-w-full truncate px-1">
                                 {furniture?.remarks}
                               </p>
                             </div>
@@ -1270,7 +1270,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                           </p>
                         </div>
                         <div className="flex w-1/2 items-center justify-center border-slate-300 border-r-2">
-                          <p className="text-sm font-workSans text-center  max-w-full">
+                          <p className="text-sm font-workSans text-center  max-w-full truncate px-1">
                             {bed?.remarks}
                           </p>
                         </div>
@@ -1449,7 +1449,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                               </p>
                             </div>
                             <div className="flex w-1/2 items-center justify-center border-slate-300 border-r-2">
-                              <p className="text-sm font-workSans text-center  max-w-full">
+                              <p className="text-sm font-workSans text-center  max-w-full truncate px-1">
                                 {bathroom?.remarks}
                               </p>
                             </div>

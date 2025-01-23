@@ -37,8 +37,8 @@ const ImgPicker: FC<ImgPickerProps> = ({
   const config: ImagePickerConf = {
     borderRadius: "8px",
     language: "en",
-    width: "90px",
-    height: "80px",
+    width: "70px",
+    height: "60px",
     objectFit: "contain",
     compressInitial: null,
     darkMode: false,
@@ -46,7 +46,7 @@ const ImgPicker: FC<ImgPickerProps> = ({
   };
 
   return (
-    <div className="flex  items-center h-full bg-gray-100 p-4">
+    <div className="flex  items-center h-full bg-primary95 p-4">
       <ReactImagePickerEditor
         config={config}
         imageSrcProp=""
@@ -54,7 +54,7 @@ const ImgPicker: FC<ImgPickerProps> = ({
       />
 
       {images && images?.length > 0 && (
-        <div className="flex gap-2 overflow-x-auto px-2">
+        <div className="flex gap-2 overflow-x-auto px-2 ">
           {images.map((img, index) => {
             const imgActualURL =
               img && !img.startsWith("data:image") && `${AppURL.imgURL}${img}`;
@@ -64,7 +64,7 @@ const ImgPicker: FC<ImgPickerProps> = ({
                 {img && img.startsWith("data:image") ? (
                   <div
                     key={index}
-                    className="relative border-2 rounded-lg bg-opacity-75 w-24 h-16 flex-shrink-0"
+                    className="relative border-2 rounded-lg bg-opacity-75 w-14 h-12 flex-shrink-0"
                   >
                     <img
                       src={img}

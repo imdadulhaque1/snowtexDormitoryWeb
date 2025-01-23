@@ -10,7 +10,10 @@ import axios from "axios";
 import VertcialRadioBtn from "../radioBtn/VertcialRadioBtn";
 import VerticalSingleInput from "../inputField/VerticalSingleInput";
 import SearchableInput from "../inputField/SearchableInput";
+import { MdClear } from "react-icons/md";
+import { IoClose } from "react-icons/io5";
 import toast from "react-hot-toast";
+import { COLORS } from "@/app/_utils/COLORS";
 interface DeleteModalProps {
   title: string;
   naviagteRoomId: number;
@@ -58,6 +61,7 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
     roomName: "",
     roomDimension: "",
     roomSideId: 0,
+    bedSpecificationId: null,
     roomBelconiId: 0,
     attachedBathroomId: 0,
     commonFeatures: [],
@@ -103,6 +107,11 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
     }
   }, [decodeToken?.token, decodeToken?.userId]);
 
+  console.log(
+    "updatedRoomDetails: ",
+    JSON.stringify(updatedRoomDetails, null, 2)
+  );
+
   useEffect(() => {
     if (updatedRoomDetails) {
       setRoomDetails((prev: any) => ({
@@ -110,6 +119,7 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
         roomDetailsId: updatedRoomDetails?.roomDetailsId,
         roomId: updatedRoomDetails?.roomId,
         floorId: updatedRoomDetails?.floorId,
+        bedSpecificationId: updatedRoomDetails?.bedSpecificationId,
         buildingId: updatedRoomDetails?.buildingId,
         roomName: updatedRoomDetails?.roomName,
         roomDimension: updatedRoomDetails?.roomDimension,
@@ -212,6 +222,9 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
 
   const handleCFRadioBtnChange = (value: number) => {
     setRoomDetails((prev: any) => ({ ...prev, roomSideId: value }));
+  };
+  const handleBedRadioBtnChange = (value: number) => {
+    setRoomDetails((prev: any) => ({ ...prev, bedSpecificationId: value }));
   };
   const handleBelconiRadioBtnChange = (value: number) => {
     setRoomDetails((prev: any) => ({ ...prev, roomBelconiId: value }));
@@ -391,11 +404,11 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
         buildingId: roomData?.buildingId,
         roomDimension: roomData?.roomDimension,
         roomSideId: roomData?.roomSideId,
+        bedSpecificationId: roomData?.bedSpecificationId,
         roomBelconiId: roomData?.roomBelconiId,
         attachedBathroomId: roomData?.attachedBathroomId,
         commonFeatures: roomData?.commonFeatures,
         availableFurnitures: roomData?.availableFurnitures,
-        bedSpecification: roomData?.bedSpecification,
         bathroomSpecification: roomData?.bathroomSpecification,
         roomImages:
           roomData?.roomImages?.length > 0
@@ -405,6 +418,8 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
             : [],
         createdBy: userId,
       };
+
+      console.log("submittedData: ", JSON.stringify(submittedData, null, 2));
 
       const { data } = await axios.post(AppURL.roomDetailsApi, submittedData, {
         headers: {
@@ -453,17 +468,22 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
       const submittedData = {
         roomDimension: roomData?.roomDimension,
         roomSideId: roomData?.roomSideId,
+        bedSpecificationId: roomData?.bedSpecificationId,
         roomBelconiId: roomData?.roomBelconiId,
         attachedBathroomId: roomData?.attachedBathroomId,
         commonFeatures: roomData?.commonFeatures,
         availableFurnitures: roomData?.availableFurnitures,
-        bedSpecification: roomData?.bedSpecification,
         bathroomSpecification: roomData?.bathroomSpecification,
         roomImages:
           roomData?.roomImages?.length > 0
             ? roomData?.roomImages
                 ?.filter((img: any) => img !== null && img !== "")
-                .map((img: any) => img.split("/").pop())
+                .map((img: any) => {
+                  if (img.startsWith("data:image/")) {
+                    return img;
+                  }
+                  return img.split("images/").pop();
+                })
             : [],
 
         updatedBy: userId,
@@ -486,6 +506,7 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
           ...prev,
           roomDimension: "",
           roomSideId: 0,
+          bedSpecificationId: 0,
           roomBelconiId: 0,
           attachedBathroomId: 0,
           commonFeatures: [],
@@ -551,11 +572,22 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-xl max-h-[92%] overflow-auto my-5">
-        <h2 className="text-lg font-workSans font-semibold uppercase mb-4 text-center">
-          {title}
-        </h2>
+      <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-xl max-h-[97%] overflow-auto my-5">
+        <div className="flex w-full items-center justify-center mb-4 ">
+          <h2 className="text-lg font-workSans font-semibold uppercase  text-center w-100p ">
+            {title}
+          </h2>
 
+          <button
+            className="flex items-end justify-end bg-slate-50 border-2 hover:border-red-700 rounded-full"
+            onClick={onCancel}
+          >
+            <IoClose
+              size={35}
+              className="cursor-pointer text-errorColor shadow-xl shadow-white hover:text-red-600"
+            />
+          </button>
+        </div>
         <div className="my-3">
           <VerticalSingleInput
             label="Room Dimensions"
@@ -613,6 +645,36 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
               checked={roomDetails?.roomSideId === 4}
               onChange={handleCFRadioBtnChange}
             />
+          </div>
+        </div>
+
+        <div className="mt-3">
+          <label className=" text-black text-sm font-workSans mb-1">
+            Bed Specifications
+          </label>
+          <div className="flex items-center justify-between flex-wrap bg-primary95 border-2 border-slate-200 rounded-lg p-2 gap-y-4">
+            {fetchData?.bedSpecification &&
+              fetchData?.bedSpecification?.length > 0 &&
+              fetchData?.bedSpecification?.map((bed: any, bedIndex: number) => {
+                return (
+                  <div key={bedIndex} className="relative group">
+                    <VertcialRadioBtn
+                      label={bed?.name}
+                      value={bed?.bedId}
+                      name="bedSpecificationId"
+                      checked={roomDetails?.bedSpecificationId === bed?.bedId}
+                      onChange={handleBedRadioBtnChange}
+                      className="z-10"
+                    />
+                    {/* Tooltip */}
+                    {bed?.remarks && (
+                      <div className="absolute hidden group-hover:block bg-gray-500 text-white font-workSans text-xs rounded-lg px-2 py-1 shadow-lg w-max z-20 -top-8 left-1/2 transform -translate-x-1/2">
+                        {bed?.remarks}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
           </div>
         </div>
 
@@ -691,7 +753,7 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
           />
         </div>
 
-        <div className="my-3">
+        {/* <div className="my-3">
           <SearchableInput
             options={fetchData?.bedSpecification}
             selectedData={roomDetails?.bedSpecification}
@@ -704,7 +766,7 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
             idKey="bedId"
             nameKey="name"
           />
-        </div>
+        </div> */}
 
         <div>
           <SearchableInput
@@ -732,6 +794,8 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
                 : []
             }
             onImagesChange={async (images) => {
+              console.log("images: ", images);
+
               await setRoomDetails((prev: any) => ({
                 ...prev,
                 roomImages: images,

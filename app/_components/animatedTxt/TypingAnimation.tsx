@@ -53,7 +53,7 @@ const TypingAnimation: React.FC<TypingAnimationProps> = ({
       } text-md ${className}`}
     >
       {displayText}
-      <span className="animate-blink">|</span>
+      <span className="animate-blink ">|</span>
     </p>
   );
 };
