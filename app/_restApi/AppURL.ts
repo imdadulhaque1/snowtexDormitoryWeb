@@ -39,6 +39,9 @@ class AppURL {
   // Room Details API
   static roomDetailsApi: string = `${this.baseURL}admin/room/RoomDetails`;
 
+  // Paid Items API
+  static paidItemApi: string = `${this.baseURL}admin/PaidItems`;
+
   // Get All Users
   static getUsersApi: string = `${this.baseURL}admin/user`;
 
