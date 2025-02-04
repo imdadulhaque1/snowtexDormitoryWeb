@@ -107,11 +107,6 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
     }
   }, [decodeToken?.token, decodeToken?.userId]);
 
-  console.log(
-    "updatedRoomDetails: ",
-    JSON.stringify(updatedRoomDetails, null, 2)
-  );
-
   useEffect(() => {
     if (updatedRoomDetails) {
       setRoomDetails((prev: any) => ({

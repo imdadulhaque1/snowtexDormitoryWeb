@@ -602,7 +602,6 @@ const RoomManagement: FC<Props> = (props) => {
                     }}
                   >
                     <MdOutlineFileUpload
-                      color={COLORS.black}
                       size={20}
                       className="cursor-pointer mr-2"
                     />
@@ -614,7 +613,6 @@ const RoomManagement: FC<Props> = (props) => {
                     onClick={closeToUpdateFunc}
                   >
                     <FaRegWindowClose
-                      color={COLORS.black}
                       size={20}
                       className="cursor-pointer mr-2"
                     />
