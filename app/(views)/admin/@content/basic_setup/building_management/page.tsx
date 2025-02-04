@@ -9,7 +9,7 @@ import { useWindowSize } from "@/app/_utils/handler/useWindowSize";
 import axios from "axios";
 import AppURL from "@/app/_restApi/AppURL";
 import { buildingsInterface } from "@/interface/admin/basicSetup/buildingsInterface";
-import { MdDelete, MdDeleteOutline } from "react-icons/md";
+import { MdDelete, MdDeleteOutline, MdOutlineFileUpload } from "react-icons/md";
 import { FaEdit, FaRegWindowClose } from "react-icons/fa";
 import { COLORS } from "@/app/_utils/COLORS";
 import { isValidBDTelephone } from "@/app/_utils/handler/validateBDTelephone ";
@@ -333,7 +333,7 @@ const BuildingManagements: FC<Props> = (props) => {
             <div className="flex justify-center items-center mt-4">
               {!buildingData?.isUpdated ? (
                 <button
-                  className="bg-primary70 font-workSans text-md py-2 px-8 rounded-lg text-black hover:bg-primary50 hover:text-white"
+                  className="flex items-center bg-primary70 font-workSans text-md py-2 px-8 rounded-lg text-black hover:bg-primary50 hover:text-white"
                   onClick={() => {
                     // buildingData &&
                     // decodeToken?.userId &&
@@ -344,12 +344,16 @@ const BuildingManagements: FC<Props> = (props) => {
                     //   );
                   }}
                 >
-                  Add Building ?
+                  <MdOutlineFileUpload
+                    size={20}
+                    className="cursor-pointer mr-2"
+                  />
+                  Add Building
                 </button>
               ) : (
                 <div className="flex justify-center items-center space-x-4">
                   <button
-                    className="bg-primary70 font-workSans text-md py-2 px-4 rounded-lg text-black hover:bg-primary50 hover:text-white"
+                    className=" flex items-center bg-primary70 font-workSans text-md py-2 px-4 rounded-lg text-black hover:bg-primary50 hover:text-white"
                     onClick={async () => {
                       await (buildingData &&
                       decodeToken?.userId &&
@@ -364,7 +368,11 @@ const BuildingManagements: FC<Props> = (props) => {
                           ));
                     }}
                   >
-                    Update Building ?
+                    <MdOutlineFileUpload
+                      size={20}
+                      className="cursor-pointer mr-2"
+                    />
+                    Update Building
                   </button>
 
                   <button
@@ -372,7 +380,6 @@ const BuildingManagements: FC<Props> = (props) => {
                     onClick={closeToUpdateFunc}
                   >
                     <FaRegWindowClose
-                      color={COLORS.black}
                       size={20}
                       className="cursor-pointer mr-2"
                     />

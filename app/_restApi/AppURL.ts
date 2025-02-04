@@ -42,6 +42,9 @@ class AppURL {
   // Paid Items API
   static paidItemApi: string = `${this.baseURL}admin/PaidItems`;
 
+  // new persons API
+  static personApi: string = `${this.baseURL}admin/NewPerson`;
+
   // Get All Users
   static getUsersApi: string = `${this.baseURL}admin/user`;
 

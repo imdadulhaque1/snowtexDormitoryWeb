@@ -274,7 +274,7 @@ const PaidItemsPage: FC<Props> = (props) => {
           getDrawerStatus ? "pl-[265]" : "pl-0"
         } max-h-screen justify-center overflow-auto pb-52`}
       >
-        <div className="flex flex-col xl:flex-row w-full h-full ">
+        <div className="flex flex-col xl:flex-row w-full h-full">
           <div
             className={`w-[97%] xl:w-[30%] h-80p bg-white p-4 rounded-lg shadow-lg`}
           >
@@ -376,7 +376,6 @@ const PaidItemsPage: FC<Props> = (props) => {
                   }}
                 >
                   <MdOutlineFileUpload
-                    color={COLORS.black}
                     size={20}
                     className="cursor-pointer mr-2"
                   />
@@ -395,7 +394,6 @@ const PaidItemsPage: FC<Props> = (props) => {
                     }}
                   >
                     <MdOutlineFileUpload
-                      color={COLORS.black}
                       size={20}
                       className="cursor-pointer mr-2"
                     />
@@ -407,7 +405,6 @@ const PaidItemsPage: FC<Props> = (props) => {
                     onClick={closeToUpdateFunc}
                   >
                     <FaRegWindowClose
-                      color={COLORS.black}
                       size={20}
                       className="cursor-pointer mr-2"
                     />
