@@ -45,6 +45,9 @@ class AppURL {
   // new persons API
   static personApi: string = `${this.baseURL}admin/NewPerson`;
 
+  // Room Category API
+  static roomCategoryApi: string = `${this.baseURL}admin/RoomCategory`;
+
   // Get All Users
   static getUsersApi: string = `${this.baseURL}admin/user`;
 

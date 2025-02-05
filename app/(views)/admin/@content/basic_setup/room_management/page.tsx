@@ -489,10 +489,10 @@ const RoomManagement: FC<Props> = (props) => {
               Room Entries
             </p>
             <VerticalSingleInput
-              label="Room Name"
+              label="Room No"
               type="text"
               name="roomName"
-              placeholder="Enter room Name..."
+              placeholder="Enter room no..."
               // @ts-ignore
               value={roomData?.roomName}
               onChange={(e: any) =>
@@ -510,7 +510,7 @@ const RoomManagement: FC<Props> = (props) => {
                 label="Room Description"
                 type="text"
                 name="roomDescription"
-                placeholder="Enter Room Description..."
+                placeholder="Enter room description..."
                 // @ts-ignore
                 value={roomData?.roomDescription}
                 onChange={(e: any) =>
@@ -729,8 +729,16 @@ const RoomManagement: FC<Props> = (props) => {
                               }  shadow-xl shadow-white`}
                             />
                           </button>
-                          <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full px-2 py-1 text-xs text-black opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
-                            View details
+                          <span
+                            className={`absolute left-1/2 transform -translate-x-1/2 bottom-full px-2 py-1 text-xs ${
+                              room?.haveRoomDetails
+                                ? "text-black"
+                                : "text-red-800"
+                            } opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans`}
+                          >
+                            {room?.haveRoomDetails
+                              ? "View details"
+                              : "Empty details"}
                           </span>
                         </div>
 
