@@ -189,6 +189,11 @@ const ViewRoomDetailsModal: FC<Props> = (props) => {
                 notAvailableColor="text-red-500"
                 className="mb-3"
               />
+              <ComView
+                label="Room Category"
+                value={room?.roomCategoryName}
+                valueColor="text-green-700"
+              />
               <ComView label="Room Dimensions" value={room?.roomDimension} />
               <ComView label="Room Side" value={roomSideTxt} />
               <ComView label="Belconi Status" value={haveBelconiTxt} />
@@ -409,6 +414,7 @@ interface comViewInterface {
   label: string;
   value: any;
   className?: string;
+  valueColor?: string;
 }
 interface clickBtnInterface {
   label: string;
@@ -416,11 +422,16 @@ interface clickBtnInterface {
   className?: string;
 }
 
-const ComView: React.FC<comViewInterface> = ({ label, value, className }) => {
+const ComView: React.FC<comViewInterface> = ({
+  label,
+  value,
+  className,
+  valueColor,
+}) => {
   return (
     <div className={`flex ${className}`}>
       <p className={`${modalStyles.detailsLabel} mr-2`}>{label}:</p>
-      <p className={modalStyles.detailsTxt}>{value}</p>
+      <p className={`${modalStyles.detailsTxt} ${valueColor}`}>{value}</p>
     </div>
   );
 };

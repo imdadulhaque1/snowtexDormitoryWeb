@@ -41,6 +41,7 @@ const RoomManagement: FC<Props> = (props) => {
     building: [],
     floor: [],
     filteredFloors: [],
+    roomCategories: [],
   });
   const [roomData, setRoomData] = useState({
     data: [],
@@ -48,6 +49,8 @@ const RoomManagement: FC<Props> = (props) => {
     roomId: null,
     roomName: "",
     roomDescription: "",
+    remarks: "",
+    roomCategoryId: null,
     floorId: null,
     buildingId: null,
     isUpdated: false,
@@ -56,6 +59,8 @@ const RoomManagement: FC<Props> = (props) => {
     roomDescriptionErrorMsg: "",
     floorIdErrorMsg: "",
     buildingIdErrorMsg: "",
+    remarksErrorMsg: "",
+    roomCategoryIdErrorMsg: "",
   });
 
   const [roomDetails, setRoomDetails] = useState({
@@ -106,6 +111,7 @@ const RoomManagement: FC<Props> = (props) => {
     if (decodeToken?.token && decodeToken?.userId) {
       getBuildingsFunc(decodeToken?.token);
       fetchFloorData(decodeToken?.token);
+      fetchRoomCategories(decodeToken?.token);
       fetchRoomFunc(decodeToken?.token, currentPage);
     }
   }, [decodeToken?.token, decodeToken?.userId]);
@@ -160,6 +166,30 @@ const RoomManagement: FC<Props> = (props) => {
       console.log("Error fetching floor data: ", error.message);
     }
   };
+  const fetchRoomCategories = async (token: string) => {
+    try {
+      const { data } = await axios.get(AppURL.roomCategoryApi, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (data?.status === 200) {
+        const convertedRoomCategory = await data?.data.map(
+          ({ roomCategoryId, name }: any) => ({
+            value: roomCategoryId,
+            label: name,
+          })
+        );
+        await setDropdownProps((prev: any) => ({
+          ...prev,
+          roomCategories: convertedRoomCategory,
+        }));
+      }
+    } catch (error: any) {
+      console.log("Error fetching room categories: ", error.message);
+    }
+  };
 
   const fetchRoomFunc = async (token: string, noOfPage: number) => {
     // https://localhost:7094/api/admin/RoomInfo?name=test&buildingName=sc&floorName=c&sortOrder=asc&page=1&pageSize=10
@@ -185,13 +215,12 @@ const RoomManagement: FC<Props> = (props) => {
     }
   };
 
-  console.log("fetch Room Data: ", JSON.stringify(roomData?.data, null, 2));
-
   const handleBuildingChange = (buildingId: string) => {
     setRoomData((prev: any) => ({
       ...prev,
       buildingId,
       floorId: null, // Reset the floorId when building changes
+      roomCategoryIdErrorMsg: "",
     }));
 
     // Filter the floors based on the selected buildingId
@@ -216,7 +245,15 @@ const RoomManagement: FC<Props> = (props) => {
       isValid = false;
       errors.roomDescriptionErrorMsg = "Floor Description is required.";
     }
+    if (!roomData.remarks.trim()) {
+      isValid = false;
+      errors.remarksErrorMsg = "Remarks is required.";
+    }
 
+    if (!roomData.roomCategoryId) {
+      isValid = false;
+      errors.roomCategoryIdErrorMsg = "Room category is required.";
+    }
     if (!roomData.buildingId) {
       isValid = false;
       errors.buildingIdErrorMsg = "Cascading building is required.";
@@ -236,6 +273,8 @@ const RoomManagement: FC<Props> = (props) => {
     const submitRoomData = await {
       roomName: roomData.roomName,
       roomDescription: roomData.roomDescription,
+      remarks: roomData.remarks,
+      roomCategoryId: roomData.roomCategoryId,
       buildingId: roomData.buildingId,
       floorId: roomData.floorId,
       createdBy: userId,
@@ -251,13 +290,14 @@ const RoomManagement: FC<Props> = (props) => {
 
       if (data?.status === 201) {
         toast.success(data?.message);
-        // fetchFloorData(token);
-        // getBuildingsFunc(token);
+
         fetchRoomFunc(token, 1);
         setRoomData((prev) => ({
           ...prev,
           roomName: "",
           roomDescription: "",
+          remarks: "",
+          roomCategoryId: null,
           floorId: null,
           buildingId: null,
           isUpdated: false,
@@ -270,7 +310,6 @@ const RoomManagement: FC<Props> = (props) => {
       }
     } catch (error: any) {
       toast.error("Failed to submit floor data !");
-      console.log("Error submitting floor data: ", error.message);
     }
   };
 
@@ -280,6 +319,8 @@ const RoomManagement: FC<Props> = (props) => {
     const updateRoomData = await {
       roomName: roomData.roomName,
       roomDescription: roomData.roomDescription,
+      remarks: roomData.remarks,
+      roomCategoryId: roomData.roomCategoryId,
       buildingId: roomData.buildingId,
       floorId: roomData.floorId,
       updatedBy: userId,
@@ -295,14 +336,14 @@ const RoomManagement: FC<Props> = (props) => {
       .then(({ data }) => {
         if (data?.status === 200) {
           toast.success("Successfully updated room data !");
-          // fetchFloorData(token);
-          // getBuildingsFunc(token);
           fetchRoomFunc(token, 1);
           setRoomData((prev) => ({
             ...prev,
             roomId: null,
             roomName: "",
             roomDescription: "",
+            remarks: "",
+            roomCategoryId: null,
             floorId: null,
             buildingId: null,
             isUpdated: false,
@@ -324,6 +365,8 @@ const RoomManagement: FC<Props> = (props) => {
       roomId: null,
       roomName: "",
       roomDescription: "",
+      remarks: "",
+      roomCategoryId: null,
       floorId: null,
       buildingId: null,
       isUpdated: false,
@@ -335,7 +378,6 @@ const RoomManagement: FC<Props> = (props) => {
     }));
     // await getBuildingsFunc(decodeToken?.token);
   };
-
   const deleteFunc = async () => {
     const deleteData = await {
       inactiveBy: decodeToken?.userId,
@@ -367,7 +409,6 @@ const RoomManagement: FC<Props> = (props) => {
         }
       } catch (error: any) {
         toast.error("Failed to delete. Please try again !");
-        console.log("Error deleting Room: ", error.message);
       }
     }
   };
@@ -525,6 +566,51 @@ const RoomManagement: FC<Props> = (props) => {
               />
             </div>
             <div className="my-3">
+              <VerticalSingleInput
+                label="Remarks"
+                type="text"
+                name="remarks"
+                placeholder="Enter remarks..."
+                // @ts-ignore
+                value={roomData?.remarks}
+                onChange={(e: any) =>
+                  setRoomData((prev) => ({
+                    ...prev,
+                    remarks: e.target.value,
+                    remarksErrorMsg: "",
+                  }))
+                }
+                errorMsg={roomData.remarksErrorMsg}
+                required
+              />
+            </div>
+            <div className="my-3">
+              <label className=" text-black text-sm font-workSans mb-1 ">
+                Select Room Categories
+              </label>
+              <SearchableDropdown
+                options={dropdownProps?.roomCategories}
+                isDisable={false}
+                placeholder="Select room category..."
+                defaultValue={dropdownProps?.roomCategories.find(
+                  (option: any) =>
+                    parseInt(option.value) ===
+                    parseInt(roomData?.roomCategoryId)
+                )}
+                onSelect={(value) => {
+                  setRoomData((prev: any) => ({
+                    ...prev,
+                    roomCategoryId: value,
+                    roomCategoryIdErrorMsg: "",
+                  }));
+                }}
+                txtColor={
+                  roomData?.roomCategoryId ? "text-black" : "text-gray-400"
+                }
+                errorMsg={roomData.roomCategoryIdErrorMsg}
+              />
+            </div>
+            <div className="my-3">
               <label className=" text-black text-sm font-workSans mb-1">
                 Select Buildings
               </label>
@@ -538,6 +624,8 @@ const RoomManagement: FC<Props> = (props) => {
                     parseInt(option.value) === parseInt(roomData?.buildingId)
                 )}
                 onSelect={(value) => handleBuildingChange(value)}
+                txtColor={roomData?.buildingId ? "text-black" : "text-gray-400"}
+                errorMsg={roomData?.buildingIdErrorMsg}
               />
             </div>
             <div className="my-3">
@@ -557,8 +645,10 @@ const RoomManagement: FC<Props> = (props) => {
                   setRoomData((prev: any) => ({
                     ...prev,
                     floorId: value,
+                    floorIdErrorMsg: "",
                   }));
                 }}
+                errorMsg={roomData?.floorIdErrorMsg}
               />
             </div>
 
@@ -567,19 +657,15 @@ const RoomManagement: FC<Props> = (props) => {
                 <button
                   className="flex bg-primary70 items-center font-workSans text-md py-2 px-4 rounded-lg text-black hover:bg-primary50 hover:text-white"
                   onClick={() => {
-                    isRequiredRoom && decodeToken?.userId
-                      ? onSubmitFunc(
-                          roomData,
-                          decodeToken?.token,
-                          decodeToken?.userId
-                        )
-                      : toast.error(
-                          "Please complete all the required fields !"
-                        );
+                    decodeToken?.userId &&
+                      onSubmitFunc(
+                        roomData,
+                        decodeToken?.token,
+                        decodeToken?.userId
+                      );
                   }}
                 >
                   <MdOutlineFileUpload
-                    color={COLORS.black}
                     size={20}
                     className="cursor-pointer mr-2"
                   />
@@ -632,15 +718,11 @@ const RoomManagement: FC<Props> = (props) => {
                 containerClassName="w-1/6"
                 hasSearch={false}
               />
-              <TableHeader
-                headerText="ID"
-                containerClassName="w-1/12 border-l-2"
-                hasSearch={false}
-              />
+
               <TableHeader
                 headerText="Name"
                 placeholder="Search by name"
-                containerClassName="w-1/5 border-l-2 border-r-2 border-slate-50"
+                containerClassName="w-1/5 border-x-2 border-slate-50"
                 id="name-search"
                 value={searchKey.roomName}
                 onChange={(e) => {
@@ -652,14 +734,24 @@ const RoomManagement: FC<Props> = (props) => {
                 onSearch={() => fetchRoomFunc(decodeToken?.token, currentPage)}
               />
               <TableHeader
+                headerText="Category"
+                containerClassName="w-1/4 "
+                hasSearch={false}
+              />
+              <TableHeader
+                headerText="Remarks"
+                containerClassName="w-1/4 border-x-2 border-slate-50"
+                hasSearch={false}
+              />
+              <TableHeader
                 headerText="Descriptions"
-                containerClassName="w-1/3 "
+                containerClassName="w-1/4 "
                 hasSearch={false}
               />
               <TableHeader
                 headerText="Floor Name"
                 placeholder="Search by floor name"
-                containerClassName="w-1/5 border-r-2 border-l-2 border-slate-50"
+                containerClassName="w-1/5 border-x-2 border-slate-50"
                 id="floorName-search"
                 value={searchKey.floorName}
                 onChange={(e) => {
@@ -673,7 +765,7 @@ const RoomManagement: FC<Props> = (props) => {
               <TableHeader
                 headerText="Building Name"
                 placeholder="Search by building name"
-                containerClassName="w-1/5 border-r-2 border-slate-50"
+                containerClassName="w-1/5 border-r-2 border-slate-50 "
                 id="buildingName-search"
                 value={searchKey.buildingName}
                 onChange={(e) => {
@@ -696,14 +788,16 @@ const RoomManagement: FC<Props> = (props) => {
               {roomData?.data && roomData?.data?.length > 0 ? (
                 roomData?.data?.map((room: any, roomIndex: number) => {
                   const isLastRoom = roomIndex === roomData?.data.length - 1;
+
+                  // py-2 px-3
                   return (
                     <div
                       key={roomIndex}
                       className={`flex w-full items-center ${
                         !isLastRoom ? "border-b-2" : "border-b-0"
-                      } border-slate-300 py-2 px-3 bg-slate-100`}
+                      } border-slate-300  bg-slate-100`}
                     >
-                      <div className="flex w-1/6 items-center justify-evenly border-slate-300 border-r-2">
+                      <div className="flex w-1/6 items-center justify-evenly">
                         <div className="relative group mr-2 mt-1">
                           <button
                             onClick={() => {
@@ -777,17 +871,23 @@ const RoomManagement: FC<Props> = (props) => {
                           </span>
                         </div>
                       </div>
-                      <div className="flex w-1/12 items-center justify-center border-slate-300 border-r-2">
-                        <p className="text-md font-workSans text-center">
-                          {room.roomId}
-                        </p>
-                      </div>
-                      <div className="flex w-1/5 items-center justify-center border-slate-300 border-r-2">
+
+                      <div className="flex w-1/5 items-center justify-center border-slate-300 border-x-2">
                         <p className="text-md font-workSans text-center break-words max-w-full">
                           {room?.roomName}
                         </p>
                       </div>
-                      <div className="flex w-1/3 items-center justify-center border-slate-300 border-r-2">
+                      <div className="flex w-1/4 items-center justify-center border-slate-300 border-r-2">
+                        <p className="text-md font-workSans text-center break-words max-w-full">
+                          {room?.roomCategoryName}
+                        </p>
+                      </div>
+                      <div className="flex w-1/4 items-center justify-center border-slate-300">
+                        <p className="text-md font-workSans text-center break-words max-w-full">
+                          {room?.remarks}
+                        </p>
+                      </div>
+                      <div className="flex w-1/4 items-center justify-center border-slate-300 border-x-2">
                         <p className="text-md font-workSans text-center break-words max-w-full">
                           {room?.roomDescription}
                         </p>
@@ -797,7 +897,7 @@ const RoomManagement: FC<Props> = (props) => {
                           {room?.floorName}
                         </p>
                       </div>
-                      <div className="flex w-1/5 justify-center items-center border-slate-300 border-r-2">
+                      <div className="flex w-1/5 justify-center items-center border-slate-300 border-r-2 ">
                         <p className="text-md font-workSans text-center break-words max-w-full">
                           {room?.buildingName}
                         </p>
@@ -810,6 +910,8 @@ const RoomManagement: FC<Props> = (props) => {
                                 ...prev,
                                 roomId: room?.roomId,
                                 roomName: room?.roomName,
+                                roomCategoryId: room?.roomCategoryId,
+                                remarks: room?.remarks,
                                 roomDescription: room?.roomDescription,
                                 buildingId: room?.buildingId,
                                 floorId: room?.floorId,
@@ -824,7 +926,7 @@ const RoomManagement: FC<Props> = (props) => {
                             />
                           </button>
                           <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full px-2 py-1 text-xs text-black opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
-                            Update Floor
+                            Update Room
                           </span>
                         </div>
                         <div className="relative group">
@@ -844,7 +946,7 @@ const RoomManagement: FC<Props> = (props) => {
                             />
                           </button>
                           <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full px-2 py-1 text-xs text-black opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
-                            Delete Floor
+                            Delete Room
                           </span>
                         </div>
                       </div>

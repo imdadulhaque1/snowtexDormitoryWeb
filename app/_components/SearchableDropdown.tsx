@@ -9,10 +9,12 @@ interface Option {
 interface Props {
   options?: Option[];
   placeholder?: string;
+  txtColor?: string;
   onSelect?: (value: string, label: string) => void;
   parentId?: string | null; // Deprecated
   defaultValue?: Option | null; // New prop for default selection
   isDisable?: boolean;
+  errorMsg?: string;
 }
 
 const SearchableDropdown: FC<Props> = ({
@@ -22,6 +24,8 @@ const SearchableDropdown: FC<Props> = ({
   parentId,
   defaultValue = null,
   isDisable = false,
+  errorMsg,
+  txtColor,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -70,7 +74,7 @@ const SearchableDropdown: FC<Props> = ({
   return (
     <div className="relative w-full">
       <button
-        className={`w-full px-4 py-2 text-left bg-primary95 border rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-indigo-200 font-workSans ${
+        className={`w-full px-4 py-2 text-left ${txtColor} bg-primary95 border rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-indigo-200 font-workSans ${
           isDisable && "opacity-40"
         }`}
         onClick={toggleDropdown}
@@ -78,6 +82,11 @@ const SearchableDropdown: FC<Props> = ({
       >
         {selectedLabel || placeholder}
       </button>
+      {errorMsg && (
+        <p className="text-errorColor text-f11 md:text-f13 font-workSans pl-1 mt-1">
+          {errorMsg}
+        </p>
+      )}
 
       {isOpen && (
         <div className="absolute w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto z-10">
@@ -88,6 +97,7 @@ const SearchableDropdown: FC<Props> = ({
             className="w-full px-4 py-2 border-b focus:outline-none font-workSans"
             placeholder="Search..."
           />
+
           <ul>
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option) => (
