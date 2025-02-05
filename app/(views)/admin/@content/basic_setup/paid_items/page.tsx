@@ -261,12 +261,6 @@ const PaidItemsPage: FC<Props> = (props) => {
     }));
   };
 
-  const isRequiredPaidItems =
-    paidItemsData?.itemName.trim() &&
-    paidItemsData?.itemRemarks.trim() &&
-    paidItemsData?.priceCalculateBy &&
-    paidItemsData?.itemPrice;
-
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <div
