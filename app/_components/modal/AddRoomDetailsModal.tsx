@@ -414,8 +414,6 @@ const AddRoomDetailsModal: React.FC<DeleteModalProps> = ({
         createdBy: userId,
       };
 
-      console.log("submittedData: ", JSON.stringify(submittedData, null, 2));
-
       const { data } = await axios.post(AppURL.roomDetailsApi, submittedData, {
         headers: {
           "Content-Type": "application/json",
