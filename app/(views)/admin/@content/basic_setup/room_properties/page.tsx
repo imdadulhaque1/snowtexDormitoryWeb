@@ -1550,38 +1550,3 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
 };
 
 export default RoomGoodsEntriesPage;
-
-/*
-
-
-<div className="w-full min-h-[75vh] bg-red-400 p-4 mx-3 rounded-lg shadow-lg">
-  <p className="font-workSans text-center mb-2 text-lg font-semibold truncate">
-    Room Common Features
-  </p>
-  <div className="overflow-x-auto">
-    <div className="min-w-[600px] border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
-      <div className="flex w-full items-center border-b-2 border-slate-300">
-        <div className="flex w-1/12 items-center justify-center border-r-2">Id</div>
-        <div className="flex w-1/5 items-center justify-center border-r-2">Name</div>
-        <div className="flex w-1/2 items-center justify-center border-r-2">Remarks</div>
-        <div className="flex w-1/5 justify-end items-center">Actions</div>
-      </div>
-    </div>
-    <div className="flex flex-col max-h-[60vh] overflow-auto">
-      {commonFeatures?.data?.map((feature, index) => (
-        <div key={index} className="flex w-full items-center border-b-2 border-slate-300 py-2 px-2 bg-slate-100">
-          <div className="flex w-1/12 items-center justify-center border-r-2">{feature?.commonFeatureId}</div>
-          <div className="flex w-1/5 items-center justify-center border-r-2">{feature?.name}</div>
-          <div className="flex w-1/2 items-center justify-center border-r-2 px-2 truncate">{feature?.remarks}</div>
-          <div className="flex w-1/5 justify-end items-center">
-            <button><FaEdit size={25} className="cursor-pointer" /></button>
-            <button><MdDeleteOutline size={28} className="cursor-pointer" /></button>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-</div>
-
-
-*/

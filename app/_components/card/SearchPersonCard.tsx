@@ -10,6 +10,8 @@ interface Props {
   firstStyle?: any;
   lastStyle?: any;
   notLastStyle?: any;
+  isChecked?: boolean;
+  handleChecked?: ((event: any) => void) | undefined;
 }
 
 const SearchPersonCard: React.FC<Props> = ({
@@ -21,6 +23,8 @@ const SearchPersonCard: React.FC<Props> = ({
   firstStyle,
   lastStyle,
   notLastStyle,
+  isChecked,
+  handleChecked,
 }) => {
   return (
     <div
@@ -70,6 +74,22 @@ const SearchPersonCard: React.FC<Props> = ({
             <span className="absolute left-1/2 transform -translate-x-1/2 bottom-full  px-2 py-1 text-xs text-black  opacity-0 transition-opacity duration-500 group-hover:opacity-100 whitespace-nowrap font-workSans">
               Delete person ?
             </span>
+          </div>
+
+          <div className="flex items-center ml-4 ">
+            <label
+              onClick={handleChecked}
+              className="flex items-center gap-2 ml-2 justify-center cursor-pointer"
+            >
+              <input
+                className="w-[19] h-[19] cursor-pointer"
+                type="checkbox"
+                // @ts-ignore
+                checked={isChecked}
+                // onChange={handleChecked}
+              />
+              <span className="text-gray-600 text-md">Checked</span>
+            </label>
           </div>
         </div>
       )}

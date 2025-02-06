@@ -21,7 +21,7 @@ const VertcialRadioBtn: React.FC<RadioButtonProps> = ({
 }) => {
   return (
     <label
-      className={`flex items-center space-x-1 cursor-pointer ${className}`}
+      className={`flex  items-center space-x-1 cursor-pointer ${className}`}
     >
       <input
         type="radio"
