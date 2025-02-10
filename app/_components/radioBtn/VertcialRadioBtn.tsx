@@ -1,11 +1,11 @@
 import React from "react";
 
 interface RadioButtonProps {
-  label: string;
-  value: number;
-  name: string;
-  checked: boolean;
-  onChange: (value: number) => void;
+  label?: string;
+  value?: number;
+  name?: string;
+  checked?: boolean;
+  onChange?: (value: number) => void;
   required?: boolean;
   className?: string;
 }
@@ -32,7 +32,9 @@ const VertcialRadioBtn: React.FC<RadioButtonProps> = ({
         className="w-5 h-5 cursor-pointer"
         required={required}
       />
-      <span className="font-workSans text-black text-sm">{label}</span>
+      {label && (
+        <span className="font-workSans text-black text-sm">{label}</span>
+      )}
     </label>
   );
 };

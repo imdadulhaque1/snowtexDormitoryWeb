@@ -22,6 +22,13 @@ import { FaCheck } from "react-icons/fa";
 import RoomInfoSelectCard from "@/app/_components/card/RoomInfoSelectCard";
 import RoomDetailsCard from "@/app/_components/card/RoomDetailsCard";
 import VertcialRadioBtn from "@/app/_components/radioBtn/VertcialRadioBtn";
+import DatePickerCard from "@/app/_components/datePicker/DateTimePicker";
+import DatePicker from "@/app/_components/datePicker/DateTimePicker";
+import DateTimePicker from "@/app/_components/datePicker/DateTimePicker";
+import DateWiseAvailableCard from "@/app/_components/card/DateWiseAvailableCard";
+import { roomDetailsInterface } from "@/interface/admin/roomManagements/roomDetailsInterface";
+import { roomInterface } from "@/interface/admin/roomManagements/roomInterface";
+import RoomTable from "@/app/_components/card/RoomTable";
 
 interface Props {}
 
@@ -31,6 +38,11 @@ interface PersonInfoState {
   searchData: personInterface[];
   selectedPerson: personInterface | null;
   checkedData: personInterface | null;
+}
+
+interface fetchInterface {
+  roomDetails: roomDetailsInterface[];
+  availableRoom: roomInterface[];
 }
 
 const RoomAssignmentsPage: FC<Props> = (props) => {
@@ -56,8 +68,9 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
     checkedStatus: false,
   });
 
-  const [fetchData, setFetchData] = useState({
+  const [fetchData, setFetchData] = useState<fetchInterface>({
     roomDetails: [],
+    availableRoom: [],
   });
 
   const [personInfo, setPersonInfo] = useState<PersonInfoState>({
@@ -71,6 +84,10 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
   const [paymentOptions, setPaymentOptions] = useState({
     paidOrNot: 0,
   });
+
+  const [selectedDate, setSelectedDate] = useState<string>(
+    new Date().toISOString()
+  );
 
   useEffect(() => {
     const fetchAndDecodeToken = async () => {
@@ -179,6 +196,10 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
     setPaymentOptions((prev) => ({ prev, paidOrNot: value }));
   };
 
+  const handleDateChange = (date: Date | null) => {
+    console.log("Selected date:", date);
+  };
+
   const size = useWindowSize();
   const windowHeight: any = size && size?.height;
 
@@ -219,7 +240,7 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
             label="External"
           />
         </div>
-        <div className="flex flex-col min-h-[70%] ">
+        <div className="flex flex-col min-h-[70%]">
           {userType?.internal && (
             <div>
               <h1>
@@ -366,6 +387,26 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
                   />
                 )}
                 {boolStatus?.checkedStatus && !boolStatus?.isViewDetails && (
+                  <div className="w-full ">
+                    <DateWiseAvailableCard
+                      token={decodeToken?.token}
+                      userId={decodeToken?.userId}
+                      onAddSuccess={(response) => {
+                        if (response?.status == 200) {
+                          toast.success(response.message);
+                          setFetchData((prev) => ({
+                            ...prev,
+                            availableRoom: response?.data,
+                          }));
+                          console.log(
+                            "response?.data: ",
+                            JSON.stringify(response, null, 2)
+                          );
+                        }
+                      }}
+                    />
+
+                    {/*                   
                   <RoomInfoSelectCard
                     token={decodeToken?.token}
                     userId={decodeToken?.userId}
@@ -384,7 +425,8 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
                         toast.error("failed to fetch room details");
                       }
                     }}
-                  />
+                  /> */}
+                  </div>
                 )}
                 {boolStatus?.checkedStatus &&
                   boolStatus?.isViewDetails &&
@@ -402,7 +444,8 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
               </div>
               <div className="flex w-full xl:w-2/3 xl:ml-4">
                 <div className=" w-full bg-white p-4 rounded-lg shadow-lg shadow-slate-400">
-                  <div className="my-3">
+                  <RoomTable roomData={fetchData?.availableRoom} />
+                  {/* <div className="my-3">
                     <label className=" text-black text-sm font-workSans mb-1">
                       Room Free
                     </label>
@@ -423,7 +466,7 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
                         className="mx-5"
                       />
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>

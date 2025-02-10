@@ -28,17 +28,17 @@ const PaidItemsPage: FC<Props> = (props) => {
   });
   const [paidItemsData, setPaidItemsData] = useState({
     paidData: [],
-    paidItemId: null,
+    itemId: null,
     itemName: "",
     itemPrice: "",
-    priceCalculateBy: null,
+    paidOrFree: null,
     itemRemarks: "",
     isUpdated: false,
     isDeleted: false,
     itemNameErrorMsg: "",
     itemRemarksErrorMsg: "",
     itemPriceErrorMsg: "",
-    priceCalculateByErrorMsg: "",
+    paidOrFreeErrorMsg: "",
   });
 
   useEffect(() => {
@@ -86,9 +86,9 @@ const PaidItemsPage: FC<Props> = (props) => {
       isValid = false;
       errors.itemPriceErrorMsg = "Items price is required.";
     }
-    if (!paidItemsData.priceCalculateBy) {
+    if (!paidItemsData.paidOrFree) {
       isValid = false;
-      errors.priceCalculateByErrorMsg = "Required to calculate.";
+      errors.paidOrFreeErrorMsg = "Required to initilize item status.";
     }
 
     setPaidItemsData((prev) => ({ ...prev, ...errors }));
@@ -119,7 +119,7 @@ const PaidItemsPage: FC<Props> = (props) => {
     const submittedData = await {
       name: itemsData?.itemName,
       price: itemsData?.itemPrice,
-      priceCalculateBy: itemsData?.priceCalculateBy,
+      paidOrFree: itemsData?.paidOrFree,
       remarks: itemsData?.itemRemarks,
       createdBy: userId,
     };
@@ -130,23 +130,24 @@ const PaidItemsPage: FC<Props> = (props) => {
           Authorization: `Bearer ${token}`,
         },
       });
+      // console.log(JSON.stringify);
 
       if (data?.status === 201) {
         toast.success(data?.message);
         fetchPaidItems(token);
         setPaidItemsData((prev) => ({
           ...prev,
-          paidItemId: null,
+          itemId: null,
           itemName: "",
           itemPrice: "",
-          priceCalculateBy: null,
+          paidOrFree: null,
           itemRemarks: "",
           isUpdated: false,
           isDeleted: false,
           itemNameErrorMsg: "",
           itemRemarksErrorMsg: "",
           itemPriceErrorMsg: "",
-          priceCalculateByErrorMsg: "",
+          paidOrFreeErrorMsg: "",
         }));
       }
     } catch (error: any) {
@@ -160,39 +161,35 @@ const PaidItemsPage: FC<Props> = (props) => {
     const updatePaidItemsData = await {
       name: updatedInfo?.itemName,
       price: updatedInfo?.itemPrice,
-      priceCalculateBy: updatedInfo?.priceCalculateBy,
+      paidOrFree: updatedInfo?.paidOrFree,
       remarks: updatedInfo?.itemRemarks,
       updatedBy: userId,
     };
 
     await axios
-      .put(
-        `${AppURL.paidItemApi}/${updatedInfo.paidItemId}`,
-        updatePaidItemsData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
+      .put(`${AppURL.paidItemApi}/${updatedInfo.itemId}`, updatePaidItemsData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then(({ data }) => {
         if (data?.status === 200) {
           toast.success("Successfully updated paid items !");
           fetchPaidItems(token);
           setPaidItemsData((prev) => ({
             ...prev,
-            paidItemId: null,
+            itemId: null,
             itemName: "",
             itemPrice: "",
-            priceCalculateBy: null,
+            paidOrFree: null,
             itemRemarks: "",
             isUpdated: false,
             isDeleted: false,
             itemNameErrorMsg: "",
             itemRemarksErrorMsg: "",
             itemPriceErrorMsg: "",
-            priceCalculateByErrorMsg: "",
+            paidOrFreeErrorMsg: "",
           }));
         }
       })
@@ -204,10 +201,10 @@ const PaidItemsPage: FC<Props> = (props) => {
     const deleteData = await {
       inactiveBy: decodeToken?.userId,
     };
-    if (paidItemsData?.paidItemId && decodeToken?.userId) {
+    if (paidItemsData?.itemId && decodeToken?.userId) {
       try {
         const response: any = await fetch(
-          `${AppURL.paidItemApi}/${paidItemsData?.paidItemId}`,
+          `${AppURL.paidItemApi}/${paidItemsData?.itemId}`,
           {
             method: "DELETE",
             headers: {
@@ -222,7 +219,7 @@ const PaidItemsPage: FC<Props> = (props) => {
           toast.success("Paid items deleted successfully !");
           setPaidItemsData((prev) => ({
             ...prev,
-            paidItemId: null,
+            itemId: null,
             isDeleted: false,
           }));
           fetchPaidItems(decodeToken?.token);
@@ -239,10 +236,10 @@ const PaidItemsPage: FC<Props> = (props) => {
   const closeToUpdateFunc = async () => {
     await setPaidItemsData((prev) => ({
       ...prev,
-      paidItemId: null,
+      itemId: null,
       itemName: "",
       itemPrice: "",
-      priceCalculateBy: null,
+      paidOrFree: null,
       itemRemarks: "",
       isUpdated: false,
       isDeleted: false,
@@ -250,13 +247,13 @@ const PaidItemsPage: FC<Props> = (props) => {
   };
 
   const handlePCByRadioBtnChange = (value: number) => {
-    setPaidItemsData((prev: any) => ({ ...prev, priceCalculateBy: value }));
+    setPaidItemsData((prev: any) => ({ ...prev, paidOrFree: value }));
   };
 
   const handleCancel = () => {
     setPaidItemsData((prev: any) => ({
       ...prev,
-      paidItemId: null,
+      itemId: null,
       isDeleted: false,
     }));
   };
@@ -310,29 +307,29 @@ const PaidItemsPage: FC<Props> = (props) => {
               />
               <div className="flex flex-col w-[95%] ml-3">
                 <label className=" text-black text-sm font-workSans mb-1">
-                  Price per
+                  Item paid or free
                 </label>
                 <div className="flex  bg-primary95 border-2 border-slate-200 rounded-lg px-2 py-2">
                   <VertcialRadioBtn
                     className="py-[2.5]"
-                    label="Day"
+                    label="Paid"
                     value={1}
-                    name="priceCalculationBy"
-                    checked={paidItemsData?.priceCalculateBy == 1}
+                    name="paidOrFree"
+                    checked={paidItemsData?.paidOrFree == 1}
                     onChange={handlePCByRadioBtnChange}
                   />
                   <VertcialRadioBtn
-                    label="Hour"
+                    label="Free"
                     value={2}
-                    name="priceCalculationBy"
-                    checked={paidItemsData?.priceCalculateBy == 2}
+                    name="paidOrFree"
+                    checked={paidItemsData?.paidOrFree == 2}
                     onChange={handlePCByRadioBtnChange}
                     className="mx-5"
                   />
                 </div>
-                {paidItemsData?.priceCalculateByErrorMsg && (
+                {paidItemsData?.paidOrFreeErrorMsg && (
                   <p className="text-errorColor text-f11 md:text-f13 font-workSans pl-1 mt-1">
-                    {paidItemsData?.priceCalculateByErrorMsg}
+                    {paidItemsData?.paidOrFreeErrorMsg}
                   </p>
                 )}
               </div>
@@ -435,7 +432,7 @@ const PaidItemsPage: FC<Props> = (props) => {
               </div>
               <div className="flex  w-1/5  justify-center items-center border-slate-50 border-r-2">
                 <p className="text-md font-workSans font-medium text-center">
-                  Price Calculate By
+                  Paid / Free
                 </p>
               </div>
               <div className="flex  w-1/5  justify-center items-center">
@@ -449,12 +446,12 @@ const PaidItemsPage: FC<Props> = (props) => {
               paidItemsData?.paidData?.map((pItem: any, piIndex: number) => {
                 const isLastItem =
                   piIndex === paidItemsData?.paidData.length - 1;
-                console.log(pItem?.priceCalculateBy);
+                console.log(pItem?.paidOrFree);
                 const pCalculateByTxt =
-                  parseInt(pItem?.priceCalculateBy) == 1
-                    ? "Day"
-                    : parseInt(pItem?.priceCalculateBy) == 2
-                    ? "Hour"
+                  parseInt(pItem?.paidOrFree) == 1
+                    ? "Paid"
+                    : parseInt(pItem?.paidOrFree) == 2
+                    ? "Free"
                     : "Unknown";
 
                 return (
@@ -485,7 +482,13 @@ const PaidItemsPage: FC<Props> = (props) => {
                       </p>
                     </div>
                     <div className="flex  w-1/5  justify-center items-center border-slate-300 border-r-2">
-                      <p className="text-md font-workSans text-center break-words max-w-full">
+                      <p
+                        className={`text-md ${
+                          pItem?.paidOrFree == 1
+                            ? "text-black"
+                            : "text-green-700"
+                        } font-workSans text-center break-words max-w-full`}
+                      >
                         {pCalculateByTxt}
                       </p>
                     </div>
@@ -495,10 +498,10 @@ const PaidItemsPage: FC<Props> = (props) => {
                           onClick={async () => {
                             await setPaidItemsData((prev: any) => ({
                               ...prev,
-                              paidItemId: pItem?.paidItemId,
+                              itemId: pItem?.itemId,
                               itemName: pItem?.name,
                               itemPrice: pItem?.price,
-                              priceCalculateBy: pItem?.priceCalculateBy,
+                              paidOrFree: pItem?.paidOrFree,
                               itemRemarks: pItem?.remarks,
                               isUpdated: true,
                             }));
@@ -521,7 +524,7 @@ const PaidItemsPage: FC<Props> = (props) => {
                           onClick={async () => {
                             await setPaidItemsData((prev: any) => ({
                               ...prev,
-                              paidItemId: pItem?.paidItemId,
+                              itemId: pItem?.itemId,
                               isDeleted: true,
                             }));
                           }}

@@ -48,6 +48,12 @@ class AppURL {
   // Room Category API
   static roomCategoryApi: string = `${this.baseURL}admin/RoomCategory`;
 
+  // Room Booking API
+  static roomBookingApi: string = `${this.baseURL}admin/RoomBooking`;
+
+  // Available Room fetching API
+  static availableRoomApi: string = `${this.baseURL}admin/RoomBooking/availableRoom`;
+
   // Get All Users
   static getUsersApi: string = `${this.baseURL}admin/user`;
 
