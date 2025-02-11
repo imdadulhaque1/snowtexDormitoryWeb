@@ -13,15 +13,15 @@ import AppURL from "@/app/_restApi/AppURL";
 import { useWindowSize } from "@/app/_utils/handler/useWindowSize";
 import SearchPersonCard from "@/app/_components/card/SearchPersonCard";
 import DeleteModal from "@/app/_components/modal/DeletedModal";
-import { IoClose } from "react-icons/io5";
 import { personInterface } from "@/interface/admin/roomManagements/personInterafce";
-import { modalStyles } from "@/app/_utils/comStyle/admin/basicSetup/room/roomStye";
 import PersonCard from "@/app/_components/card/PersonCard";
-import SearchableDropdown from "@/app/_components/SearchableDropdown";
-import { FaCheck } from "react-icons/fa";
-import RoomInfoSelectCard from "@/app/_components/card/RoomInfoSelectCard";
 import RoomDetailsCard from "@/app/_components/card/RoomDetailsCard";
-import VertcialRadioBtn from "@/app/_components/radioBtn/VertcialRadioBtn";
+import DateWiseAvailableCard from "@/app/_components/card/DateWiseAvailableCard";
+import { roomDetailsInterface } from "@/interface/admin/roomManagements/roomDetailsInterface";
+import { roomInterface } from "@/interface/admin/roomManagements/roomInterface";
+import RoomTable from "@/app/_components/card/RoomTable";
+import AvailableRoomItemCard from "@/app/_components/card/AvailableRoomItemCard";
+import ReservationTimeCard from "@/app/_components/card/ReservationTimeCard";
 
 interface Props {}
 
@@ -31,6 +31,12 @@ interface PersonInfoState {
   searchData: personInterface[];
   selectedPerson: personInterface | null;
   checkedData: personInterface | null;
+}
+
+interface fetchInterface {
+  roomDetails: roomDetailsInterface[];
+  availableRoom: roomInterface[];
+  selectedRoom: roomInterface | null;
 }
 
 const RoomAssignmentsPage: FC<Props> = (props) => {
@@ -54,10 +60,24 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
     isUpdate: false,
     isDelete: false,
     checkedStatus: false,
+    isRoomSelected: false,
   });
 
-  const [fetchData, setFetchData] = useState({
+  const [fetchData, setFetchData] = useState<fetchInterface>({
     roomDetails: [],
+    availableRoom: [],
+    selectedRoom: null,
+  });
+
+  const [bookingInfo, setBookingInfo] = useState({
+    personId: null,
+    roomWisePerson: [],
+    paidItems: [],
+    freeItems: [],
+    totalPaidItemsPrice: null,
+    totalFreeItemsPrice: null,
+    startTime: "",
+    endTime: "",
   });
 
   const [personInfo, setPersonInfo] = useState<PersonInfoState>({
@@ -71,6 +91,10 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
   const [paymentOptions, setPaymentOptions] = useState({
     paidOrNot: 0,
   });
+
+  const [selectedDate, setSelectedDate] = useState<string>(
+    new Date().toISOString()
+  );
 
   useEffect(() => {
     const fetchAndDecodeToken = async () => {
@@ -179,8 +203,14 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
     setPaymentOptions((prev) => ({ prev, paidOrNot: value }));
   };
 
+  const handleDateChange = (date: Date | null) => {
+    console.log("Selected date:", date);
+  };
+
   const size = useWindowSize();
   const windowHeight: any = size && size?.height;
+
+  // console.log("final result: ", JSON.stringify(bookingInfo, null, 2));
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -219,7 +249,7 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
             label="External"
           />
         </div>
-        <div className="flex flex-col min-h-[70%] ">
+        <div className="flex flex-col min-h-[70%] overflow-y-auto pb-20">
           {userType?.internal && (
             <div>
               <h1>
@@ -366,6 +396,22 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
                   />
                 )}
                 {boolStatus?.checkedStatus && !boolStatus?.isViewDetails && (
+                  <div className="w-full ">
+                    <DateWiseAvailableCard
+                      token={decodeToken?.token}
+                      userId={decodeToken?.userId}
+                      onAddSuccess={(response) => {
+                        if (response?.status == 200) {
+                          toast.success(response.message);
+                          setFetchData((prev) => ({
+                            ...prev,
+                            availableRoom: response?.data,
+                          }));
+                        }
+                      }}
+                    />
+
+                    {/*                   
                   <RoomInfoSelectCard
                     token={decodeToken?.token}
                     userId={decodeToken?.userId}
@@ -384,7 +430,8 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
                         toast.error("failed to fetch room details");
                       }
                     }}
-                  />
+                  /> */}
+                  </div>
                 )}
                 {boolStatus?.checkedStatus &&
                   boolStatus?.isViewDetails &&
@@ -400,30 +447,56 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
                     />
                   )}
               </div>
-              <div className="flex w-full xl:w-2/3 xl:ml-4">
-                <div className=" w-full bg-white p-4 rounded-lg shadow-lg shadow-slate-400">
-                  <div className="my-3">
-                    <label className=" text-black text-sm font-workSans mb-1">
-                      Room Free
-                    </label>
-                    <div className="flex  bg-primary95 border-2 border-slate-200 rounded-lg p-2 w-full  xl:w-1/2 ">
-                      <VertcialRadioBtn
-                        label="Paid"
-                        value={1}
-                        name="Paid"
-                        checked={paymentOptions?.paidOrNot === 1}
-                        onChange={paidOrNotChange}
-                      />
-                      <VertcialRadioBtn
-                        label="Free of cost"
-                        value={2}
-                        name="roomFee"
-                        checked={paymentOptions?.paidOrNot === 2}
-                        onChange={paidOrNotChange}
-                        className="mx-5"
-                      />
-                    </div>
-                  </div>
+              <div className="flex flex-col w-full xl:w-2/3 xl:ml-4 xl:h-[800] overflow-y-auto pb-28">
+                <RoomTable
+                  className="w-full p-4"
+                  roomData={fetchData?.availableRoom}
+                  // returnItems={(sRoom) => {
+                  //   console.log("sRoom: ", JSON.stringify(sRoom, null, 2));
+
+                  //   if (sRoom) {
+                  //     setBoolStatus((prev) => ({
+                  //       ...prev,
+                  //       isRoomSelected: true,
+                  //     }));
+                  //     setFetchData((prev: any) => ({
+                  //       ...prev,
+                  //       selectedRoom: sRoom,
+                  //     }));
+                  //   } else {
+                  //     setBoolStatus((prev) => ({
+                  //       ...prev,
+                  //       isRoomSelected: false,
+                  //     }));
+                  //     setFetchData((prev) => ({ ...prev, selectedRoom: null }));
+                  //   }
+                  // }}
+                  onPassItems={(itemRess: any) => {
+                    setBookingInfo((prev) => ({
+                      ...prev,
+                      roomWisePerson: itemRess,
+                    }));
+                  }}
+                />
+                <AvailableRoomItemCard
+                  onPassItems={(itemRes) => {
+                    setBookingInfo((prev) => ({
+                      ...prev,
+                      paidItems: itemRes?.paidItems,
+                      freeItems: itemRes?.freeItems,
+                      totalPaidItemsPrice: itemRes?.totalPaidItemAmount,
+                      totalFreeItemsPrice: itemRes?.totalFreeItemAmount,
+                    }));
+                  }}
+                  className="w-full p-4 my-3"
+                  token={decodeToken?.token}
+                  userId={decodeToken?.userId}
+                />
+                <ReservationTimeCard />
+                <div className="flex items-center justify-center my-4">
+                  <button className="font-workSans text-black bg-primary80 rounded-md py-2 px-5 shadow-lg ">
+                    Room Booking
+                  </button>
                 </div>
               </div>
             </div>
@@ -497,4 +570,93 @@ const ComBtn: FC<comBtnInterface> = ({ className, onClick, label }) => {
       {label}
     </button>
   );
+};
+
+const roomBookingApi = {
+  personId: 1,
+  roomWiseAssignedPerson: [
+    {
+      roomName: "",
+      roomId: 11,
+      roomWisePerson: [
+        {
+          name: "",
+          email: "",
+          phone: "",
+        },
+        {
+          name: "",
+          email: "",
+          phone: "",
+        },
+      ],
+    },
+    {
+      roomName: "",
+      roomId: 5,
+      roomWisePerson: [
+        {
+          name: "",
+          email: "",
+          phone: "",
+        },
+      ],
+    },
+  ],
+  paidItems: [
+    {
+      itemId: 1006,
+      name: "dgbdfg",
+      price: "23",
+      paidOrFree: 1,
+      remarks: "sgdfgdf",
+      isApprove: false,
+      approvedBy: null,
+      isActive: true,
+      inactiveBy: null,
+      inactiveTime: null,
+      createdBy: 6,
+      createdTime: "2025-02-10T10:11:48.18",
+      updatedBy: null,
+      updatedTime: null,
+    },
+    {
+      itemId: 1002,
+      name: "werwerwer",
+      price: "23",
+      paidOrFree: 1,
+      remarks: "werewrewr",
+      isApprove: false,
+      approvedBy: null,
+      isActive: true,
+      inactiveBy: null,
+      inactiveTime: null,
+      createdBy: 6,
+      createdTime: "2025-02-10T10:11:48.18",
+      updatedBy: null,
+      updatedTime: null,
+    },
+  ],
+  freeItems: [
+    {
+      itemId: 1002,
+      name: "Tissue",
+      price: "23",
+      paidOrFree: 1,
+      remarks: "tissues",
+      isApprove: false,
+      approvedBy: null,
+      isActive: true,
+      inactiveBy: null,
+      inactiveTime: null,
+      createdBy: 6,
+      createdTime: "2025-02-10T10:11:48.18",
+      updatedBy: null,
+      updatedTime: null,
+    },
+  ],
+  totalPaidItemsPrice: 233,
+  totalFreeItemsPrice: 222,
+  startTime: "2025-02-10T10:11:48.18",
+  endTime: "2025-02-13T10:11:48.18",
 };

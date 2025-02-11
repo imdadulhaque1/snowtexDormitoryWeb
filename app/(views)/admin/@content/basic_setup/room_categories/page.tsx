@@ -28,11 +28,13 @@ const RoomCategoryPage: FC<Props> = (props) => {
     categoryData: [],
     roomCategoryId: null,
     name: "",
+    noOfPerson: 0,
     remarks: "",
     isUpdated: false,
     isDeleted: false,
     nameErrorMsg: "",
     remarksErrorMsg: "",
+    noOfPersonErrorMsg: "",
   });
 
   useEffect(() => {
@@ -76,6 +78,10 @@ const RoomCategoryPage: FC<Props> = (props) => {
       isValid = false;
       errors.remarksErrorMsg = "Items remarks is required.";
     }
+    if (categoriesInfo.noOfPerson <= 0) {
+      isValid = false;
+      errors.noOfPersonErrorMsg = "Atleast one person should be inserted";
+    }
 
     setCategoriesInfo((prev) => ({ ...prev, ...errors }));
     return isValid;
@@ -106,6 +112,7 @@ const RoomCategoryPage: FC<Props> = (props) => {
 
     const submittedData = await {
       name: categoryData?.name,
+      noOfPerson: categoryData?.noOfPerson,
       remarks: categoryData?.remarks,
       createdBy: userId,
     };
@@ -124,6 +131,7 @@ const RoomCategoryPage: FC<Props> = (props) => {
         setCategoriesInfo((prev) => ({
           ...prev,
           roomCategoryId: null,
+          noOfPerson: 0,
           name: "",
           remarks: "",
           isUpdated: false,
@@ -145,6 +153,7 @@ const RoomCategoryPage: FC<Props> = (props) => {
 
     const updateRoomCategory = await {
       name: updatedInfo?.name,
+      noOfPerson: updatedInfo?.noOfPerson,
       remarks: updatedInfo?.remarks,
       updatedBy: userId,
     };
@@ -167,6 +176,7 @@ const RoomCategoryPage: FC<Props> = (props) => {
           setCategoriesInfo((prev) => ({
             ...prev,
             roomCategoryId: null,
+            noOfPerson: 0,
             name: "",
             remarks: "",
             isUpdated: false,
@@ -219,6 +229,7 @@ const RoomCategoryPage: FC<Props> = (props) => {
     await setCategoriesInfo((prev) => ({
       ...prev,
       roomCategoryId: null,
+      noOfPerson: 0,
       name: "",
       remarks: "",
       isUpdated: false,
@@ -259,6 +270,23 @@ const RoomCategoryPage: FC<Props> = (props) => {
                 }))
               }
               errorMsg={categoriesInfo.nameErrorMsg}
+              required
+            />
+            <VerticalSingleInput
+              label="No Of Person"
+              type="number"
+              name="noOfPerson"
+              placeholder="Enter No Of Person..."
+              // @ts-ignore
+              value={categoriesInfo?.noOfPerson}
+              onChange={(e: any) =>
+                setCategoriesInfo((prev) => ({
+                  ...prev,
+                  noOfPerson: e.target.value,
+                  noOfPersonErrorMsg: "",
+                }))
+              }
+              errorMsg={categoriesInfo.noOfPersonErrorMsg}
               required
             />
 
@@ -349,6 +377,11 @@ const RoomCategoryPage: FC<Props> = (props) => {
                   Name
                 </p>
               </div>
+              <div className=" flex  w-1/6 items-center justify-center border-slate-50 border-r-2">
+                <p className="text-md font-workSans font-medium text-center py-2 px-2">
+                  No of person
+                </p>
+              </div>
               <div className="flex w-2/4 items-center justify-center border-slate-50 border-r-2">
                 <p className="text-md font-workSans font-medium text-center py-2 px-2">
                   Remarks
@@ -386,6 +419,11 @@ const RoomCategoryPage: FC<Props> = (props) => {
                           {cItem?.name}
                         </p>
                       </div>
+                      <div className=" flex  w-1/6 items-center justify-center border-slate-300 border-l-2 min-h-11">
+                        <p className="text-md font-workSans text-center break-words max-w-full">
+                          {cItem?.noOfPerson}
+                        </p>
+                      </div>
                       <div className="flex w-2/4 items-center justify-center border-slate-300 border-x-2 min-h-11">
                         <p className="text-md font-workSans text-center break-words max-w-full">
                           {cItem?.remarks}
@@ -400,6 +438,7 @@ const RoomCategoryPage: FC<Props> = (props) => {
                                 ...prev,
                                 roomCategoryId: cItem?.roomCategoryId,
                                 name: cItem?.name,
+                                noOfPerson: cItem?.noOfPerson,
                                 remarks: cItem?.remarks,
                                 isUpdated: true,
                               }));

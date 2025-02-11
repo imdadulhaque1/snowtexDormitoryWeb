@@ -1,19 +1,15 @@
 import React from "react";
 
-interface RadioButtonProps {
+interface CheckboxProps {
   label?: string;
-  value?: number;
-  name?: string;
   checked?: boolean;
-  onChange?: (value: number) => void;
+  onChange?: (checked: boolean) => void;
   required?: boolean;
   className?: string;
 }
 
-const VertcialRadioBtn: React.FC<RadioButtonProps> = ({
+const Checkbox: React.FC<CheckboxProps> = ({
   label,
-  value,
-  name,
   checked,
   onChange,
   required = false,
@@ -21,14 +17,12 @@ const VertcialRadioBtn: React.FC<RadioButtonProps> = ({
 }) => {
   return (
     <label
-      className={`flex  items-center space-x-1 cursor-pointer ${className}`}
+      className={`flex items-center space-x-1 cursor-pointer ${className}`}
     >
       <input
-        type="radio"
-        value={value}
-        name={name}
+        type="checkbox"
         checked={checked}
-        onChange={() => onChange(value)}
+        onChange={(e) => onChange?.(e.target.checked)}
         className="w-5 h-5 cursor-pointer"
         required={required}
       />
@@ -39,4 +33,4 @@ const VertcialRadioBtn: React.FC<RadioButtonProps> = ({
   );
 };
 
-export default VertcialRadioBtn;
+export default Checkbox;
