@@ -20,7 +20,11 @@ const VerticalSingleInput: FC<Props> = ({
 }) => {
   return (
     <div className="flex flex-col w-full">
-      <label className=" text-black text-sm font-workSans mb-1 ">{label}</label>
+      {label && (
+        <label className=" text-black text-sm font-workSans mb-1 ">
+          {label}
+        </label>
+      )}
       <input
         type={type}
         name={name}

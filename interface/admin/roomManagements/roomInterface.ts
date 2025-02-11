@@ -20,4 +20,5 @@ export interface roomInterface {
   floorName: string;
   buildingName: string;
   roomCategoryName: string;
+  roomWisePerson: number | string;
 }

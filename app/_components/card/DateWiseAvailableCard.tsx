@@ -2,6 +2,8 @@
 
 import React, { FC, useEffect, useState } from "react";
 import { MdDeleteOutline, MdOutlineFileUpload } from "react-icons/md";
+import { CiSearch } from "react-icons/ci";
+import { IoSearch } from "react-icons/io5";
 import axios from "axios";
 import toast from "react-hot-toast";
 import DateTimePicker from "../datePicker/DateTimePicker";
@@ -93,11 +95,11 @@ const DateWiseAvailableCard: FC<Props> = ({ token, onAddSuccess, userId }) => {
       </div>
       <div className="flex w-full items-center justify-center mt-4">
         <button
-          className="flex bg-primary70 items-center font-workSans text-md py-2 px-4 rounded-lg text-black hover:bg-primary50 hover:text-white"
+          className="flex bg-slate-400 items-center font-workSans text-md py-2 px-4 rounded-lg text-black hover:bg-slate-500 hover:text-white"
           onClick={availableRoomFunc}
         >
-          <MdOutlineFileUpload size={20} className="cursor-pointer mr-2" />
-          Submit
+          <IoSearch size={20} className="cursor-pointer mr-2" />
+          Available Room
         </button>
       </div>
     </div>
