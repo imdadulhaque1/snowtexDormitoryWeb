@@ -13,9 +13,15 @@ interface Props {
   token?: string;
   userId?: string;
   onAddSuccess?: (response: any) => void;
+  onPassItems?: (resTime: { startTime: any; endTime: any }) => void;
 }
 
-const DateWiseAvailableCard: FC<Props> = ({ token, onAddSuccess, userId }) => {
+const DateWiseAvailableCard: FC<Props> = ({
+  token,
+  onAddSuccess,
+  userId,
+  onPassItems,
+}) => {
   const [startDateTime, setStartDateTime] = useState<string>();
   const [endDateTime, setEndDateTime] = useState<string>();
 
@@ -24,6 +30,12 @@ const DateWiseAvailableCard: FC<Props> = ({ token, onAddSuccess, userId }) => {
     endErrorMsg: "",
     startEndErrMsg: "",
   });
+
+  useEffect(() => {
+    if (onPassItems) {
+      onPassItems({ startTime: startDateTime, endTime: endDateTime });
+    }
+  }, [startDateTime, endDateTime]);
 
   const validateForm = () => {
     let isValid = true;
@@ -71,6 +83,7 @@ const DateWiseAvailableCard: FC<Props> = ({ token, onAddSuccess, userId }) => {
 
   return (
     <div className=" w-full bg-white p-4 rounded-lg shadow-lg shadow-slate-400 my-4">
+      <p className="text-xl text-black text-center mb-4">Reservation Time</p>
       <div className=" w-full flex  justify-between">
         <div className="w-[48%]">
           <DateTimePicker

@@ -1,23 +1,23 @@
 "use client";
 
 import React, { FC, useEffect, useState } from "react";
-import { MdDeleteOutline, MdOutlineFileUpload } from "react-icons/md";
-import { CiSearch } from "react-icons/ci";
-import { IoSearch } from "react-icons/io5";
-import axios from "axios";
-import toast from "react-hot-toast";
 import DateTimePicker from "../datePicker/DateTimePicker";
-import AppURL from "@/app/_restApi/AppURL";
 
 interface Props {
   token?: string;
   userId?: string;
-  onAddSuccess?: (response: any) => void;
+  onPassItems?: (resTime: { startTime: any; endTime: any }) => void;
 }
 
-const ReservationTimeCard: FC<Props> = ({ token, onAddSuccess, userId }) => {
+const ReservationTimeCard: FC<Props> = ({ token, onPassItems, userId }) => {
   const [startDateTime, setStartDateTime] = useState<string>();
   const [endDateTime, setEndDateTime] = useState<string>();
+
+  useEffect(() => {
+    if (onPassItems) {
+      onPassItems({ startTime: startDateTime, endTime: endDateTime });
+    }
+  }, [startDateTime, endDateTime]);
 
   return (
     <div className=" w-full bg-white p-4 rounded-lg shadow-lg shadow-slate-400 my-4">

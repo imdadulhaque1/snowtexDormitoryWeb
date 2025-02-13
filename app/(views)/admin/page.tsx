@@ -23,6 +23,7 @@ import RoomGoodsEntriesPage from "./@content/basic_setup/room_properties/page";
 import PaidItemsPage from "./@content/basic_setup/paid_items/page";
 import RoomAssignmentsPage from "./@content/setting/room_assignments/page";
 import RoomCategoryPage from "./@content/basic_setup/room_categories/page";
+import BookedRoomPage from "./@content/booked_room/page";
 
 const AdminPage = () => {
   const router = useRouter();
@@ -106,6 +107,8 @@ const AdminPage = () => {
         return <PaidItemsPage />;
       case "setting/room_assignments":
         return <RoomAssignmentsPage />;
+      case "booked_room":
+        return <BookedRoomPage />;
       default:
         return <AdminDashboardPage />;
     }

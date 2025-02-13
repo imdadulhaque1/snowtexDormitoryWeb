@@ -21,4 +21,5 @@ export interface roomInterface {
   buildingName: string;
   roomCategoryName: string;
   roomWisePerson: number | string;
+  roomPrice: number | string;
 }

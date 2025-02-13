@@ -21,7 +21,6 @@ import { roomDetailsInterface } from "@/interface/admin/roomManagements/roomDeta
 import { roomInterface } from "@/interface/admin/roomManagements/roomInterface";
 import RoomTable from "@/app/_components/card/RoomTable";
 import AvailableRoomItemCard from "@/app/_components/card/AvailableRoomItemCard";
-import ReservationTimeCard from "@/app/_components/card/ReservationTimeCard";
 
 interface Props {}
 
@@ -70,8 +69,8 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
   });
 
   const [bookingInfo, setBookingInfo] = useState({
-    personId: null,
-    roomWisePerson: [],
+    personInfo: null,
+    roomInfo: [],
     paidItems: [],
     freeItems: [],
     totalPaidItemsPrice: null,
@@ -87,14 +86,6 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
     selectedPerson: null,
     checkedData: null,
   });
-
-  const [paymentOptions, setPaymentOptions] = useState({
-    paidOrNot: 0,
-  });
-
-  const [selectedDate, setSelectedDate] = useState<string>(
-    new Date().toISOString()
-  );
 
   useEffect(() => {
     const fetchAndDecodeToken = async () => {
@@ -160,7 +151,10 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
       await setPersonInfo((prev: any) => ({
         ...prev,
         selectedPerson: selectedPerson,
-        checkedData: null,
+      }));
+      await setBookingInfo((prev) => ({
+        ...prev,
+        personInfo: null,
       }));
     }
   };
@@ -199,18 +193,79 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
     }
   };
 
-  const paidOrNotChange = (value: any) => {
-    setPaymentOptions((prev) => ({ prev, paidOrNot: value }));
-  };
+  const roomBookingFunc = async () => {
+    if (isRequiredToBookingRoom) {
+      const submittedData = {
+        personInfo: JSON.stringify(bookingInfo?.personInfo),
+        roomInfo: JSON.stringify(bookingInfo?.roomInfo),
+        paidItems: JSON.stringify(bookingInfo?.paidItems),
+        freeItems: JSON.stringify(bookingInfo?.freeItems),
+        totalPaidItemsPrice: bookingInfo?.totalPaidItemsPrice,
+        totalFreeItemsPrice: bookingInfo?.totalFreeItemsPrice,
+        totalRoomPrice: totalRoomPrice,
+        grandTotal:
+          parseFloat(bookingInfo?.totalPaidItemsPrice) +
+          parseFloat(totalRoomPrice),
+        startTime: bookingInfo?.startTime,
+        endTime: bookingInfo?.endTime,
+        createdBy: decodeToken?.userId,
+      };
 
-  const handleDateChange = (date: Date | null) => {
-    console.log("Selected date:", date);
+      console.log("final result: ", JSON.stringify(submittedData, null, 2));
+
+      try {
+        const { data } = await axios.post(
+          AppURL.roomBookingApi,
+          submittedData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${decodeToken?.token}`,
+            },
+          }
+        );
+
+        if (data?.status === 201) {
+          toast.success(data?.message);
+          // fetchRoomCategories(token);
+          // setCategoriesInfo((prev) => ({
+          //   ...prev,
+          //   roomCategoryId: null,
+          //   noOfPerson: 0,
+          //   categoryBasedPrice: 0,
+          //   name: "",
+          //   remarks: "",
+          //   isUpdated: false,
+          //   isDeleted: false,
+          //   nameErrorMsg: "",
+          //   remarksErrorMsg: "",
+          // }));
+        }
+      } catch (error: any) {
+        toast.error("Failed to booking room !");
+      }
+    } else {
+      toast.error("Please complete the required fields !");
+    }
   };
 
   const size = useWindowSize();
   const windowHeight: any = size && size?.height;
 
-  // console.log("final result: ", JSON.stringify(bookingInfo, null, 2));
+  const totalRoomPrice =
+    bookingInfo.roomInfo &&
+    bookingInfo.roomInfo?.length > 0 &&
+    bookingInfo.roomInfo.reduce(
+      (sum, { roomInfo }: any) => sum + parseFloat(roomInfo.roomPrice),
+      0
+    );
+
+  const isRequiredToBookingRoom =
+    bookingInfo?.personInfo &&
+    bookingInfo?.roomInfo &&
+    bookingInfo?.roomInfo?.length > 0 &&
+    bookingInfo?.startTime &&
+    bookingInfo?.endTime;
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -350,14 +405,22 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
                                   const isChecked = await event.target.checked;
 
                                   if (isChecked) {
-                                    setPersonInfo((prev) => ({
+                                    // setPersonInfo((prev) => ({
+                                    //   ...prev,
+                                    //   checkedData: person,
+                                    // }));
+                                    setBookingInfo((prev) => ({
                                       ...prev,
-                                      checkedData: person,
+                                      personInfo: person,
                                     }));
                                   } else {
-                                    setPersonInfo((prev) => ({
+                                    // setPersonInfo((prev) => ({
+                                    //   ...prev,
+                                    //   checkedData: null,
+                                    // }));
+                                    setBookingInfo((prev) => ({
                                       ...prev,
-                                      checkedData: null,
+                                      personInfo: null,
                                     }));
                                   }
                                 }}
@@ -378,7 +441,7 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
                   </div>
                 ) : (
                   <PersonCard
-                    personData={personInfo?.checkedData}
+                    personData={bookingInfo?.personInfo}
                     cancelFunc={() => {
                       if (boolStatus?.isViewDetails) {
                         toast.error("Please close room details, first !");
@@ -387,10 +450,14 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
                           ...prev,
                           checkedStatus: false,
                         }));
-                        setPersonInfo((prev) => ({
+                        setBookingInfo((prev) => ({
                           ...prev,
-                          checkedData: null,
+                          personInfo: null,
                         }));
+                        // setPersonInfo((prev) => ({
+                        //   ...prev,
+                        //   checkedData: null,
+                        // }));
                       }
                     }}
                   />
@@ -408,6 +475,13 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
                             availableRoom: response?.data,
                           }));
                         }
+                      }}
+                      onPassItems={(resTime) => {
+                        setBookingInfo((prev) => ({
+                          ...prev,
+                          startTime: resTime?.startTime,
+                          endTime: resTime?.endTime,
+                        }));
                       }}
                     />
 
@@ -474,7 +548,7 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
                   onPassItems={(itemRess: any) => {
                     setBookingInfo((prev) => ({
                       ...prev,
-                      roomWisePerson: itemRess,
+                      roomInfo: itemRess,
                     }));
                   }}
                 />
@@ -492,8 +566,21 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
                   token={decodeToken?.token}
                   userId={decodeToken?.userId}
                 />
-                <ReservationTimeCard />
-                <div className="flex items-center justify-center my-4">
+                {/* <ReservationTimeCard
+                  onPassItems={(resTime) => {
+                    setBookingInfo((prev) => ({
+                      ...prev,
+                      startTime: resTime?.startTime,
+                      endTime: resTime?.endTime,
+                    }));
+                  }}
+                /> */}
+                <div
+                  className="flex items-center justify-center my-4"
+                  onClick={() => {
+                    roomBookingFunc();
+                  }}
+                >
                   <button className="font-workSans text-black bg-primary80 rounded-md py-2 px-5 shadow-lg ">
                     Room Booking
                   </button>
@@ -570,93 +657,4 @@ const ComBtn: FC<comBtnInterface> = ({ className, onClick, label }) => {
       {label}
     </button>
   );
-};
-
-const roomBookingApi = {
-  personId: 1,
-  roomWiseAssignedPerson: [
-    {
-      roomName: "",
-      roomId: 11,
-      roomWisePerson: [
-        {
-          name: "",
-          email: "",
-          phone: "",
-        },
-        {
-          name: "",
-          email: "",
-          phone: "",
-        },
-      ],
-    },
-    {
-      roomName: "",
-      roomId: 5,
-      roomWisePerson: [
-        {
-          name: "",
-          email: "",
-          phone: "",
-        },
-      ],
-    },
-  ],
-  paidItems: [
-    {
-      itemId: 1006,
-      name: "dgbdfg",
-      price: "23",
-      paidOrFree: 1,
-      remarks: "sgdfgdf",
-      isApprove: false,
-      approvedBy: null,
-      isActive: true,
-      inactiveBy: null,
-      inactiveTime: null,
-      createdBy: 6,
-      createdTime: "2025-02-10T10:11:48.18",
-      updatedBy: null,
-      updatedTime: null,
-    },
-    {
-      itemId: 1002,
-      name: "werwerwer",
-      price: "23",
-      paidOrFree: 1,
-      remarks: "werewrewr",
-      isApprove: false,
-      approvedBy: null,
-      isActive: true,
-      inactiveBy: null,
-      inactiveTime: null,
-      createdBy: 6,
-      createdTime: "2025-02-10T10:11:48.18",
-      updatedBy: null,
-      updatedTime: null,
-    },
-  ],
-  freeItems: [
-    {
-      itemId: 1002,
-      name: "Tissue",
-      price: "23",
-      paidOrFree: 1,
-      remarks: "tissues",
-      isApprove: false,
-      approvedBy: null,
-      isActive: true,
-      inactiveBy: null,
-      inactiveTime: null,
-      createdBy: 6,
-      createdTime: "2025-02-10T10:11:48.18",
-      updatedBy: null,
-      updatedTime: null,
-    },
-  ],
-  totalPaidItemsPrice: 233,
-  totalFreeItemsPrice: 222,
-  startTime: "2025-02-10T10:11:48.18",
-  endTime: "2025-02-13T10:11:48.18",
 };

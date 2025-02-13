@@ -81,15 +81,28 @@ const AvailableRoomItemCard: FC<Props> = ({
 
   const paidItems =
     checkRoomItems && checkRoomItems?.length > 0
-      ? checkRoomItems?.filter(
-          (paidItem) => parseInt(paidItem?.paidOrFree) == 1
-        )
+      ? checkRoomItems
+          .filter((item: any) => item.paidOrFree === 1)
+          .map((item: any) => ({
+            itemId: item.itemId,
+            name: item.name,
+            price: item.price,
+            paidOrFree: item.paidOrFree,
+            remarks: item.remarks,
+          }))
       : [];
+
   const freeItems =
     checkRoomItems && checkRoomItems?.length > 0
-      ? checkRoomItems?.filter(
-          (paidItem) => parseInt(paidItem?.paidOrFree) == 2
-        )
+      ? checkRoomItems
+          ?.filter((paidItem) => parseInt(paidItem?.paidOrFree) == 2)
+          .map((item: any) => ({
+            itemId: item.itemId,
+            name: item.name,
+            price: item.price,
+            paidOrFree: item.paidOrFree,
+            remarks: item.remarks,
+          }))
       : [];
 
   const totalPaidItemAmount =
@@ -112,7 +125,7 @@ const AvailableRoomItemCard: FC<Props> = ({
     if (onPassItems) {
       onPassItems(passingItems);
     }
-  }, [paidItems, freeItems, totalPaidItemAmount, totalFreeItemAmount]);
+  }, [checkRoomItems]);
 
   return (
     <>
@@ -233,6 +246,7 @@ const AvailableRoomItemCard: FC<Props> = ({
 
                 return (
                   <div
+                    key={pIndex}
                     className={`flex w-full items-center  border border-slate-300 ${
                       isLast && "rounded-b-md"
                     } `}
@@ -293,6 +307,7 @@ const AvailableRoomItemCard: FC<Props> = ({
                 const isLast = fIndex == freeItems.length - 1;
                 return (
                   <div
+                    key={fIndex}
                     className={`flex w-full items-center  border border-slate-300 ${
                       isLast && "rounded-b-md"
                     } `}
@@ -351,3 +366,53 @@ const ComView: FC<ComViewProps> = ({ value, className }) => {
     </div>
   );
 };
+
+/*
+
+const checkRoomItems = [
+  {
+    "itemId": 1,
+    "name": "Tawel",
+    "price": "50",
+    "paidOrFree": 1,
+    "remarks": "Only for using purpose",
+    "isApprove": false,
+    "approvedBy": null,
+    "isActive": true,
+    "inactiveBy": null,
+    "inactiveTime": null,
+    "createdBy": 6,
+    "createdTime": "2025-02-02T08:31:01.91",
+    "updatedBy": 6,
+    "updatedTime": "2025-02-12T05:56:21.557"
+  },
+  {
+    "itemId": 1002,
+    "name": "Tissue",
+    "price": "30",
+    "paidOrFree": 2,
+    "remarks": "Only for  using perpose.",
+    "isApprove": false,
+    "approvedBy": null,
+    "isActive": true,
+    "inactiveBy": null,
+    "inactiveTime": null,
+    "createdBy": 6,
+    "createdTime": "2025-02-08T09:48:05.697",
+    "updatedBy": null,
+    "updatedTime": null
+  }
+];
+
+const paidItems = checkRoomItems.filter(item => item.paidOrFree === 1).map(item => ({
+  itemId: item.itemId,
+  name: item.name,
+  price: item.price,
+  paidOrFree: item.paidOrFree,
+  remarks: item.remarks
+}));
+
+console.log("paidItems =", paidItems);
+
+
+*/
