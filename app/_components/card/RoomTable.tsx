@@ -5,6 +5,7 @@ import TableHeader from "../inputField/table/TableHeader";
 import { roomInterface } from "@/interface/admin/roomManagements/roomInterface";
 import Checkbox from "../inputField/checkbox/Checkbox";
 import VerticalSingleInput from "../inputField/VerticalSingleInput";
+import { IoIosRemoveCircleOutline } from "react-icons/io";
 import toast from "react-hot-toast";
 
 interface Props {
@@ -23,11 +24,17 @@ const RoomTable: FC<Props> = ({
   const [checkedRooms, setCheckedRooms] = useState<roomInterface[]>([]);
   const [roomPersons, setRoomPersons] = useState<{
     [key: string]: {
-      roomName: string;
-      roomId: number;
-      roomWisePerson: { name: string; email: string; phone: string }[];
+      roomInfo: any;
+      roomWisePerson: {
+        name: string;
+        phone: string;
+        email: string;
+        nidBirth: string;
+        age: string;
+      }[];
     };
   }>({});
+
   const [searchKey, setSearchKey] = useState({
     roomCategoryName: "",
     roomName: "",
@@ -46,10 +53,19 @@ const RoomTable: FC<Props> = ({
         let updatedCheckedRooms;
 
         if (isChecked) {
+          // Room is already checked, uncheck it
           updatedCheckedRooms = prevChecked.filter(
             (r) => r.roomId !== room.roomId
           );
+
+          // Clear room persons related to the unchecked room
+          setRoomPersons((prevPersons) => {
+            const updatedPersons = { ...prevPersons };
+            delete updatedPersons[String(room.roomId)];
+            return updatedPersons;
+          });
         } else {
+          // Room is not checked, check it
           updatedCheckedRooms = [...prevChecked, room];
         }
 
@@ -70,12 +86,11 @@ const RoomTable: FC<Props> = ({
   );
 
   const handleAddPerson = (room: roomInterface) => {
-    setRoomPersons((prev) => {
+    setRoomPersons((prev: any) => {
       const roomId = String(room.roomId); // Ensure roomId is a string for object key
 
       const updatedRoom = prev[roomId] || {
-        roomName: room.roomName,
-        roomId: room.roomId,
+        roomInfo: room,
         roomWisePerson: [], // Ensure this is an array
       };
 
@@ -85,7 +100,7 @@ const RoomTable: FC<Props> = ({
           ...updatedRoom,
           roomWisePerson: [
             ...updatedRoom.roomWisePerson,
-            { name: "", email: "", phone: "" }, // New entry
+            { name: "", phone: "", email: "", nidBirth: "", age: "" }, // New entry
           ],
         },
       };
@@ -127,14 +142,9 @@ const RoomTable: FC<Props> = ({
 
   useEffect(() => {
     if (onPassItems) {
-      onPassItems(roomPersons);
+      onPassItems(Object.values(roomPersons));
     }
   }, [roomPersons]);
-
-  // console.log(
-  //   "roomPersons: ",
-  //   JSON.stringify(Object.values(roomPersons), null, 2)
-  // );
 
   return (
     <>
@@ -163,8 +173,13 @@ const RoomTable: FC<Props> = ({
             }
           />
           <TableHeader
-            headerText="No of Person"
+            headerText="Price"
             containerClassName="w-[10%]"
+            hasSearch={false}
+          />
+          <TableHeader
+            headerText="No of Person"
+            containerClassName="w-[10%] border-l-2 border-slate-50"
             hasSearch={false}
           />
           <TableHeader
@@ -225,7 +240,14 @@ const RoomTable: FC<Props> = ({
                     value={room.roomCategoryName}
                     className="w-1/4 border-x-2"
                   />
-                  <ComView value={room.roomWisePerson} className="w-[10%]" />
+                  <ComView
+                    value={room.roomPrice ? room.roomPrice : "0"}
+                    className="w-[10%]"
+                  />
+                  <ComView
+                    value={room.roomWisePerson}
+                    className="w-[10%] border-l-2"
+                  />
                   <ComView value={room.roomName} className="w-1/5 border-x-2" />
                   <ComView
                     value={room.floorName}
@@ -242,11 +264,11 @@ const RoomTable: FC<Props> = ({
           )}
         </div>
       </div>
-      <div className="flex flex-wrap justify-center items-start">
+      <div className="flex flex-col justify-center items-start">
         {checkedRooms.map((cRoom: any, cIndex: number) => (
           <div
             key={cIndex}
-            className="flex flex-col items-center w-[48%] rounded-lg bg-white shadow-lg p-3 mt-3 mr-3"
+            className="flex flex-col items-center w-[100%] rounded-lg bg-white shadow-lg p-3 mt-3 mr-3"
           >
             <p className="font-workSans text-md text-center font-medium">
               {`${cRoom.roomName} (${cRoom.roomWisePerson})`}
@@ -315,8 +337,223 @@ const RoomTable: FC<Props> = ({
                 </div>
               )
             )} */}
+            <div className="flex w-full items-center rounded-t-lg bg-slate-300  ">
+              <TableHeader
+                headerText="Name"
+                containerClassName="w-1/5"
+                hasSearch={false}
+              />
+              <TableHeader
+                headerText="Mobile No"
+                containerClassName="w-1/5 border-x-2 border-slate-50"
+                hasSearch={false}
+              />
+              <TableHeader
+                headerText="Email"
+                containerClassName="w-1/5"
+                hasSearch={false}
+              />
+              <TableHeader
+                headerText="NID / Birth"
+                containerClassName="w-1/5 border-l-2 border-slate-50"
+                hasSearch={false}
+              />
+              <TableHeader
+                headerText="Age"
+                containerClassName="w-[10%] border-x-2 border-slate-50"
+                hasSearch={false}
+              />
+              <TableHeader
+                headerText="Remove"
+                containerClassName="w-[10%] "
+                hasSearch={false}
+              />
+            </div>
 
             {roomPersons[cRoom.roomId]?.roomWisePerson?.map(
+              (person: any, pIndex: number) => {
+                const isLast =
+                  pIndex ==
+                  roomPersons[cRoom.roomId]?.roomWisePerson?.length - 1;
+                return (
+                  <div
+                    key={pIndex}
+                    className={`flex w-full items-center border-b-2 border-r-2 border-l-2 border-slate-300 ${
+                      isLast && "rounded-b-md"
+                    } `}
+                  >
+                    <ComInputView
+                      placeholder="Person name"
+                      className="w-1/5 "
+                      type="text"
+                      name="name"
+                      value={person.name}
+                      onChange={(e: any) =>
+                        handlePersonChange(
+                          cRoom.roomId,
+                          pIndex,
+                          "name",
+                          e.target.value
+                        )
+                      }
+                    />
+                    <ComInputView
+                      placeholder="Person mobile no"
+                      className="w-1/5 border-x-2 "
+                      type="tel"
+                      name="phone"
+                      value={person.phone}
+                      onChange={(e: any) =>
+                        handlePersonChange(
+                          cRoom.roomId,
+                          pIndex,
+                          "phone",
+                          e.target.value
+                        )
+                      }
+                    />
+                    <ComInputView
+                      placeholder="Email address"
+                      className="w-1/5 "
+                      type="mail"
+                      name="email"
+                      value={person.email}
+                      onChange={(e: any) =>
+                        handlePersonChange(
+                          cRoom.roomId,
+                          pIndex,
+                          "email",
+                          e.target.value
+                        )
+                      }
+                    />
+                    <ComInputView
+                      placeholder="NID / Birth certificate"
+                      className="w-1/5 border-x-2"
+                      type="text"
+                      name="nidBirth"
+                      value={person.nidBirth}
+                      onChange={(e: any) =>
+                        handlePersonChange(
+                          cRoom.roomId,
+                          pIndex,
+                          "nidBirth",
+                          e.target.value
+                        )
+                      }
+                    />
+                    <ComInputView
+                      placeholder="Person age"
+                      className="w-[10%] "
+                      type="number"
+                      name="age"
+                      value={person.age}
+                      onChange={(e: any) =>
+                        handlePersonChange(
+                          cRoom.roomId,
+                          pIndex,
+                          "age",
+                          e.target.value
+                        )
+                      }
+                    />
+
+                    <div className="flex items-center justify-center w-[10%] border-l-2">
+                      <IoIosRemoveCircleOutline
+                        size={25}
+                        className="cursor-pointer mr-2 text-errorColor hover:text-red-500"
+                        onClick={() => handleRemovePerson(cRoom.roomId, pIndex)}
+                      />
+                    </div>
+                  </div>
+                );
+              }
+            )}
+
+            <button
+              className="font-workSans text-black border-2 border-slate-500 rounded-lg px-3 mt-3 hover:bg-slate-500 hover:text-white"
+              onClick={() => {
+                if (
+                  cRoom?.roomId &&
+                  roomPersons.hasOwnProperty(String(cRoom.roomId))
+                ) {
+                  if (
+                    roomPersons[String(cRoom.roomId)]?.roomWisePerson?.length +
+                      1 >
+                    cRoom?.roomWisePerson
+                  ) {
+                    toast.error("Limitted person already exists !");
+                  } else {
+                    handleAddPerson(cRoom);
+                  }
+                } else {
+                  handleAddPerson(cRoom);
+                }
+              }}
+            >
+              Add more person
+            </button>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+};
+
+export default RoomTable;
+
+interface ComViewProps {
+  value?: any;
+  className?: string;
+}
+interface comInputProps {
+  type?: any;
+  name?: string;
+  className?: string;
+  placeholder?: string;
+}
+
+const ComView: FC<ComViewProps> = ({ value, className }) => {
+  return (
+    <div
+      className={`flex items-center justify-center border-slate-300 ${className}`}
+    >
+      <p className="text-sm font-workSans text-center break-words max-w-full">
+        {value}
+      </p>
+    </div>
+  );
+};
+
+const ComInputView: FC<comInputProps> = ({
+  type,
+  name,
+  className,
+  placeholder,
+  ...props
+}) => {
+  return (
+    <div
+      className={`flex items-center justify-center border-slate-300 ${className}`}
+    >
+      <input
+        type={type}
+        name={name}
+        placeholder={placeholder}
+        className={` text-sm text-black w-full  outline-none focus:outline-none px-2 font-workSans bg-white ${
+          className || ""
+        }`}
+        {...props}
+      />
+    </div>
+  );
+};
+
+/*
+
+
+
+{roomPersons[cRoom.roomId]?.roomWisePerson?.map(
               (person: any, pIndex: number) => (
                 <div
                   key={pIndex}
@@ -383,51 +620,6 @@ const RoomTable: FC<Props> = ({
               )
             )}
 
-            <button
-              className="font-workSans text-black border-2 border-slate-500 rounded-lg px-3 mt-3 hover:bg-slate-500 hover:text-white"
-              onClick={() => {
-                if (
-                  cRoom?.roomId &&
-                  roomPersons.hasOwnProperty(String(cRoom.roomId))
-                ) {
-                  if (
-                    roomPersons[String(cRoom.roomId)]?.roomWisePerson?.length +
-                      1 >
-                    cRoom?.roomWisePerson
-                  ) {
-                    toast.error("Limitted person already exists !");
-                  } else {
-                    handleAddPerson(cRoom);
-                  }
-                } else {
-                  handleAddPerson(cRoom);
-                }
-              }}
-            >
-              Add More
-            </button>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-};
 
-export default RoomTable;
 
-interface ComViewProps {
-  value?: any;
-  className?: string;
-}
-
-const ComView: FC<ComViewProps> = ({ value, className }) => {
-  return (
-    <div
-      className={`flex items-center justify-center border-slate-300 ${className}`}
-    >
-      <p className="text-sm font-workSans text-center break-words max-w-full">
-        {value}
-      </p>
-    </div>
-  );
-};
+*/

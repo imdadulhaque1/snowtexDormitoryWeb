@@ -107,6 +107,11 @@ const RoomTable: FC<Props> = ({ roomData, returnItems, className }) => {
             }
           />
           <TableHeader
+            headerText="Price"
+            containerClassName="w-[10%]"
+            hasSearch={false}
+          />
+          <TableHeader
             headerText="No of Person"
             containerClassName="w-[10%]"
             hasSearch={false}
@@ -169,6 +174,7 @@ const RoomTable: FC<Props> = ({ roomData, returnItems, className }) => {
                     value={room.roomCategoryName}
                     className="w-1/4 border-x-2"
                   />
+                  <ComView value={room.roomPrice} className="w-[10%]" />
                   <ComView value={room.roomWisePerson} className="w-[10%]" />
                   <ComView value={room.roomName} className="w-1/5 border-x-2" />
                   <ComView

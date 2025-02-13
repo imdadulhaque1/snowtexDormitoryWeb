@@ -29,10 +29,12 @@ const RoomCategoryPage: FC<Props> = (props) => {
     roomCategoryId: null,
     name: "",
     noOfPerson: 0,
+    categoryBasedPrice: 0,
     remarks: "",
     isUpdated: false,
     isDeleted: false,
     nameErrorMsg: "",
+    categoryBasedPriceErrorMsg: "",
     remarksErrorMsg: "",
     noOfPersonErrorMsg: "",
   });
@@ -113,6 +115,7 @@ const RoomCategoryPage: FC<Props> = (props) => {
     const submittedData = await {
       name: categoryData?.name,
       noOfPerson: categoryData?.noOfPerson,
+      categoryBasedPrice: categoryData?.categoryBasedPrice,
       remarks: categoryData?.remarks,
       createdBy: userId,
     };
@@ -132,6 +135,7 @@ const RoomCategoryPage: FC<Props> = (props) => {
           ...prev,
           roomCategoryId: null,
           noOfPerson: 0,
+          categoryBasedPrice: 0,
           name: "",
           remarks: "",
           isUpdated: false,
@@ -154,6 +158,7 @@ const RoomCategoryPage: FC<Props> = (props) => {
     const updateRoomCategory = await {
       name: updatedInfo?.name,
       noOfPerson: updatedInfo?.noOfPerson,
+      categoryBasedPrice: updatedInfo?.categoryBasedPrice,
       remarks: updatedInfo?.remarks,
       updatedBy: userId,
     };
@@ -177,6 +182,7 @@ const RoomCategoryPage: FC<Props> = (props) => {
             ...prev,
             roomCategoryId: null,
             noOfPerson: 0,
+            categoryBasedPrice: 0,
             name: "",
             remarks: "",
             isUpdated: false,
@@ -276,7 +282,7 @@ const RoomCategoryPage: FC<Props> = (props) => {
               label="No Of Person"
               type="number"
               name="noOfPerson"
-              placeholder="Enter No Of Person..."
+              placeholder="Enter no of person..."
               // @ts-ignore
               value={categoriesInfo?.noOfPerson}
               onChange={(e: any) =>
@@ -287,6 +293,22 @@ const RoomCategoryPage: FC<Props> = (props) => {
                 }))
               }
               errorMsg={categoriesInfo.noOfPersonErrorMsg}
+              required
+            />
+            <VerticalSingleInput
+              label="Category Based Room Price"
+              type="number"
+              name="categoryBasedPrice"
+              placeholder="Enter category based room price..."
+              // @ts-ignore
+              value={categoriesInfo?.categoryBasedPrice}
+              onChange={(e: any) =>
+                setCategoriesInfo((prev) => ({
+                  ...prev,
+                  categoryBasedPrice: e.target.value,
+                  categoryBasedPriceErrorMsg: "",
+                }))
+              }
               required
             />
 
@@ -382,6 +404,11 @@ const RoomCategoryPage: FC<Props> = (props) => {
                   No of person
                 </p>
               </div>
+              <div className=" flex  w-1/6 items-center justify-center border-slate-50 border-r-2">
+                <p className="text-md font-workSans font-medium text-center py-2 px-2">
+                  Room Price
+                </p>
+              </div>
               <div className="flex w-2/4 items-center justify-center border-slate-50 border-r-2">
                 <p className="text-md font-workSans font-medium text-center py-2 px-2">
                   Remarks
@@ -424,6 +451,13 @@ const RoomCategoryPage: FC<Props> = (props) => {
                           {cItem?.noOfPerson}
                         </p>
                       </div>
+                      <div className=" flex  w-1/6 items-center justify-center border-slate-300 border-l-2 min-h-11">
+                        <p className="text-md font-workSans text-center break-words max-w-full">
+                          {cItem?.categoryBasedPrice
+                            ? cItem?.categoryBasedPrice
+                            : "0"}
+                        </p>
+                      </div>
                       <div className="flex w-2/4 items-center justify-center border-slate-300 border-x-2 min-h-11">
                         <p className="text-md font-workSans text-center break-words max-w-full">
                           {cItem?.remarks}
@@ -439,6 +473,9 @@ const RoomCategoryPage: FC<Props> = (props) => {
                                 roomCategoryId: cItem?.roomCategoryId,
                                 name: cItem?.name,
                                 noOfPerson: cItem?.noOfPerson,
+                                categoryBasedPrice: cItem?.categoryBasedPrice
+                                  ? cItem?.categoryBasedPrice
+                                  : 0,
                                 remarks: cItem?.remarks,
                                 isUpdated: true,
                               }));
