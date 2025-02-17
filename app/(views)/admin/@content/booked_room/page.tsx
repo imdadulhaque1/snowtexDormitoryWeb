@@ -9,6 +9,7 @@ import axios from "axios";
 import AppURL from "@/app/_restApi/AppURL";
 import toast from "react-hot-toast";
 import { bookedRoomInterface } from "@/interface/admin/roomManagements/bookedRoomInterface";
+import BookedRoomTable from "@/app/_components/card/BookedRoomTable";
 
 interface Props {}
 
@@ -73,8 +74,6 @@ const BookedRoomPage: FC<Props> = (props) => {
     }
   };
 
-  console.log("Booked Room: ", JSON.stringify(fetchData?.bookedRoom, null, 2));
-
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <div
@@ -82,9 +81,9 @@ const BookedRoomPage: FC<Props> = (props) => {
           getDrawerStatus ? "pl-[265]" : "pl-0"
         } max-h-screen  justify-center `}
       >
-        <h1 className="text-zinc-500 font-sans text-center text-2xl">
-          Booked Room Page
-        </h1>
+        {fetchData?.bookedRoom && (
+          <BookedRoomTable bookedRoom={fetchData?.bookedRoom} />
+        )}
       </div>
     </Suspense>
   );
@@ -101,11 +100,3 @@ const parseJsonFields = (data: any) => {
     freeItems: JSON.parse(item.freeItems),
   }));
 };
-/*
-// Convert the response data
-const formattedData = parseJsonFields(responseData);
-
-console.log(formattedData);
-
-
-*/
