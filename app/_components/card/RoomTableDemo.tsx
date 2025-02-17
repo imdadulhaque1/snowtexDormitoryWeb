@@ -78,7 +78,6 @@ const RoomTable: FC<Props> = ({ roomData, returnItems, className }) => {
       return { ...prev, [roomId]: updatedPersons };
     });
   };
-  console.log("room Persons: ", JSON.stringify(roomPersons, null, 2));
 
   return (
     <>

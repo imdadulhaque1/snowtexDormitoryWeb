@@ -21,6 +21,8 @@ import { roomDetailsInterface } from "@/interface/admin/roomManagements/roomDeta
 import { roomInterface } from "@/interface/admin/roomManagements/roomInterface";
 import RoomTable from "@/app/_components/card/RoomTable";
 import AvailableRoomItemCard from "@/app/_components/card/AvailableRoomItemCard";
+import VerticalView from "@/app/_components/comView/VerticalView";
+import { calculateDate, noOfDays } from "@/app/_utils/handler/formateDate";
 
 interface Props {}
 
@@ -36,6 +38,17 @@ interface fetchInterface {
   roomDetails: roomDetailsInterface[];
   availableRoom: roomInterface[];
   selectedRoom: roomInterface | null;
+}
+interface bookingInterface {
+  personInfo: any | null;
+  roomInfo: any | [];
+  paidItems: [];
+  freeItems: [];
+  totalPaidItemsPrice: number;
+  totalFreeItemsPrice: number;
+  startTime: string;
+  endTime: string;
+  totalDays: number;
 }
 
 const RoomAssignmentsPage: FC<Props> = (props) => {
@@ -68,15 +81,16 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
     selectedRoom: null,
   });
 
-  const [bookingInfo, setBookingInfo] = useState({
+  const [bookingInfo, setBookingInfo] = useState<bookingInterface>({
     personInfo: null,
     roomInfo: [],
     paidItems: [],
     freeItems: [],
-    totalPaidItemsPrice: null,
-    totalFreeItemsPrice: null,
+    totalPaidItemsPrice: 0,
+    totalFreeItemsPrice: 0,
     startTime: "",
     endTime: "",
+    totalDays: 0,
   });
 
   const [personInfo, setPersonInfo] = useState<PersonInfoState>({
@@ -203,15 +217,12 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
         totalPaidItemsPrice: bookingInfo?.totalPaidItemsPrice,
         totalFreeItemsPrice: bookingInfo?.totalFreeItemsPrice,
         totalRoomPrice: totalRoomPrice,
-        grandTotal:
-          parseFloat(bookingInfo?.totalPaidItemsPrice) +
-          parseFloat(totalRoomPrice),
+        grandTotal: grandTotal,
+        totalDays: bookingInfo?.totalDays,
         startTime: bookingInfo?.startTime,
         endTime: bookingInfo?.endTime,
         createdBy: decodeToken?.userId,
       };
-
-      console.log("final result: ", JSON.stringify(submittedData, null, 2));
 
       try {
         const { data } = await axios.post(
@@ -227,19 +238,18 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
 
         if (data?.status === 201) {
           toast.success(data?.message);
-          // fetchRoomCategories(token);
-          // setCategoriesInfo((prev) => ({
-          //   ...prev,
-          //   roomCategoryId: null,
-          //   noOfPerson: 0,
-          //   categoryBasedPrice: 0,
-          //   name: "",
-          //   remarks: "",
-          //   isUpdated: false,
-          //   isDeleted: false,
-          //   nameErrorMsg: "",
-          //   remarksErrorMsg: "",
-          // }));
+          setBoolStatus((prev) => ({
+            ...prev,
+            checkedStatus: false,
+          }));
+          setBookingInfo((prev) => ({
+            ...prev,
+            personInfo: null,
+          }));
+          setFetchData((prev) => ({
+            ...prev,
+            availableRoom: [],
+          }));
         }
       } catch (error: any) {
         toast.error("Failed to booking room !");
@@ -253,12 +263,20 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
   const windowHeight: any = size && size?.height;
 
   const totalRoomPrice =
-    bookingInfo.roomInfo &&
-    bookingInfo.roomInfo?.length > 0 &&
-    bookingInfo.roomInfo.reduce(
-      (sum, { roomInfo }: any) => sum + parseFloat(roomInfo.roomPrice),
-      0
-    );
+    bookingInfo.roomInfo && bookingInfo.roomInfo?.length > 0
+      ? bookingInfo.roomInfo.reduce(
+          (sum: any, { roomInfo }: any) => sum + parseFloat(roomInfo.roomPrice),
+          0
+        )
+      : 0;
+
+  const grandTotal =
+    // @ts-ignore
+    parseFloat(totalRoomPrice) * parseInt(bookingInfo?.totalDays) +
+    (bookingInfo?.totalPaidItemsPrice
+      ? // @ts-ignore
+        parseFloat(bookingInfo?.totalPaidItemsPrice)
+      : 0);
 
   const isRequiredToBookingRoom =
     bookingInfo?.personInfo &&
@@ -318,7 +336,13 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
               <div className="flex flex-col w-full xl:w-1/3 h-100p">
                 {!boolStatus?.checkedStatus ? (
                   <div className="flex flex-col w-full  ">
-                    <div className="flex w-full bg-white items-center justify-between p-2 rounded-t-lg">
+                    <div
+                      className={`flex w-full bg-white items-center  justify-between p-2 ${
+                        !boolStatus?.checkedStatus
+                          ? "rounded-lg"
+                          : "rounded-t-lg"
+                      }`}
+                    >
                       <input
                         className="w-2/3 font-workSans text-black bg-primary95 mr-3 p-2 border-2 border-slate-300 rounded-lg outline-none focus:outline-none"
                         placeholder="Search by name / contact no / email"
@@ -396,8 +420,6 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
                                 }}
                                 isChecked={boolStatus?.checkedStatus}
                                 handleChecked={async (event: any) => {
-                                  // const checked = event.target.checked;
-
                                   await setBoolStatus((prev) => ({
                                     ...prev,
                                     checkedStatus: event.target.checked,
@@ -405,19 +427,11 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
                                   const isChecked = await event.target.checked;
 
                                   if (isChecked) {
-                                    // setPersonInfo((prev) => ({
-                                    //   ...prev,
-                                    //   checkedData: person,
-                                    // }));
                                     setBookingInfo((prev) => ({
                                       ...prev,
                                       personInfo: person,
                                     }));
                                   } else {
-                                    // setPersonInfo((prev) => ({
-                                    //   ...prev,
-                                    //   checkedData: null,
-                                    // }));
                                     setBookingInfo((prev) => ({
                                       ...prev,
                                       personInfo: null,
@@ -454,10 +468,10 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
                           ...prev,
                           personInfo: null,
                         }));
-                        // setPersonInfo((prev) => ({
-                        //   ...prev,
-                        //   checkedData: null,
-                        // }));
+                        setFetchData((prev) => ({
+                          ...prev,
+                          availableRoom: [],
+                        }));
                       }
                     }}
                   />
@@ -474,6 +488,13 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
                             ...prev,
                             availableRoom: response?.data,
                           }));
+                          setBookingInfo((prev: any) => ({
+                            ...prev,
+                            totalDays: noOfDays(
+                              bookingInfo?.startTime,
+                              bookingInfo?.endTime
+                            ),
+                          }));
                         }
                       }}
                       onPassItems={(resTime) => {
@@ -484,27 +505,6 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
                         }));
                       }}
                     />
-
-                    {/*                   
-                  <RoomInfoSelectCard
-                    token={decodeToken?.token}
-                    userId={decodeToken?.userId}
-                    onAddSuccess={async (response) => {
-                      if (response?.status == 200) {
-                        await setBoolStatus((prev: any) => ({
-                          ...prev,
-                          isViewDetails: true,
-                        }));
-                        await setFetchData((prev) => ({
-                          ...prev,
-                          roomDetails: response?.data,
-                        }));
-                        await toast.success(response?.message);
-                      } else {
-                        toast.error("failed to fetch room details");
-                      }
-                    }}
-                  /> */}
                   </div>
                 )}
                 {boolStatus?.checkedStatus &&
@@ -521,71 +521,72 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
                     />
                   )}
               </div>
-              <div className="flex flex-col w-full xl:w-2/3 xl:ml-4 xl:h-[800] overflow-y-auto pb-28">
-                <RoomTable
-                  className="w-full p-4"
-                  roomData={fetchData?.availableRoom}
-                  // returnItems={(sRoom) => {
-                  //   console.log("sRoom: ", JSON.stringify(sRoom, null, 2));
+              {boolStatus?.checkedStatus && (
+                <div className="flex flex-col w-full xl:w-2/3 xl:ml-4 xl:h-[800] overflow-y-auto pb-28">
+                  <RoomTable
+                    className="w-full p-4"
+                    roomData={fetchData?.availableRoom}
+                    onPassItems={(itemRess: any) => {
+                      setBookingInfo((prev) => ({
+                        ...prev,
+                        roomInfo: itemRess,
+                      }));
+                    }}
+                  />
+                  <AvailableRoomItemCard
+                    onPassItems={(itemRes) => {
+                      setBookingInfo((prev) => ({
+                        ...prev,
+                        paidItems: itemRes?.paidItems,
+                        freeItems: itemRes?.freeItems,
+                        totalPaidItemsPrice: itemRes?.totalPaidItemAmount,
+                        totalFreeItemsPrice: itemRes?.totalFreeItemAmount,
+                      }));
+                    }}
+                    className="w-full p-4 my-3"
+                    token={decodeToken?.token}
+                    userId={decodeToken?.userId}
+                  />
 
-                  //   if (sRoom) {
-                  //     setBoolStatus((prev) => ({
-                  //       ...prev,
-                  //       isRoomSelected: true,
-                  //     }));
-                  //     setFetchData((prev: any) => ({
-                  //       ...prev,
-                  //       selectedRoom: sRoom,
-                  //     }));
-                  //   } else {
-                  //     setBoolStatus((prev) => ({
-                  //       ...prev,
-                  //       isRoomSelected: false,
-                  //     }));
-                  //     setFetchData((prev) => ({ ...prev, selectedRoom: null }));
-                  //   }
-                  // }}
-                  onPassItems={(itemRess: any) => {
-                    setBookingInfo((prev) => ({
-                      ...prev,
-                      roomInfo: itemRess,
-                    }));
-                  }}
-                />
-                <AvailableRoomItemCard
-                  onPassItems={(itemRes) => {
-                    setBookingInfo((prev) => ({
-                      ...prev,
-                      paidItems: itemRes?.paidItems,
-                      freeItems: itemRes?.freeItems,
-                      totalPaidItemsPrice: itemRes?.totalPaidItemAmount,
-                      totalFreeItemsPrice: itemRes?.totalFreeItemAmount,
-                    }));
-                  }}
-                  className="w-full p-4 my-3"
-                  token={decodeToken?.token}
-                  userId={decodeToken?.userId}
-                />
-                {/* <ReservationTimeCard
-                  onPassItems={(resTime) => {
-                    setBookingInfo((prev) => ({
-                      ...prev,
-                      startTime: resTime?.startTime,
-                      endTime: resTime?.endTime,
-                    }));
-                  }}
-                /> */}
-                <div
-                  className="flex items-center justify-center my-4"
-                  onClick={() => {
-                    roomBookingFunc();
-                  }}
-                >
-                  <button className="font-workSans text-black bg-primary80 rounded-md py-2 px-5 shadow-lg ">
-                    Room Booking
-                  </button>
+                  <div className="flex flex-col items-start w-[100%]  rounded-lg bg-white shadow-lg p-3 my-4">
+                    <div className="flex flex-col items-end">
+                      <VerticalView
+                        label="Total Reservation Days"
+                        value={bookingInfo?.totalDays}
+                      />
+                      <VerticalView
+                        label="Total Room Price Per Day (৳)"
+                        value={totalRoomPrice}
+                        className="my-1"
+                      />
+                      <VerticalView
+                        label="Total Paid Items Price (৳)"
+                        value={
+                          bookingInfo?.totalPaidItemsPrice
+                            ? bookingInfo?.totalPaidItemsPrice
+                            : "0"
+                        }
+                        className="my-1"
+                      />
+                      <VerticalView
+                        label="Grand Total (৳) "
+                        value={grandTotal}
+                        className="my-1"
+                      />
+                    </div>
+                    <div
+                      className="flex items-center justify-center mt-4 w-full"
+                      onClick={() => {
+                        roomBookingFunc();
+                      }}
+                    >
+                      <button className="font-workSans text-black bg-primary80 rounded-md py-2 px-5 shadow-lg ">
+                        Room Booking
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           )}
           <AddNewPersonModal
