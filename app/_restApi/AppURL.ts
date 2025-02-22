@@ -1,12 +1,10 @@
 class AppURL {
   // static baseURL: string = "http://192.168.15.26:27086/";
-  static baseURL: string = "https://localhost:7094/api/";
-  static imgURL: string = "https://localhost:7094/";
+  static baseURL: string = "http://192.168.1.232:212/api/";
+  static imgURL: string = "http://192.168.1.232:212/";
+  // static baseURL: string = "https://localhost:7094/api/";
+  // static imgURL: string = "https://localhost:7094/";
 
-  // static baseURL: string = "https://localhost:7094/api/admin/room/RoomDetails/images/roomDetails/SSL/Floor - A/Room - B/20250120_091018_6_0e9132f9.png";
-  // static baseURL: string = "https://localhost:7094/images/roomDetails/SSL/Floor - A/Room - B/20250120_091018_6_0e9132f9.png";
-
-  // refactor the ccode  for saving imagesand the images will be saved into images forlder. donot need Path.Combine(_imageDirectory, $"{buildingName}/{floorName}/{roomName}"); path directly save in images folder
   // Authentication API's
   static signup: string = `${this.baseURL}auth/signup`; // .net
   static signin: string = `${this.baseURL}Auth/login`; // .net

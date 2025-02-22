@@ -1,63 +1,58 @@
 "use client";
 
-import React, { FC, useState } from "react";
+import React, { FC } from "react";
 import TableHeader from "../inputField/table/TableHeader";
 import { bookedRoomInterface } from "@/interface/admin/roomManagements/bookedRoomInterface";
-import { IoEyeOutline } from "react-icons/io5";
-import BookedRoomDetailsCard from "./BookedRoomDetailsCard";
+import { FaEdit } from "react-icons/fa";
 import {
+  formatDate,
   formatDateAndTime,
   isDateExpired,
 } from "@/app/_utils/handler/formateDate";
 import ComView from "../comView/ComView";
+import toast from "react-hot-toast";
 
 interface Props {
   className?: string;
   bookedRoom?: bookedRoomInterface[];
+  onPassItems?: (updateItem: any) => void;
 }
 
-interface roomDetailsInterface {
-  isDetailsVisible?: boolean;
-  selectedBookedRoom?: bookedRoomInterface[] | any;
-}
-
-const BookedRoomTable: FC<Props> = ({ className, bookedRoom }) => {
-  const [room, setRoom] = useState<roomDetailsInterface>({
-    isDetailsVisible: false,
-    selectedBookedRoom: [],
-  });
-
-  const detailViewCancel = () => {
-    setRoom({
-      isDetailsVisible: false,
-      selectedBookedRoom: [],
-    });
-  };
+const UpdateReservationRoomCard: FC<Props> = ({
+  className,
+  bookedRoom,
+  onPassItems,
+}) => {
   return (
     <>
       <div
         className={`rounded-lg bg-white shadow-lg shadow-slate-400 ${className} p-4 `}
       >
-        <p className="text-xl text-black text-center mb-4">All Booked Room</p>
+        <p className="text-xl text-black text-center mb-4 capitalize">
+          Booked room search for update
+        </p>
         <div className="flex w-full items-center rounded-t-lg bg-slate-300">
           <TableHeader
-            headerText="Details"
-            containerClassName="w-[8%]"
-            hasSearch={false}
-          />
-          <TableHeader
             headerText="Person Name"
-            containerClassName="w-[12%] border-x-2 border-slate-50"
-            hasSearch={false}
+            containerClassName="w-[10%] border-x-2 border-slate-50"
+            hasSearch={true}
+            placeholder="Search by name"
           />
           <TableHeader
             headerText="Mobile No"
-            containerClassName="w-[11%] "
-            hasSearch={false}
+            containerClassName="w-[8%] "
+            hasSearch={true}
+            placeholder="Search by mobile"
+          />
+          <TableHeader
+            headerText="Email"
+            containerClassName="w-[13%] border-x-2 border-slate-50"
+            hasSearch={true}
+            placeholder="Search by email"
           />
           <TableHeader
             headerText="Price / Day (৳) "
-            containerClassName="w-[10%] border-x-2 border-slate-50"
+            containerClassName="w-[10%] border-r-2 border-slate-50"
             hasSearch={false}
           />
           <TableHeader
@@ -77,16 +72,25 @@ const BookedRoomTable: FC<Props> = ({ className, bookedRoom }) => {
           />
           <TableHeader
             headerText="From Date"
-            containerClassName="w-[13%] border-x-2 border-slate-50"
+            containerClassName="w-[10%] border-x-2 border-slate-50"
             hasSearch={false}
           />
           <TableHeader
             headerText="To Date"
-            containerClassName="w-[13%] "
+            containerClassName="w-[10%] border-r-2 border-slate-50"
+            hasSearch={false}
+          />
+          <TableHeader
+            headerText="Action"
+            containerClassName="w-[7%] "
             hasSearch={false}
           />
         </div>
-        <div className="w-full max-h-[500px] overflow-y-auto border-y border-2">
+        <div
+          className={`w-full max-h-[250px] overflow-y-auto ${
+            bookedRoom && bookedRoom?.length > 0 && "border-y border-2"
+          }`}
+        >
           {bookedRoom && bookedRoom?.length > 0 ? (
             bookedRoom.map((bRoom, bRoomIndex) => {
               const expireDate = isDateExpired(bRoom.endTime)
@@ -97,36 +101,17 @@ const BookedRoomTable: FC<Props> = ({ className, bookedRoom }) => {
                   key={bRoomIndex}
                   className={`flex w-full items-center border-b-2 border-slate-300 ${expireDate} `}
                 >
-                  <div className="flex w-[8%] items-center justify-center">
-                    <IoEyeOutline
-                      size={25}
-                      className="cursor-pointer mr-2 text-primary50 hover:text-primary40"
-                      onClick={async () => {
-                        // const convertedData = await {
-                        //   ...bRoom,
-                        //   roomInfo:
-                        //     bRoom.roomInfo && bRoom.roomInfo?.length > 0
-                        //       ? bRoom.roomInfo.map((room) => ({
-                        //           ...room.roomInfo,
-                        //           roomWisePerson: room.roomWisePerson,
-                        //         }))
-                        //       : [],
-                        // };
-
-                        await setRoom({
-                          isDetailsVisible: true,
-                          selectedBookedRoom: bRoom,
-                        });
-                      }}
-                    />
-                  </div>
                   <ComView
                     value={bRoom.personInfo?.name}
-                    className="w-[12%] border-x-2"
+                    className="w-[10%] "
                   />
                   <ComView
                     value={bRoom.personInfo?.personalPhoneNo}
-                    className="w-[11%]"
+                    className="w-[8%] border-x-2"
+                  />
+                  <ComView
+                    value={bRoom.personInfo?.email}
+                    className="w-[13%]"
                   />
                   <ComView
                     value={bRoom?.totalRoomPrice}
@@ -142,17 +127,30 @@ const BookedRoomTable: FC<Props> = ({ className, bookedRoom }) => {
                   />
                   <ComView value={bRoom.grandTotal} className="w-[11%] " />
                   <ComView
-                    value={
-                      bRoom.startTime ? formatDateAndTime(bRoom.startTime) : ""
-                    }
-                    className="w-[13%] border-x-2"
+                    value={bRoom.startTime ? formatDate(bRoom.startTime) : ""}
+                    className="w-[10%] border-x-2"
                   />
                   <ComView
-                    value={
-                      bRoom.endTime ? formatDateAndTime(bRoom.endTime) : ""
-                    }
-                    className="w-[13%] "
+                    value={bRoom.endTime ? formatDate(bRoom.endTime) : ""}
+                    className="w-[10%] border-r-2"
                   />
+                  <div className="flex w-[7%]  items-center justify-center p-1">
+                    <FaEdit
+                      size={25}
+                      className={`cursor-pointer text-slate-400 ${
+                        !isDateExpired(bRoom.endTime) && "hover:text-slate-600"
+                      } `}
+                      onClick={async () => {
+                        if (!isDateExpired(bRoom.endTime)) {
+                          if (onPassItems) {
+                            onPassItems(bRoom);
+                          }
+                        } else {
+                          toast.error("Unable to update!");
+                        }
+                      }}
+                    />
+                  </div>
                 </div>
               );
             })
@@ -163,15 +161,8 @@ const BookedRoomTable: FC<Props> = ({ className, bookedRoom }) => {
           )}
         </div>
       </div>
-      {room?.isDetailsVisible && room?.selectedBookedRoom && (
-        <BookedRoomDetailsCard
-          bookedRoom={room?.selectedBookedRoom}
-          onCancel={detailViewCancel}
-          isVisible={room?.isDetailsVisible}
-        />
-      )}
     </>
   );
 };
 
-export default BookedRoomTable;
+export default UpdateReservationRoomCard;

@@ -82,13 +82,13 @@ const PopupMenu: React.FC<PopupMenuProps> = ({
       Cookies.remove("authToken", { path: "/" });
 
       // Also clear the token from the server-side response cookie
-      await axios.post(
-        AppURL.signout,
-        {},
-        {
-          withCredentials: true, // Ensure the request sends cookies
-        }
-      );
+      // await axios.post(
+      //   AppURL.signout,
+      //   {},
+      //   {
+      //     withCredentials: true, // Ensure the request sends cookies
+      //   }
+      // );
       handleClose();
       // Redirect to the login page
       router.push("/");

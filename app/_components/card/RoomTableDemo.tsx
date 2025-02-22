@@ -209,7 +209,7 @@ const RoomTable: FC<Props> = ({ roomData, returnItems, className }) => {
                   placeholder={`Enter Person-${pIndex + 1} name...`}
                   // @ts-ignore
                   value={person.name}
-                  onChange={(e) =>
+                  onChange={(e: any) =>
                     handlePersonChange(
                       cRoom.roomId,
                       pIndex,

@@ -28,8 +28,10 @@ const LoginForm: FC<LoginFormProps> = ({
   const router = useRouter();
 
   const [loginData, setLoginData] = useState<LoginDataINterface>({
-    emailOrPhone: "",
-    password: "",
+    emailOrPhone: "imdadulhaque1440@gmail.com",
+    password: "Abc@1234",
+    // emailOrPhone: "",
+    // password: "",
     emailPhoneErrorMsg: "",
     passwordErrorMsg: "",
   });
@@ -54,6 +56,7 @@ const LoginForm: FC<LoginFormProps> = ({
 
   const handleOutsideClick = (event: MouseEvent) => {
     if ((event.target as HTMLElement).closest("form")) return;
+    // @ts-ignore
     onClose(); // onClose is optional so use here the ts type
   };
 
@@ -72,24 +75,26 @@ const LoginForm: FC<LoginFormProps> = ({
         password: loginData.password,
       };
 
-      const { data } = await axios.post(AppURL.signin, submitData, {
-        withCredentials: true,
-      });
+      const { data } = await axios.post(AppURL.signin, submitData);
+      // const { data } = await axios.post(AppURL.signin, submitData, {
+      //   withCredentials: true,
+      // });
 
       if (data?.status === 200) {
         toast.success("Successfully log-in !");
         Cookies.set("authToken", data.user.token, {
           expires: 7, // Expires in 7 days
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
+          // secure: process.env.NODE_ENV === "production",
+          // sameSite: "strict",
         });
-        isFormModal && onSuccess(); // onSuccess is optional so use here the ts type
+        // @ts-ignore
+        isFormModal && onSuccess();
         !isFormModal && router.push("/admin");
       } else {
         toast.error("Invalid credentials!");
       }
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "An error occurred");
+      toast.error(err?.message || "An error occurred to signin.");
     }
   }
 
@@ -105,6 +110,7 @@ const LoginForm: FC<LoginFormProps> = ({
         <VerticalSingleInput
           label="Email"
           placeholder="Enter Email..."
+          // @ts-ignore
           value={loginData.emailOrPhone}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setLoginData((prev) => ({
@@ -119,6 +125,7 @@ const LoginForm: FC<LoginFormProps> = ({
           label="Password"
           type="password"
           placeholder="Your password"
+          // @ts-ignore
           value={loginData.password}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setLoginData((prev) => ({

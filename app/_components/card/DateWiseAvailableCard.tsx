@@ -1,8 +1,6 @@
 "use client";
 
 import React, { FC, useEffect, useState } from "react";
-import { MdDeleteOutline, MdOutlineFileUpload } from "react-icons/md";
-import { CiSearch } from "react-icons/ci";
 import { IoSearch } from "react-icons/io5";
 import axios from "axios";
 import toast from "react-hot-toast";

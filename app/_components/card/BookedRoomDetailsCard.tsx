@@ -4,7 +4,11 @@ import { modalStyles } from "@/app/_utils/comStyle/admin/basicSetup/room/roomSty
 import React, { FC } from "react";
 import { IoClose } from "react-icons/io5";
 import TableHeader from "../inputField/table/TableHeader";
-import { formatDateAndTime, noOfDays } from "@/app/_utils/handler/formateDate";
+import {
+  formatDate,
+  formatDateAndTime,
+  noOfDays,
+} from "@/app/_utils/handler/formateDate";
 import VerticalView from "../comView/VerticalView";
 import ComView from "../comView/ComView";
 
@@ -39,8 +43,8 @@ const BookedRoomDetailsCard: FC<Props> = ({
 
   return (
     <div className={modalStyles.overlay}>
-      <div className={`${modalStyles.bookedRoomcontainer} w-screen`}>
-        <div className="flex w-full items-center justify-center mb-4">
+      <div className={`${modalStyles.bookedRoomcontainer} w-[80%]`}>
+        <div className="flex w-full items-center justify-center mb-4 ">
           <h2 className={`w-100p text-center ${modalStyles.title}`}>
             Booked Room Details
           </h2>
@@ -94,7 +98,7 @@ const BookedRoomDetailsCard: FC<Props> = ({
               className="my-1"
             />
           </div>
-          <div className="flex flex-col justify-end items-end ">
+          <div className="flex flex-col justify-end items-end mb-4">
             <div className="flex p-3  flex-col justify-end items-end">
               <p className="font-workSans text-xl font-medium">
                 Price Calculations
@@ -115,15 +119,15 @@ const BookedRoomDetailsCard: FC<Props> = ({
                 className="my-1"
               />
               <VerticalView
-                label="Grand Price"
+                label="Grand Total"
                 value={bookedRoom?.grandTotal}
-                className="my-1"
+                className="my-1 border-2 p-2 rounded-lg border-slate-500"
               />
             </div>
           </div>
         </div>
 
-        <div className="flex items-center mb-4">
+        {/* <div className="flex items-center mb-4">
           <p className={`${modalStyles.detailsLabel} mr-2`}>
             Reservation Time:
           </p>
@@ -131,7 +135,7 @@ const BookedRoomDetailsCard: FC<Props> = ({
             {formatDateAndTime(bookedRoom?.startTime)} -{" "}
             {formatDateAndTime(bookedRoom?.endTime)}
           </p>
-        </div>
+        </div> */}
 
         <div className="flex w-full items-center rounded-t-lg bg-slate-300">
           <TableHeader
@@ -159,7 +163,7 @@ const BookedRoomDetailsCard: FC<Props> = ({
             containerClassName="w-[8%] "
             hasSearch={false}
           />
-          <div className="w-[50%] border-l-2 border-slate-50 ">
+          <div className="w-[32%] border-x-2 border-slate-50 ">
             <p className="text-center font-workSans text-md py-1">
               Room Wise Person
             </p>
@@ -181,6 +185,16 @@ const BookedRoomDetailsCard: FC<Props> = ({
               />
             </div>
           </div>
+          <TableHeader
+            headerText="From Date"
+            containerClassName="w-[9%] "
+            hasSearch={false}
+          />
+          <TableHeader
+            headerText="To Date"
+            containerClassName="w-[9%] border-l-2 border-slate-50 "
+            hasSearch={false}
+          />
         </div>
         <div className="w-full max-h-[300px] overflow-y-auto border-y border-2">
           {bookedRoom?.roomInfo && bookedRoom?.roomInfo?.length > 0 ? (
@@ -201,35 +215,48 @@ const BookedRoomDetailsCard: FC<Props> = ({
                   />
                   <ComView value={room.roomPrice} className="w-[8%] " />
 
-                  <div className="w-[50%] border-l-2 border-slate-300">
-                    {room?.roomWisePerson &&
-                    room?.roomWisePerson?.length > 0 ? (
-                      room.roomWisePerson.map((person: any, pIndex: number) => {
-                        const isLast =
-                          pIndex == room.roomWisePerson?.length - 1;
-                        return (
-                          <div
-                            key={pIndex}
-                            className={`flex items-center w-full ${
-                              !isLast && "border-b-2"
-                            } border-slate-300 py-1`}
-                          >
-                            <ComView value={person.name} className="w-[40%]" />
-                            <ComView
-                              value={person?.phone}
-                              className="w-[30%] border-x-2"
-                            />
-                            <ComView
-                              value={person?.nidBirth}
-                              className="w-[30%] "
-                            />
-                          </div>
-                        );
-                      })
+                  <div className="w-[32%] border-x-2 border-slate-300">
+                    {room?.roomWisePersonInfo &&
+                    room?.roomWisePersonInfo?.length > 0 ? (
+                      room.roomWisePersonInfo.map(
+                        (person: any, pIndex: number) => {
+                          const isLast =
+                            pIndex == room.roomWisePersonInfo?.length - 1;
+                          return (
+                            <div
+                              key={pIndex}
+                              className={`flex items-center w-full ${
+                                !isLast && "border-b-2"
+                              } border-slate-300 py-1`}
+                            >
+                              <ComView
+                                value={person.name}
+                                className="w-[40%]"
+                              />
+                              <ComView
+                                value={person?.phone}
+                                className="w-[30%] border-x-2"
+                              />
+                              <ComView
+                                value={person?.nidBirth}
+                                className="w-[30%] "
+                              />
+                            </div>
+                          );
+                        }
+                      )
                     ) : (
                       <p>No person founds!</p>
                     )}
                   </div>
+                  <ComView
+                    value={room?.startTime ? formatDate(room?.startTime) : ""}
+                    className="w-[9%]  border-r-2"
+                  />
+                  <ComView
+                    value={room?.endTime ? formatDate(room?.endTime) : ""}
+                    className="w-[9%] "
+                  />
                 </div>
               );
             })
@@ -256,7 +283,12 @@ const BookedRoomDetailsCard: FC<Props> = ({
               />
               <TableHeader
                 headerText="Price"
-                containerClassName="w-1/3"
+                containerClassName="w-1/6 border-r-2 border-slate-50"
+                hasSearch={false}
+              />
+              <TableHeader
+                headerText="Qty"
+                containerClassName="w-1/6"
                 hasSearch={false}
               />
             </div>
@@ -281,7 +313,11 @@ const BookedRoomDetailsCard: FC<Props> = ({
                     />
                     <ComView
                       value={pItem.price}
-                      className={`w-1/3 text-black`}
+                      className={`w-1/6 border-r-2 text-black`}
+                    />
+                    <ComView
+                      value={pItem.itemQty}
+                      className={`w-1/6 text-black`}
                     />
                   </div>
                 );
@@ -291,7 +327,7 @@ const BookedRoomDetailsCard: FC<Props> = ({
                 No paid items founds !
               </p>
             )}
-            {bookedRoom?.paidItems && bookedRoom?.paidItems.length > 0 && (
+            {/* {bookedRoom?.paidItems && bookedRoom?.paidItems.length > 0 && (
               <div className="flex w-full items-end justify-end">
                 <div className="flex w-1/3 items-center justify-center py-1">
                   <p className="font-workSans text-black text-md font-medium">
@@ -299,7 +335,7 @@ const BookedRoomDetailsCard: FC<Props> = ({
                   </p>
                 </div>
               </div>
-            )}
+            )} */}
           </div>
           <div className="flex flex-col items-center w-[49.5%] rounded-lg bg-white shadow-lg p-3 border-2 border-slate-300">
             <p className="font-workSans text-md text-center font-medium">
@@ -318,7 +354,12 @@ const BookedRoomDetailsCard: FC<Props> = ({
               />
               <TableHeader
                 headerText="Price"
-                containerClassName="w-1/3"
+                containerClassName="w-1/6 border-r-2 border-slate-50"
+                hasSearch={false}
+              />
+              <TableHeader
+                headerText="Qty"
+                containerClassName="w-1/6"
                 hasSearch={false}
               />
             </div>
@@ -342,7 +383,11 @@ const BookedRoomDetailsCard: FC<Props> = ({
                     />
                     <ComView
                       value={fItem.price}
-                      className={`w-1/3 text-black`}
+                      className={`w-1/6 border-r-2 text-black`}
+                    />
+                    <ComView
+                      value={fItem.itemQty}
+                      className={`w-1/6 text-black`}
                     />
                   </div>
                 );
@@ -352,7 +397,7 @@ const BookedRoomDetailsCard: FC<Props> = ({
                 No free items founds !
               </p>
             )}
-            {bookedRoom?.freeItems && bookedRoom?.freeItems.length > 0 && (
+            {/* {bookedRoom?.freeItems && bookedRoom?.freeItems.length > 0 && (
               <div className="flex w-full items-end justify-end">
                 <div className="flex w-1/3 items-center justify-center py-1">
                   <p className="font-workSans text-gray-400 text-md font-medium">
@@ -360,7 +405,7 @@ const BookedRoomDetailsCard: FC<Props> = ({
                   </p>
                 </div>
               </div>
-            )}
+            )} */}
           </div>
         </div>
       </div>
