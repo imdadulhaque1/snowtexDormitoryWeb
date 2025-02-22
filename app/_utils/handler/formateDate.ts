@@ -119,6 +119,17 @@ export const isDateExpired = (endTime: string) => {
   }
 };
 
+export const isToday = (dateString: string): boolean => {
+  const givenDate = new Date(dateString);
+  const today = new Date();
+
+  return (
+    givenDate.getFullYear() === today.getFullYear() &&
+    givenDate.getMonth() === today.getMonth() &&
+    givenDate.getDate() === today.getDate()
+  );
+};
+
 export const noOfDays = (startDate: string, endDate: string) => {
   // Parse the input dates to ignore time
   const start = new Date(startDate);
@@ -136,3 +147,5 @@ export const noOfDays = (startDate: string, endDate: string) => {
 
   return daysDifference;
 };
+
+//

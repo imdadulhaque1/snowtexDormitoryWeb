@@ -24,6 +24,8 @@ import PaidItemsPage from "./@content/basic_setup/paid_items/page";
 import RoomAssignmentsPage from "./@content/setting/room_assignments/page";
 import RoomCategoryPage from "./@content/basic_setup/room_categories/page";
 import BookedRoomPage from "./@content/booked_room/page";
+import RoomCheckoutPage from "./@content/checkout/page";
+import RoomReservationUpdatePage from "./@content/update_reservation/page";
 
 const AdminPage = () => {
   const router = useRouter();
@@ -109,6 +111,11 @@ const AdminPage = () => {
         return <RoomAssignmentsPage />;
       case "booked_room":
         return <BookedRoomPage />;
+      case "checkout":
+        return <RoomCheckoutPage />;
+      case "update_reservation":
+        return <RoomReservationUpdatePage />;
+
       default:
         return <AdminDashboardPage />;
     }

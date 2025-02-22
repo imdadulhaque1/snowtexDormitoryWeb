@@ -4,7 +4,6 @@ import React, { FC, useEffect, useState } from "react";
 import TableHeader from "../inputField/table/TableHeader";
 import { roomInterface } from "@/interface/admin/roomManagements/roomInterface";
 import Checkbox from "../inputField/checkbox/Checkbox";
-import VerticalSingleInput from "../inputField/VerticalSingleInput";
 import { IoIosRemoveCircleOutline } from "react-icons/io";
 import toast from "react-hot-toast";
 
@@ -25,7 +24,7 @@ const RoomTable: FC<Props> = ({
   const [roomPersons, setRoomPersons] = useState<{
     [key: string]: {
       roomInfo: any;
-      roomWisePerson: {
+      roomWisePersonInfo: {
         name: string;
         phone: string;
         email: string;
@@ -87,20 +86,20 @@ const RoomTable: FC<Props> = ({
 
   const handleAddPerson = (room: roomInterface) => {
     setRoomPersons((prev: any) => {
-      const roomId = String(room.roomId); // Ensure roomId is a string for object key
+      const roomId = String(room.roomId);
 
       const updatedRoom = prev[roomId] || {
         roomInfo: room,
-        roomWisePerson: [], // Ensure this is an array
+        roomWisePersonInfo: [],
       };
 
       return {
         ...prev,
         [roomId]: {
           ...updatedRoom,
-          roomWisePerson: [
-            ...updatedRoom.roomWisePerson,
-            { name: "", phone: "", email: "", nidBirth: "", age: "" }, // New entry
+          roomWisePersonInfo: [
+            ...updatedRoom.roomWisePersonInfo,
+            { name: "", phone: "", email: "", nidBirth: "", age: "" },
           ],
         },
       };
@@ -111,12 +110,12 @@ const RoomTable: FC<Props> = ({
     setRoomPersons((prev) => {
       if (!prev[roomId]) return prev;
 
-      const updatedPersons = prev[roomId].roomWisePerson.filter(
+      const updatedPersons = prev[roomId].roomWisePersonInfo.filter(
         (_, i) => i !== index
       );
       return {
         ...prev,
-        [roomId]: { ...prev[roomId], roomWisePerson: updatedPersons },
+        [roomId]: { ...prev[roomId], roomWisePersonInfo: updatedPersons },
       };
     });
   };
@@ -130,12 +129,12 @@ const RoomTable: FC<Props> = ({
     setRoomPersons((prev) => {
       if (!prev[roomId]) return prev;
 
-      const updatedPersons = [...prev[roomId].roomWisePerson];
+      const updatedPersons = [...prev[roomId].roomWisePersonInfo];
       updatedPersons[index] = { ...updatedPersons[index], [field]: value };
 
       return {
         ...prev,
-        [roomId]: { ...prev[roomId], roomWisePerson: updatedPersons },
+        [roomId]: { ...prev[roomId], roomWisePersonInfo: updatedPersons },
       };
     });
   };
@@ -370,11 +369,11 @@ const RoomTable: FC<Props> = ({
               />
             </div>
 
-            {roomPersons[cRoom.roomId]?.roomWisePerson?.map(
+            {roomPersons[cRoom.roomId]?.roomWisePersonInfo?.map(
               (person: any, pIndex: number) => {
                 const isLast =
                   pIndex ==
-                  roomPersons[cRoom.roomId]?.roomWisePerson?.length - 1;
+                  roomPersons[cRoom.roomId]?.roomWisePersonInfo?.length - 1;
                 return (
                   <div
                     key={pIndex}
@@ -387,6 +386,7 @@ const RoomTable: FC<Props> = ({
                       className="w-1/5 "
                       type="text"
                       name="name"
+                      // @ts-ignore
                       value={person.name}
                       onChange={(e: any) =>
                         handlePersonChange(
@@ -402,6 +402,7 @@ const RoomTable: FC<Props> = ({
                       className="w-1/5 border-x-2 "
                       type="tel"
                       name="phone"
+                      // @ts-ignore
                       value={person.phone}
                       onChange={(e: any) =>
                         handlePersonChange(
@@ -417,6 +418,7 @@ const RoomTable: FC<Props> = ({
                       className="w-1/5 "
                       type="mail"
                       name="email"
+                      // @ts-ignore
                       value={person.email}
                       onChange={(e: any) =>
                         handlePersonChange(
@@ -432,6 +434,7 @@ const RoomTable: FC<Props> = ({
                       className="w-1/5 border-x-2"
                       type="text"
                       name="nidBirth"
+                      // @ts-ignore
                       value={person.nidBirth}
                       onChange={(e: any) =>
                         handlePersonChange(
@@ -447,6 +450,7 @@ const RoomTable: FC<Props> = ({
                       className="w-[10%] "
                       type="number"
                       name="age"
+                      // @ts-ignore
                       value={person.age}
                       onChange={(e: any) =>
                         handlePersonChange(
@@ -478,7 +482,8 @@ const RoomTable: FC<Props> = ({
                   roomPersons.hasOwnProperty(String(cRoom.roomId))
                 ) {
                   if (
-                    roomPersons[String(cRoom.roomId)]?.roomWisePerson?.length +
+                    roomPersons[String(cRoom.roomId)]?.roomWisePersonInfo
+                      ?.length +
                       1 >
                     cRoom?.roomWisePerson
                   ) {
@@ -548,78 +553,3 @@ const ComInputView: FC<comInputProps> = ({
     </div>
   );
 };
-
-/*
-
-
-
-{roomPersons[cRoom.roomId]?.roomWisePerson?.map(
-              (person: any, pIndex: number) => (
-                <div
-                  key={pIndex}
-                  className="p-3 border-2 border-gray-300 rounded-md w-full mt-3"
-                >
-                  <VerticalSingleInput
-                    type="text"
-                    name="personName"
-                    placeholder={`Enter Person-${pIndex + 1} name...`}
-                    // @ts-ignore
-                    value={person.name}
-                    onChange={(e: any) =>
-                      handlePersonChange(
-                        cRoom.roomId,
-                        pIndex,
-                        "name",
-                        e.target.value
-                      )
-                    }
-                    required
-                  />
-                  <VerticalSingleInput
-                    className="my-2"
-                    type="text"
-                    name="personEmail"
-                    placeholder={`Enter Person-${pIndex + 1} email...`}
-                    // @ts-ignore
-                    value={person.email}
-                    onChange={(e: any) =>
-                      handlePersonChange(
-                        cRoom.roomId,
-                        pIndex,
-                        "email",
-                        e.target.value
-                      )
-                    }
-                    required
-                  />
-                  <VerticalSingleInput
-                    type="text"
-                    name="personPhone"
-                    placeholder={`Enter Person-${pIndex + 1} phone...`}
-                    // @ts-ignore
-                    value={person.phone}
-                    onChange={(e: any) =>
-                      handlePersonChange(
-                        cRoom.roomId,
-                        pIndex,
-                        "phone",
-                        e.target.value
-                      )
-                    }
-                    required
-                  />
-                  <div className="flex items-center justify-center">
-                    <p
-                      onClick={() => handleRemovePerson(cRoom.roomId, pIndex)}
-                      className="font-workSans font-medium text-errorColor text-center text-sm cursor-pointer border-2 border-errorColor mt-3 px-5 py-1 rounded-md"
-                    >
-                      Remove
-                    </p>
-                  </div>
-                </div>
-              )
-            )}
-
-
-
-*/

@@ -209,9 +209,20 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
 
   const roomBookingFunc = async () => {
     if (isRequiredToBookingRoom) {
-      const submittedData = {
+      const convertedRoomData = await bookingInfo?.roomInfo.map(
+        ({ roomInfo, roomWisePersonInfo }: any) => ({
+          ...roomInfo,
+          roomWisePersonInfo,
+        })
+      );
+
+      // personInfo: bookingInfo?.personInfo,
+      // roomInfo: convertedRoomData,
+      // paidItems: bookingInfo?.paidItems,
+      // freeItems: bookingInfo?.freeItems,
+      const submittedData = await {
         personInfo: JSON.stringify(bookingInfo?.personInfo),
-        roomInfo: JSON.stringify(bookingInfo?.roomInfo),
+        roomInfo: JSON.stringify(convertedRoomData),
         paidItems: JSON.stringify(bookingInfo?.paidItems),
         freeItems: JSON.stringify(bookingInfo?.freeItems),
         totalPaidItemsPrice: bookingInfo?.totalPaidItemsPrice,
@@ -245,6 +256,7 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
           setBookingInfo((prev) => ({
             ...prev,
             personInfo: null,
+            totalDays: 0,
           }));
           setFetchData((prev) => ({
             ...prev,
@@ -284,6 +296,8 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
     bookingInfo?.roomInfo?.length > 0 &&
     bookingInfo?.startTime &&
     bookingInfo?.endTime;
+
+  // console.log(bookingInfo?.startTime, bookingInfo?.endTime);
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -435,6 +449,7 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
                                     setBookingInfo((prev) => ({
                                       ...prev,
                                       personInfo: null,
+                                      totalDays: 0,
                                     }));
                                   }
                                 }}
@@ -467,6 +482,7 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
                         setBookingInfo((prev) => ({
                           ...prev,
                           personInfo: null,
+                          totalDays: 0,
                         }));
                         setFetchData((prev) => ({
                           ...prev,
@@ -522,14 +538,28 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
                   )}
               </div>
               {boolStatus?.checkedStatus && (
-                <div className="flex flex-col w-full xl:w-2/3 xl:ml-4 xl:h-[800] overflow-y-auto pb-28">
+                <div className="flex flex-col w-full xl:w-2/3 xl:ml-4  overflow-y-auto pb-28">
                   <RoomTable
                     className="w-full p-4"
                     roomData={fetchData?.availableRoom}
-                    onPassItems={(itemRess: any) => {
-                      setBookingInfo((prev) => ({
+                    onPassItems={async (itemRess: any) => {
+                      const convertedRoom = await itemRess.map((room: any) => ({
+                        ...room,
+                        roomInfo: {
+                          ...room.roomInfo,
+                          startTime: bookingInfo?.startTime,
+                          endTime: bookingInfo?.endTime,
+                        },
+                      }));
+
+                      console.log(
+                        "convertedRoom: ",
+                        JSON.stringify(convertedRoom, null, 2)
+                      );
+
+                      await setBookingInfo((prev) => ({
                         ...prev,
-                        roomInfo: itemRess,
+                        roomInfo: convertedRoom,
                       }));
                     }}
                   />
@@ -659,3 +689,510 @@ const ComBtn: FC<comBtnInterface> = ({ className, onClick, label }) => {
     </button>
   );
 };
+
+/*
+
+submittedData = {
+  "personInfo": {
+    "personId": 1,
+    "name": "Imdadul Haque",
+    "companyName": "Snowtex Group",
+    "personalPhoneNo": "01773964101",
+    "companyPhoneNo": "01773964101",
+    "email": "imddulhaque1440@gmail.com",
+    "nidBirthPassport": "5552902107",
+    "countryName": "Bangladesh",
+    "address": "Dhamrai, Savar, Dhaka, Bangladesh",
+    "isApprove": false,
+    "approvedBy": null,
+    "isActive": true,
+    "inactiveBy": null,
+    "inactiveTime": null,
+    "createdBy": 6,
+    "createdTime": "2025-02-03T09:02:08.253",
+    "updatedBy": null,
+    "updatedTime": null
+  },
+  "roomInfo": [
+    {
+      "roomInfo": {
+        "roomId": 1005,
+        "roomName": "Test - Room - one",
+        "roomDescription": "Testing purpose room created - Test - Room - one",
+        "remarks": "Demo Remarks",
+        "roomCategoryId": 6,
+        "floorId": 4,
+        "buildingId": 2,
+        "isRoomAvailable": true,
+        "haveRoomDetails": false,
+        "isApprove": false,
+        "isActive": true,
+        "inactiveBy": null,
+        "createdBy": 6,
+        "createdTime": "2025-01-07T10:49:10.693",
+        "updatedBy": 6,
+        "updatedTime": "2025-01-07T13:39:22.333",
+        "floorName": "Floor - BB",
+        "buildingName": "SOL",
+        "roomCategoryName": "Double room",
+        "roomWisePerson": 2,
+        "roomPrice": "255",
+        "startTime": "2025-02-26T03:29:00.000Z",
+        "endTime": "2025-02-27T03:30:00.000Z"
+      },
+      "roomWisePerson": [
+        {
+          "name": "wefsdgfd dfgdfgdfgfdg",
+          "phone": "01773964101",
+          "email": "imdadulhaque@gmail.com",
+          "nidBirth": "3424234234",
+          "age": "453"
+        },
+        {
+          "name": "eggdfg fhfghfgbfghfghb fdfg",
+          "phone": "01773964101",
+          "email": "imdad1440@gmail.com",
+          "nidBirth": "3424234234",
+          "age": "345"
+        }
+      ]
+    },
+    {
+      "roomInfo": {
+        "roomId": 1006,
+        "roomName": "Test - Room",
+        "roomDescription": "Testing purpose room created",
+        "remarks": "Demo Remarks",
+        "roomCategoryId": 1,
+        "floorId": 2,
+        "buildingId": 2,
+        "isRoomAvailable": true,
+        "haveRoomDetails": true,
+        "isApprove": false,
+        "isActive": true,
+        "inactiveBy": null,
+        "createdBy": 6,
+        "createdTime": "2025-01-07T16:02:13.157",
+        "updatedBy": null,
+        "updatedTime": null,
+        "floorName": "Floor - B",
+        "buildingName": "SOL",
+        "roomCategoryName": "Single room",
+        "roomWisePerson": 1,
+        "roomPrice": "100",
+        "startTime": "2025-02-26T03:29:00.000Z",
+        "endTime": "2025-02-27T03:30:00.000Z"
+      },
+      "roomWisePerson": [
+        {
+          "name": "qweqweqwe",
+          "phone": "01773964101",
+          "email": "imdad@gmail.com",
+          "nidBirth": "3424234234",
+          "age": "123"
+        }
+      ]
+    }
+  ],
+  "paidItems": [
+    {
+      "itemId": 1003,
+      "name": "Gamcha",
+      "price": "150",
+      "actualPrice": "150",
+      "paidOrFree": 1,
+      "itemQty": 1,
+      "remarks": "Permanently......"
+    },
+    {
+      "itemId": 1006,
+      "name": "New Brush",
+      "price": "55",
+      "actualPrice": "55",
+      "paidOrFree": 1,
+      "itemQty": 1,
+      "remarks": "Permanently...."
+    }
+  ],
+  "freeItems": [
+    {
+      "itemId": 1,
+      "name": "Tawel",
+      "price": "50",
+      "actualPrice": "50",
+      "paidOrFree": 2,
+      "itemQty": 1,
+      "remarks": "Only for using purpose"
+    },
+    {
+      "itemId": 1002,
+      "name": "Tissue",
+      "price": "30",
+      "actualPrice": "30",
+      "paidOrFree": 2,
+      "itemQty": 1,
+      "remarks": "Only for  using perpose."
+    },
+    {
+      "itemId": 1004,
+      "name": "Soap",
+      "price": "100",
+      "actualPrice": "100",
+      "paidOrFree": 2,
+      "itemQty": 1,
+      "remarks": "Permanently...."
+    },
+    {
+      "itemId": 1005,
+      "name": "Shampo",
+      "price": "5",
+      "actualPrice": "5",
+      "paidOrFree": 2,
+      "itemQty": 1,
+      "remarks": "Only for using perpose."
+    }
+  ],
+  "totalPaidItemsPrice": 205,
+  "totalFreeItemsPrice": 185,
+  "totalRoomPrice": 355,
+  "grandTotal": 560,
+  "totalDays": 1,
+  "startTime": "2025-02-26T03:29:00.000Z",
+  "endTime": "2025-02-27T03:30:00.000Z",
+  "createdBy": "6"
+}
+
+
+
+
+*/
+
+const convertedData = {
+  personInfo: {
+    personId: 1,
+    name: "Imdadul Haque",
+    companyName: "Snowtex Group",
+    personalPhoneNo: "01773964101",
+    companyPhoneNo: "01773964101",
+    email: "imddulhaque1440@gmail.com",
+    nidBirthPassport: "5552902107",
+    countryName: "Bangladesh",
+    address: "Dhamrai, Savar, Dhaka, Bangladesh",
+    isApprove: false,
+    approvedBy: null,
+    isActive: true,
+    inactiveBy: null,
+    inactiveTime: null,
+    createdBy: 6,
+    createdTime: "2025-02-03T09:02:08.253",
+    updatedBy: null,
+    updatedTime: null,
+  },
+  roomInfo: [
+    {
+      roomId: 1005,
+      roomName: "Test - Room - one",
+      roomDescription: "Testing purpose room created - Test - Room - one",
+      remarks: "Demo Remarks",
+      roomCategoryId: 6,
+      floorId: 4,
+      buildingId: 2,
+      isRoomAvailable: true,
+      haveRoomDetails: false,
+      isApprove: false,
+      isActive: true,
+      inactiveBy: null,
+      createdBy: 6,
+      createdTime: "2025-01-07T10:49:10.693",
+      updatedBy: 6,
+      updatedTime: "2025-01-07T13:39:22.333",
+      floorName: "Floor - BB",
+      buildingName: "SOL",
+      roomCategoryName: "Double room",
+      noOfRoomWisePerson: 2,
+      roomPrice: "255",
+      startTime: "2025-02-26T03:29:00.000Z",
+      endTime: "2025-02-27T03:30:00.000Z",
+      roomWisePerson: [
+        {
+          name: "wefsdgfd dfgdfgdfgfdg",
+          phone: "01773964101",
+          email: "imdadulhaque@gmail.com",
+          nidBirth: "3424234234",
+          age: "453",
+        },
+        {
+          name: "eggdfg fhfghfgbfghfghb fdfg",
+          phone: "01773964101",
+          email: "imdad1440@gmail.com",
+          nidBirth: "3424234234",
+          age: "345",
+        },
+      ],
+    },
+    {
+      roomId: 1006,
+      roomName: "Test - Room",
+      roomDescription: "Testing purpose room created",
+      remarks: "Demo Remarks",
+      roomCategoryId: 1,
+      floorId: 2,
+      buildingId: 2,
+      isRoomAvailable: true,
+      haveRoomDetails: true,
+      isApprove: false,
+      isActive: true,
+      inactiveBy: null,
+      createdBy: 6,
+      createdTime: "2025-01-07T16:02:13.157",
+      updatedBy: null,
+      updatedTime: null,
+      floorName: "Floor - B",
+      buildingName: "SOL",
+      roomCategoryName: "Single room",
+      noOfRoomWisePerson: 1,
+      roomPrice: "100",
+      startTime: "2025-02-26T03:29:00.000Z",
+      endTime: "2025-02-27T03:30:00.000Z",
+      roomWisePerson: [
+        {
+          name: "qweqweqwe",
+          phone: "01773964101",
+          email: "imdad@gmail.com",
+          nidBirth: "3424234234",
+          age: "123",
+        },
+      ],
+    },
+  ],
+  paidItems: [
+    {
+      itemId: 1003,
+      name: "Gamcha",
+      price: "150",
+      actualPrice: "150",
+      paidOrFree: 1,
+      itemQty: 1,
+      remarks: "Permanently......",
+    },
+    {
+      itemId: 1006,
+      name: "New Brush",
+      price: "55",
+      actualPrice: "55",
+      paidOrFree: 1,
+      itemQty: 1,
+      remarks: "Permanently....",
+    },
+  ],
+  freeItems: [
+    {
+      itemId: 1,
+      name: "Tawel",
+      price: "50",
+      actualPrice: "50",
+      paidOrFree: 2,
+      itemQty: 1,
+      remarks: "Only for using purpose",
+    },
+    {
+      itemId: 1002,
+      name: "Tissue",
+      price: "30",
+      actualPrice: "30",
+      paidOrFree: 2,
+      itemQty: 1,
+      remarks: "Only for  using perpose.",
+    },
+    {
+      itemId: 1004,
+      name: "Soap",
+      price: "100",
+      actualPrice: "100",
+      paidOrFree: 2,
+      itemQty: 1,
+      remarks: "Permanently....",
+    },
+    {
+      itemId: 1005,
+      name: "Shampo",
+      price: "5",
+      actualPrice: "5",
+      paidOrFree: 2,
+      itemQty: 1,
+      remarks: "Only for using perpose.",
+    },
+  ],
+  totalPaidItemsPrice: 205,
+  totalFreeItemsPrice: 185,
+  totalRoomPrice: 355,
+  grandTotal: 560,
+  totalDays: 1,
+  startTime: "2025-02-26T03:29:00.000Z",
+  endTime: "2025-02-27T03:30:00.000Z",
+  createdBy: "6",
+};
+
+const roomData = [
+  {
+    roomInfo: {
+      // remove this
+      roomId: 1005,
+      roomName: "Test - Room - one",
+      roomDescription: "Testing purpose room created - Test - Room - one",
+      remarks: "Demo Remarks",
+      roomCategoryId: 6,
+      floorId: 4,
+      buildingId: 2,
+      isRoomAvailable: true,
+      haveRoomDetails: false,
+      isApprove: false,
+      isActive: true,
+      inactiveBy: null,
+      createdBy: 6,
+      createdTime: "2025-01-07T10:49:10.693",
+      updatedBy: 6,
+      updatedTime: "2025-01-07T13:39:22.333",
+      floorName: "Floor - BB",
+      buildingName: "SOL",
+      roomCategoryName: "Double room",
+      roomWisePerson: 2,
+      roomPrice: "255",
+      startTime: "2025-02-26T03:45:00.000Z",
+      endTime: "2025-02-27T03:45:00.000Z",
+    },
+    roomWisePersonInfo: [
+      {
+        name: "Person - 02",
+        phone: "01773964101",
+        email: "imdadulhaque@gmail.com",
+        nidBirth: "3424234234",
+        age: "234",
+      },
+      {
+        name: "Person - 03",
+        phone: "01773964101",
+        email: "imdad1440@gmail.com",
+        nidBirth: "3424234234",
+        age: "456",
+      },
+    ],
+  },
+  {
+    roomInfo: {
+      // remove this
+      roomId: 1006,
+      roomName: "Test - Room",
+      roomDescription: "Testing purpose room created",
+      remarks: "Demo Remarks",
+      roomCategoryId: 1,
+      floorId: 2,
+      buildingId: 2,
+      isRoomAvailable: true,
+      haveRoomDetails: true,
+      isApprove: false,
+      isActive: true,
+      inactiveBy: null,
+      createdBy: 6,
+      createdTime: "2025-01-07T16:02:13.157",
+      updatedBy: null,
+      updatedTime: null,
+      floorName: "Floor - B",
+      buildingName: "SOL",
+      roomCategoryName: "Single room",
+      roomWisePerson: 1,
+      roomPrice: "100",
+      startTime: "2025-02-26T03:45:00.000Z",
+      endTime: "2025-02-27T03:45:00.000Z",
+    },
+    roomWisePersonInfo: [
+      {
+        name: "Person - 01",
+        phone: "01773964101",
+        email: "imdad@gmail.com",
+        nidBirth: "3424234234",
+        age: "12",
+      },
+    ],
+  },
+];
+
+// converted roomData like below format using JS in optimized way:
+
+const convertedRoomData = [
+  {
+    roomId: 1005,
+    roomName: "Test - Room - one",
+    roomDescription: "Testing purpose room created - Test - Room - one",
+    remarks: "Demo Remarks",
+    roomCategoryId: 6,
+    floorId: 4,
+    buildingId: 2,
+    isRoomAvailable: true,
+    haveRoomDetails: false,
+    isApprove: false,
+    isActive: true,
+    inactiveBy: null,
+    createdBy: 6,
+    createdTime: "2025-01-07T10:49:10.693",
+    updatedBy: 6,
+    updatedTime: "2025-01-07T13:39:22.333",
+    floorName: "Floor - BB",
+    buildingName: "SOL",
+    roomCategoryName: "Double room",
+    roomWisePerson: 2,
+    roomPrice: "255",
+    startTime: "2025-02-26T03:45:00.000Z",
+    endTime: "2025-02-27T03:45:00.000Z",
+    roomWisePersonInfo: [
+      {
+        name: "Person - 02",
+        phone: "01773964101",
+        email: "imdadulhaque@gmail.com",
+        nidBirth: "3424234234",
+        age: "234",
+      },
+      {
+        name: "Person - 03",
+        phone: "01773964101",
+        email: "imdad1440@gmail.com",
+        nidBirth: "3424234234",
+        age: "456",
+      },
+    ],
+  },
+  {
+    roomId: 1006,
+    roomName: "Test - Room",
+    roomDescription: "Testing purpose room created",
+    remarks: "Demo Remarks",
+    roomCategoryId: 1,
+    floorId: 2,
+    buildingId: 2,
+    isRoomAvailable: true,
+    haveRoomDetails: true,
+    isApprove: false,
+    isActive: true,
+    inactiveBy: null,
+    createdBy: 6,
+    createdTime: "2025-01-07T16:02:13.157",
+    updatedBy: null,
+    updatedTime: null,
+    floorName: "Floor - B",
+    buildingName: "SOL",
+    roomCategoryName: "Single room",
+    roomWisePerson: 1,
+    roomPrice: "100",
+    startTime: "2025-02-26T03:45:00.000Z",
+    endTime: "2025-02-27T03:45:00.000Z",
+    roomWisePersonInfo: [
+      {
+        name: "Person - 01",
+        phone: "01773964101",
+        email: "imdad@gmail.com",
+        nidBirth: "3424234234",
+        age: "12",
+      },
+    ],
+  },
+];

@@ -1,9 +1,12 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import TableHeader from "../inputField/table/TableHeader";
 import { roomDetailsInterface } from "@/interface/admin/roomManagements/roomDetailsInterface";
 import AppURL from "@/app/_restApi/AppURL";
 import Checkbox from "../inputField/checkbox/Checkbox";
+import ComInputView from "../inputField/ComInputView";
+import { isJsonArrayEqual } from "@/app/_utils/handler/isJsonArrayEqual";
+import toast from "react-hot-toast";
 
 interface Props {
   className?: string;
@@ -33,6 +36,9 @@ const AvailableRoomItemCard: FC<Props> = ({
     paidOrFree: "",
   });
   const [checkRoomItems, setCheckRoomItems] = useState<number[]>([]); // Store selected room IDs
+  const [filteredRoomData, setFilteredRoomData] = useState<
+    roomDetailsInterface[]
+  >([]); // Store selected room IDs
 
   const availableRoomItemsFunc = async () => {
     try {
@@ -43,7 +49,13 @@ const AvailableRoomItemCard: FC<Props> = ({
         },
       });
       if (data?.status === 200) {
-        setFetchData((prev) => ({ ...prev, roomItems: data?.data }));
+        const convertedRoomItem = data?.data.map((item: any) => ({
+          ...item,
+          itemQty: 1,
+          actualPrice: item?.price,
+        }));
+
+        setFetchData((prev) => ({ ...prev, roomItems: convertedRoomItem }));
       }
     } catch (err: any) {
       console.log("Failed to fetch room items: ", err?.message);
@@ -70,14 +82,31 @@ const AvailableRoomItemCard: FC<Props> = ({
     });
   };
 
+  const prevFilteredRoom = useRef(filteredRoomData);
+
   // ✅ Filter logic based on search inputs
-  const filteredRoomData = fetchData.roomItems.filter((roomItem) =>
+  const filteredRoom = fetchData.roomItems.filter((roomItem) =>
     ["name", "price", "paidOrFree"].every((key) =>
       String(roomItem[key as keyof typeof roomItem])
         .toLowerCase()
         .includes(searchKey[key as keyof typeof searchKey].toLowerCase())
     )
   );
+  useEffect(() => {
+    if (!isJsonArrayEqual(filteredRoom, prevFilteredRoom.current)) {
+      setFilteredRoomData((prevData) =>
+        filteredRoom.map((item: any) => {
+          const existingItem: any = prevData.find(
+            (prev: any) => prev.itemId === item.itemId
+          );
+          return existingItem
+            ? { ...item, itemQty: existingItem.itemQty }
+            : item;
+        })
+      );
+      prevFilteredRoom.current = filteredRoom;
+    }
+  }, [filteredRoom]);
 
   const paidItems =
     checkRoomItems && checkRoomItems?.length > 0
@@ -87,7 +116,9 @@ const AvailableRoomItemCard: FC<Props> = ({
             itemId: item.itemId,
             name: item.name,
             price: item.price,
+            actualPrice: item.actualPrice,
             paidOrFree: item.paidOrFree,
+            itemQty: item.itemQty,
             remarks: item.remarks,
           }))
       : [];
@@ -95,12 +126,14 @@ const AvailableRoomItemCard: FC<Props> = ({
   const freeItems =
     checkRoomItems && checkRoomItems?.length > 0
       ? checkRoomItems
-          ?.filter((paidItem) => parseInt(paidItem?.paidOrFree) == 2)
+          ?.filter((paidItem: any) => parseInt(paidItem?.paidOrFree) == 2)
           .map((item: any) => ({
             itemId: item.itemId,
             name: item.name,
             price: item.price,
+            actualPrice: item.actualPrice,
             paidOrFree: item.paidOrFree,
+            itemQty: item.itemQty,
             remarks: item.remarks,
           }))
       : [];
@@ -115,6 +148,16 @@ const AvailableRoomItemCard: FC<Props> = ({
     freeItems.length > 0 &&
     freeItems.reduce((sum: any, item: any) => sum + Number(item.price), 0);
 
+  const noOfPaidItems =
+    paidItems &&
+    paidItems.length > 0 &&
+    paidItems.reduce((sum: any, item: any) => sum + Number(item.itemQty), 0);
+
+  const noOfFreeItems =
+    freeItems &&
+    freeItems.length > 0 &&
+    freeItems.reduce((sum: any, item: any) => sum + Number(item.itemQty), 0);
+
   useEffect(() => {
     const passingItems = {
       paidItems,
@@ -127,6 +170,36 @@ const AvailableRoomItemCard: FC<Props> = ({
     }
   }, [checkRoomItems]);
 
+  const handleQuantityChange = async (itemId: number, newQty: number) => {
+    const updateNewQty = await (newQty <= 0 ? 1 : newQty > 10 ? 10 : newQty);
+
+    await setFilteredRoomData((prevItems) =>
+      prevItems.map((item: any) =>
+        item.itemId === itemId
+          ? {
+              ...item,
+              itemQty: updateNewQty,
+              price: parseFloat(item.actualPrice) * updateNewQty,
+            }
+          : item
+      )
+    );
+    await setCheckRoomItems((cRoom) =>
+      cRoom.map((item: any) =>
+        item.itemId === itemId
+          ? {
+              ...item,
+              itemQty: updateNewQty,
+              price: parseFloat(item.actualPrice) * updateNewQty,
+            }
+          : item
+      )
+    );
+
+    if (newQty < 1) return toast.error("Item qty must be more than 1.");
+    if (newQty > 10) return toast.error("Item qty must be less than 10.");
+  };
+
   return (
     <>
       <div
@@ -138,7 +211,7 @@ const AvailableRoomItemCard: FC<Props> = ({
         <div className="flex w-full items-center rounded-t-lg bg-slate-300">
           <TableHeader
             headerText="Select"
-            containerClassName="w-1/5"
+            containerClassName="w-1/12"
             hasSearch={false}
           />
           <TableHeader
@@ -164,7 +237,7 @@ const AvailableRoomItemCard: FC<Props> = ({
           <TableHeader
             headerText="Paid(1) / Free(2)"
             placeholder="Search by Paid or Free"
-            containerClassName="w-1/5 border-l-2 border-slate-50"
+            containerClassName="w-1/5 border-x-2 border-slate-50"
             hasSearch={true}
             apiOnSearch={false}
             value={searchKey.paidOrFree}
@@ -173,9 +246,14 @@ const AvailableRoomItemCard: FC<Props> = ({
               setSearchKey((prev) => ({ ...prev, paidOrFree: "" }))
             }
           />
+          <TableHeader
+            headerText="Item Qty"
+            containerClassName="w-1/6"
+            hasSearch={false}
+          />
         </div>
 
-        <div className="w-full max-h-[200px] overflow-y-auto">
+        <div className="w-full max-h-[250px] overflow-y-auto">
           {filteredRoomData.map((roomItem: any, roomIndex: number) => {
             const isLast = roomIndex == filteredRoomData?.length - 1;
             const isChecked = checkRoomItems.some(
@@ -192,7 +270,7 @@ const AvailableRoomItemCard: FC<Props> = ({
                   isLast && "rounded-b-md"
                 } ${selectedRowBg}`}
               >
-                <div className="w-1/5 flex justify-center py-1">
+                <div className="w-1/12 flex justify-center py-1">
                   <Checkbox
                     checked={isChecked}
                     onChange={() => handleCheckboxChange(roomItem)}
@@ -211,6 +289,21 @@ const AvailableRoomItemCard: FC<Props> = ({
                   value={roomItem.paidOrFree === 1 ? "Paid" : "Free"}
                   className={`w-1/5 ${txtColor}`}
                 />
+                <div className="w-1/6 ">
+                  <ComInputView
+                    placeholder="item quantity"
+                    className="w-full py-1 text-center"
+                    type="number"
+                    name="itemQty"
+                    value={roomItem?.itemQty?.toString()}
+                    onChange={(e: any) =>
+                      handleQuantityChange(
+                        roomItem.itemId,
+                        Number(e.target.value)
+                      )
+                    }
+                  />
+                </div>
               </div>
             );
           })}
@@ -236,7 +329,12 @@ const AvailableRoomItemCard: FC<Props> = ({
               />
               <TableHeader
                 headerText="Price"
-                containerClassName="w-1/3"
+                containerClassName=" border-r-2 border-slate-50 w-1/3"
+                hasSearch={false}
+              />
+              <TableHeader
+                headerText="Qty"
+                containerClassName="w-1/5"
                 hasSearch={false}
               />
             </div>
@@ -261,7 +359,11 @@ const AvailableRoomItemCard: FC<Props> = ({
                     />
                     <ComView
                       value={pItem.price}
-                      className={`w-1/3 text-black`}
+                      className={`w-1/6 border-r-2 text-black`}
+                    />
+                    <ComView
+                      value={pItem.itemQty}
+                      className={`w-1/6 text-black`}
                     />
                   </div>
                 );
@@ -272,12 +374,17 @@ const AvailableRoomItemCard: FC<Props> = ({
               </p>
             )}
             {paidItems && paidItems.length > 0 && (
-              <div className="flex w-full items-end justify-end">
-                <div className="flex w-1/3 items-center justify-center py-1">
-                  <p className="font-workSans text-black text-md font-medium">
-                    {`Total: ${totalPaidItemAmount}`}
-                  </p>
-                </div>
+              <div className="flex w-full items-end justify-end ">
+                <ComView
+                  value={totalPaidItemAmount}
+                  // value={`Total: ${totalPaidItemAmount}`}
+                  className={`w-1/6  text-black font-medium`}
+                />
+                <ComView
+                  value={noOfPaidItems}
+                  // value={`Total: ${noOfPaidItems}`}
+                  className={`w-1/6 text-black font-medium`}
+                />
               </div>
             )}
           </div>
@@ -298,7 +405,12 @@ const AvailableRoomItemCard: FC<Props> = ({
               />
               <TableHeader
                 headerText="Price"
-                containerClassName="w-1/3"
+                containerClassName="border-r-2 border-slate-50 w-1/6"
+                hasSearch={false}
+              />
+              <TableHeader
+                headerText="Qty"
+                containerClassName="w-1/6"
                 hasSearch={false}
               />
             </div>
@@ -322,7 +434,11 @@ const AvailableRoomItemCard: FC<Props> = ({
                     />
                     <ComView
                       value={fItem.price}
-                      className={`w-1/3 text-black`}
+                      className={`w-1/6 border-r-2 text-black`}
+                    />
+                    <ComView
+                      value={fItem.itemQty}
+                      className={`w-1/6 text-black`}
                     />
                   </div>
                 );
@@ -333,12 +449,17 @@ const AvailableRoomItemCard: FC<Props> = ({
               </p>
             )}
             {freeItems && freeItems.length > 0 && (
-              <div className="flex w-full items-end justify-end">
-                <div className="flex w-1/3 items-center justify-center py-1">
-                  <p className="font-workSans text-black text-md font-medium">
-                    {`Total: ${totalFreeItemAmount}`}
-                  </p>
-                </div>
+              <div className="flex w-full items-end justify-end ">
+                <ComView
+                  value={totalFreeItemAmount}
+                  // value={`Total: ${totalFreeItemAmount}`}
+                  className={`w-1/6  text-black font-medium`}
+                />
+                <ComView
+                  value={noOfFreeItems}
+                  // value={`Total: ${noOfFreeItems}`}
+                  className={`w-1/6 text-black font-medium`}
+                />
               </div>
             )}
           </div>

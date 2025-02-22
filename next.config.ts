@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "https",
+        protocol: "http",
         hostname: "localhost",
         port: "7094",
         pathname: "/images/**",
@@ -24,6 +24,29 @@ const nextConfig: NextConfig = {
   webpack: (config) => {
     config.infrastructureLogging = { level: "warn" };
     return config;
+  },
+
+  async headers() {
+    return [
+      {
+        // Apply CORS headers to all API routes
+        source: "/api/:path*",
+        headers: [
+          {
+            key: "Access-Control-Allow-Origin",
+            value: "*", // Allow all origins
+          },
+          {
+            key: "Access-Control-Allow-Methods",
+            value: "GET, POST, OPTIONS, PUT, DELETE",
+          },
+          {
+            key: "Access-Control-Allow-Headers",
+            value: "X-Custom-Header, Content-Type",
+          },
+        ],
+      },
+    ];
   },
 };
 
@@ -42,7 +65,14 @@ export default nextConfig;
 //   },
 
 //   images: {
-//     domains: ["localhost"],
+//     remotePatterns: [
+//       {
+//         protocol: "https",
+//         hostname: "localhost",
+//         port: "7094",
+//         pathname: "/images/**",
+//       },
+//     ],
 //   },
 
 //   webpack: (config) => {
