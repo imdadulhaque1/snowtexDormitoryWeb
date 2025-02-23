@@ -284,7 +284,7 @@ const MenuPermission: FC<Props> = (props) => {
   return (
     <div
       className={`flex flex-col ${
-        getDrawerStatus ? "pl-[265]" : "pl-0"
+        getDrawerStatus ? "pl-[265px]" : "pl-0"
       } flex flex-col xl:flex-row   h-screen pb-52 xl:pb-5   overflow-auto `}
     >
       <div className="flex flex-col items-center w-full xl:w-48p  h-100p lg:h-90p bg-white ml-3 m-2 py-5 border-2 border-primary80 rounded-lg shadow-lg">

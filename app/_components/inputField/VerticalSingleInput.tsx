@@ -29,7 +29,7 @@ const VerticalSingleInput: FC<Props> = ({
         type={type}
         name={name}
         placeholder={placeholder}
-        className={`w-full border-2 rounded-md outline-none focus:outline-none px-2 py-2 font-workSans bg-primary95 ${
+        className={`w-full text-black border-2 rounded-md outline-none focus:outline-none px-2 py-2 font-workSans bg-primary95 ${
           className || ""
         }`}
         {...props}

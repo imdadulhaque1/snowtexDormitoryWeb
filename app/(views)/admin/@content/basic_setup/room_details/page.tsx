@@ -182,7 +182,7 @@ const RoomDetailsPage: FC<Props> = (props) => {
     <Suspense fallback={<div>Loading...</div>}>
       <div
         className={`flex  justify-center ${
-          getDrawerStatus ? "pl-[265]" : "pl-0"
+          getDrawerStatus ? "pl-[265px]" : "pl-0"
         }`}
       >
         <div className="flex w-screen h-full ">
@@ -288,7 +288,7 @@ const RoomDetailsPage: FC<Props> = (props) => {
                         }}
                         className="w-4 h-4 cursor-pointer bg-slate-500 rounded-lg"
                       />
-                      <span className="absolute font-workSans text-black text-center text-sm top-[-2] ml-1">
+                      <span className="absolute font-workSans text-black text-center text-sm top-[-2px] ml-1">
                         {feature}
                       </span>
                     </div>

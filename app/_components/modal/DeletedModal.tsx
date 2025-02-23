@@ -32,7 +32,9 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
             />
           </div>
         </div>
-        <h2 className="text-lg font-workSans font-semibold mt-4">{title}</h2>
+        <h2 className="text-black text-lg font-workSans font-semibold mt-4">
+          {title}
+        </h2>
         <p className="text-sm font-workSans text-gray-700 mt-2">
           {description}
         </p>

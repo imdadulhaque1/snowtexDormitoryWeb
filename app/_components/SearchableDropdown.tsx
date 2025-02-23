@@ -74,7 +74,7 @@ const SearchableDropdown: FC<Props> = ({
   return (
     <div className="relative w-full">
       <button
-        className={`w-full px-4 py-2 text-left ${txtColor} bg-primary95 border rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-indigo-200 font-workSans ${
+        className={` text-black w-full px-4 py-2 text-left ${txtColor} bg-primary95 border rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-indigo-200 font-workSans ${
           isDisable && "opacity-40"
         }`}
         onClick={toggleDropdown}
@@ -94,7 +94,7 @@ const SearchableDropdown: FC<Props> = ({
             type="text"
             value={searchTerm}
             onChange={handleSearch}
-            className="w-full px-4 py-2 border-b focus:outline-none font-workSans"
+            className="text-black w-full px-4 py-2 border-b focus:outline-none font-workSans"
             placeholder="Search..."
           />
 
@@ -104,7 +104,7 @@ const SearchableDropdown: FC<Props> = ({
                 <li
                   key={option.value}
                   onClick={() => handleSelect(option)}
-                  className="px-4 py-2 cursor-pointer hover:bg-indigo-50 font-workSans"
+                  className="text-black px-4 py-2 cursor-pointer hover:bg-indigo-50 font-workSans"
                 >
                   {option.label}
                 </li>

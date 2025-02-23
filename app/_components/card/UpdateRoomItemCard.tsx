@@ -17,6 +17,7 @@ interface Props {
   freeItems?: any;
   token?: string;
   userId: string | number;
+  onPassItems?: (res: any) => void;
 }
 
 const UpdateRoomItemCard: FC<Props> = ({
@@ -25,6 +26,7 @@ const UpdateRoomItemCard: FC<Props> = ({
   freeItems,
   token,
   userId,
+  onPassItems,
 }) => {
   const actualItems = paidItems.concat(freeItems);
   const initialized = useRef(false);
@@ -81,6 +83,22 @@ const UpdateRoomItemCard: FC<Props> = ({
       return isChecked
         ? prev.filter((item: any) => item.itemId !== rItem.itemId)
         : [...prev, rItem, riIndex];
+    });
+    setPrevItems((prev: any) => {
+      const isPaid = rItem?.paidOrFree === 1;
+
+      const key = isPaid ? "paidItems" : "freeItems";
+
+      const itemExists = prev[key].some(
+        (item: any) => item?.riIndex === riIndex
+      );
+
+      return {
+        ...prev,
+        [key]: itemExists
+          ? prev[key].filter((item: any) => item.riIndex !== riIndex)
+          : [...prev[key], { ...rItem, riIndex }],
+      };
     });
   };
 
@@ -164,6 +182,18 @@ const UpdateRoomItemCard: FC<Props> = ({
     });
     toast.error("Item removed successfully !");
   };
+
+  useEffect(() => {
+    const passingItems = {
+      paidItems: prevItems?.paidItems,
+      freeItems: prevItems?.freeItems,
+      totalPaidItemAmount,
+      totalFreeItemAmount,
+    };
+    if (onPassItems) {
+      onPassItems(passingItems);
+    }
+  }, [prevItems?.paidItems, prevItems?.freeItems]);
 
   return (
     <div
@@ -249,7 +279,7 @@ const UpdateRoomItemCard: FC<Props> = ({
 
       <div className=" w-full flex justify-center items-start my-4 p-4 ">
         <div className="flex flex-col items-center w-[50%] border-2 border-slate-300 rounded-lg bg-white shadow-lg p-3 mr-3">
-          <p className="font-workSans text-md text-center font-medium">
+          <p className="text-black font-workSans text-md text-center font-medium">
             Paid items
           </p>
           <div className="flex w-full items-center rounded-t-lg bg-slate-200 mt-2  ">
@@ -348,7 +378,7 @@ const UpdateRoomItemCard: FC<Props> = ({
           )}
         </div>
         <div className="flex flex-col items-center w-[50%]  border-2 border-slate-300 rounded-lg bg-white shadow-lg p-3">
-          <p className="font-workSans text-md text-center font-medium">
+          <p className="text-black font-workSans text-md text-center font-medium">
             Free items
           </p>
           <div className="flex w-full items-center rounded-t-lg bg-slate-200 mt-2">

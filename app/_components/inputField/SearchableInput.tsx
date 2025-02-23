@@ -92,14 +92,14 @@ const SearchableInput: FC<SearchableInputProps> = ({
             ref={inputRef}
             type="text"
             placeholder={placeholder}
-            className="flex-1 border-none outline-none focus:outline-none py-2 px-1 font-workSans text-sm bg-primary95"
+            className="text-black flex-1 border-none outline-none focus:outline-none py-2 px-1 font-workSans text-sm bg-primary95"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
           />
           {inputValue && (
             <button
               onClick={handleManualAdd}
-              className="font-workSans text-sm bg-green-200 px-3 py-1 rounded-xl hover:bg-green-300"
+              className="text-black font-workSans text-sm bg-green-200 px-3 py-1 rounded-xl hover:bg-green-300"
             >
               Manually Add ?
             </button>

@@ -183,7 +183,7 @@ const RolesPage: FC<Props> = (props) => {
   };
 
   return (
-    <div className={`flex-col ${getDrawerStatus ? "pl-[265]" : "pl-0"} p-4 `}>
+    <div className={`flex-col ${getDrawerStatus ? "pl-[265px]" : "pl-0"} p-4 `}>
       <AreaSubmitForm
         addHoverText="Add Roles"
         updateHoverText="Update roles"
@@ -230,7 +230,7 @@ const RolesPage: FC<Props> = (props) => {
                       expandRoleObj: roleItem,
                     }));
                   }}
-                  className="bg-slate-300 p-2 rounded-md h-full hover:bg-slate-400 hover:text-white font-workSans text-md text-black"
+                  className="bg-slate-300 p-2 rounded-md h-full hover:bg-slate-400 hover:text-white font-workSans text-sm text-black"
                 >
                   {roleItem.name}
                 </button>

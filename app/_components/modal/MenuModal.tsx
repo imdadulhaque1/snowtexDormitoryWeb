@@ -117,7 +117,7 @@ const MenuModal: FC<ModalProps> = ({ menu, onClose, onSubmit }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-6 rounded-lg w-3/4 max-w-3xl">
-        <h2 className="text-xl font-semibold mb-4 text-center font-workSans">
+        <h2 className="text-black  text-xl font-semibold mb-4 text-center font-workSans">
           Update Dormitory Menu
         </h2>
 
@@ -160,7 +160,7 @@ const MenuModal: FC<ModalProps> = ({ menu, onClose, onSubmit }) => {
           </div>
           <div className="w-1/2">
             <div className="flex items-center mb-1">
-              <label className="text-sm font-medium block">
+              <label className="text-black text-sm font-medium block">
                 Select Parent Layer
               </label>
 

@@ -29,7 +29,7 @@ const VertcialRadioBtn: React.FC<RadioButtonProps> = ({
         name={name}
         checked={checked}
         onChange={() => onChange(value)}
-        className="w-5 h-5 cursor-pointer"
+        className="w-5 h-5 cursor-pointer text-black "
         required={required}
       />
       {label && (

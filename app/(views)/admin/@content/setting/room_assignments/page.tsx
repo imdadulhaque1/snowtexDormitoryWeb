@@ -303,7 +303,7 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
     <Suspense fallback={<div>Loading...</div>}>
       <div
         className={`flex flex-col ${
-          getDrawerStatus ? "pl-[265]" : "pl-0"
+          getDrawerStatus ? "pl-[265px]" : "pl-0"
         } max-h-screen  justify-center `}
       >
         <div className="flex items-center justify-center w-100p h-10 mb-4">
@@ -551,11 +551,6 @@ const RoomAssignmentsPage: FC<Props> = (props) => {
                           endTime: bookingInfo?.endTime,
                         },
                       }));
-
-                      console.log(
-                        "convertedRoom: ",
-                        JSON.stringify(convertedRoom, null, 2)
-                      );
 
                       await setBookingInfo((prev) => ({
                         ...prev,

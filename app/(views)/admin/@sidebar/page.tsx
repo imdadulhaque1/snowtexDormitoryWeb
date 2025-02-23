@@ -192,7 +192,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     <Suspense fallback={<div>Loading...</div>}>
       <div
         className={`flex fixed  h-screen bg-white transition-transform duration-500 ease-in-out border-r-2 shadow-2xl z-50  ${
-          isDrawerOpen ? "w-[265]" : "w-0"
+          isDrawerOpen ? "w-[265px]" : "w-0"
         }`}
       >
         {!isDrawerOpen && (
@@ -255,5 +255,3 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
 };
 
 export default Sidebar;
-
-//

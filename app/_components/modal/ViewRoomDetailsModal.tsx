@@ -113,7 +113,7 @@ const ViewRoomDetailsModal: FC<Props> = (props) => {
     <div className={modalStyles.overlay}>
       <div className={`${modalStyles.container} w-screen`}>
         <div className="flex w-full items-center justify-center mb-4 ">
-          <h2 className={`w-100p text-center ${modalStyles.title}`}>
+          <h2 className={`w-100p text-center text-black  ${modalStyles.title}`}>
             {room?.roomName} Details
           </h2>
 
@@ -129,9 +129,9 @@ const ViewRoomDetailsModal: FC<Props> = (props) => {
         </div>
 
         <div className="flex space-x-4">
-          <div className="relative w-[250] h-80">
+          <div className="relative w-[250px] h-80">
             <div
-              className="relative w-[250] h-full overflow-hidden border border-gray-300 rounded-xl cursor-pointer"
+              className="relative w-[250px] h-full overflow-hidden border border-gray-300 rounded-xl cursor-pointer"
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
             >
@@ -147,7 +147,7 @@ const ViewRoomDetailsModal: FC<Props> = (props) => {
             {/* Zoomed Image */}
             {zoomStyle.isVisible && (
               <div
-                className="absolute top-0 left-[260] w-80 h-80 border border-gray-300 overflow-hidden rounded-xl"
+                className="absolute top-0 left-[260px] w-80 h-80 border border-gray-300 overflow-hidden rounded-xl"
                 style={{
                   backgroundSize: "150%",
                   backgroundImage: zoomStyle.backgroundImage,

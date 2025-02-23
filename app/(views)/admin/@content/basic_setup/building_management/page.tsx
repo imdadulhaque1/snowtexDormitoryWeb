@@ -259,7 +259,7 @@ const BuildingManagements: FC<Props> = (props) => {
     <Suspense fallback={<div>Loading...</div>}>
       <div
         className={`flex ${
-          getDrawerStatus ? "pl-[265]" : "pl-0"
+          getDrawerStatus ? "pl-[265px]" : "pl-0"
         }  max-h-screen justify-center overflow-auto pb-52`}
       >
         <div className="flex flex-col xl:flex-row w-full h-full ">
@@ -395,27 +395,27 @@ const BuildingManagements: FC<Props> = (props) => {
           >
             <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
               <div className="flex w-1/12 items-center  justify-center border-slate-50 border-r-2">
-                <p className="text-md font-workSans font-medium text-center ">
+                <p className="text-black text-md font-workSans font-medium text-center ">
                   Id
                 </p>
               </div>
               <div className=" flex  w-1/5 items-center justify-center border-slate-50 border-r-2">
-                <p className="text-md font-workSans font-medium text-center">
+                <p className="text-black text-md font-workSans font-medium text-center">
                   Name
                 </p>
               </div>
               <div className="flex w-1/3 items-center justify-center border-slate-50 border-r-2">
-                <p className="text-md font-workSans font-medium text-center">
+                <p className="text-black text-md font-workSans font-medium text-center">
                   Address
                 </p>
               </div>
               <div className="flex  w-1/5  justify-center items-center border-slate-50 border-r-2">
-                <p className="text-md font-workSans font-medium text-center">
+                <p className="text-black text-md font-workSans font-medium text-center">
                   Contact No
                 </p>
               </div>
               <div className="flex  w-1/5  justify-center items-center">
-                <p className="text-md font-workSans font-medium text-center">
+                <p className="text-black text-md font-workSans font-medium text-center">
                   Actions
                 </p>
               </div>
@@ -433,22 +433,22 @@ const BuildingManagements: FC<Props> = (props) => {
                     } border-slate-300 py-2 px-2  bg-slate-100`}
                   >
                     <div className="flex w-1/12 items-center  justify-center border-slate-300 border-r-2">
-                      <p className="text-md font-workSans text-center">
+                      <p className="text-black text-md font-workSans text-center">
                         {building?.buildingId}
                       </p>
                     </div>
                     <div className=" flex  w-1/5 items-center justify-center border-slate-300 border-r-2">
-                      <p className="text-md font-workSans text-center break-words max-w-full">
+                      <p className="text-black text-md font-workSans text-center break-words max-w-full">
                         {building?.buildingName}
                       </p>
                     </div>
                     <div className="flex w-1/3 items-center justify-center border-slate-300 border-r-2">
-                      <p className="text-md font-workSans text-center break-words max-w-full">
+                      <p className="text-black text-md font-workSans text-center break-words max-w-full">
                         {building?.buildingAddress}
                       </p>
                     </div>
                     <div className="flex  w-1/5  justify-center items-center border-slate-300 border-r-2">
-                      <p className="text-md font-workSans text-center break-words max-w-full">
+                      <p className="text-black text-md font-workSans text-center break-words max-w-full">
                         {building?.contactNo}
                       </p>
                     </div>

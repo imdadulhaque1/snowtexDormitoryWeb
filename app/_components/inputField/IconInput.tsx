@@ -47,7 +47,7 @@ const IconInput: FC<IconInputProps> = ({ label, onIconChange }) => {
       <div>
         <textarea
           placeholder="Enter SVG or HTML code here..."
-          className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+          className="text-black w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
           rows={4}
           onChange={handleCodeChange}
         />

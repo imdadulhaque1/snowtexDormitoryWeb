@@ -82,7 +82,7 @@ const SearchPersonCard: React.FC<Props> = ({
               className="flex items-center gap-2 ml-2 justify-center cursor-pointer"
             >
               <input
-                className="w-[19] h-[19] cursor-pointer"
+                className="w-[19px] h-[19px] cursor-pointer"
                 type="checkbox"
                 // @ts-ignore
                 checked={isChecked}
