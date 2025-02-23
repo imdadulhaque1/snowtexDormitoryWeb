@@ -216,7 +216,7 @@ const RegistrationForm: FC<Props> = () => {
                   //     phoneErrorMsg: "",
                   //   }))
                   // }
-                  className="peer block w-full rounded-md border border-gray-300 bg-primary95 pl-3"
+                  className="text-black peer block w-full rounded-md border border-gray-300 bg-primary95 pl-3"
                 />
                 <style jsx global>{`
                   .peer input {

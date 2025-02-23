@@ -28,10 +28,10 @@ const LoginForm: FC<LoginFormProps> = ({
   const router = useRouter();
 
   const [loginData, setLoginData] = useState<LoginDataINterface>({
-    emailOrPhone: "imdadulhaque1440@gmail.com",
-    password: "Abc@1234",
-    // emailOrPhone: "",
-    // password: "",
+    // emailOrPhone: "imdadulhaque1440@gmail.com",
+    // password: "Abc@1234",
+    emailOrPhone: "",
+    password: "",
     emailPhoneErrorMsg: "",
     passwordErrorMsg: "",
   });
@@ -76,16 +76,13 @@ const LoginForm: FC<LoginFormProps> = ({
       };
 
       const { data } = await axios.post(AppURL.signin, submitData);
-      // const { data } = await axios.post(AppURL.signin, submitData, {
-      //   withCredentials: true,
-      // });
 
       if (data?.status === 200) {
         toast.success("Successfully log-in !");
         Cookies.set("authToken", data.user.token, {
           expires: 7, // Expires in 7 days
-          // secure: process.env.NODE_ENV === "production",
-          // sameSite: "strict",
+          // secure: true,
+          // sameSite: "none",
         });
         // @ts-ignore
         isFormModal && onSuccess();

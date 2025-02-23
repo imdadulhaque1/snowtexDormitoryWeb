@@ -82,7 +82,7 @@ const UserMultiSelector: React.FC<UserSelectorProps> = React.memo(
         {users.map((user) => (
           <label
             key={user.userId}
-            className="flex items-center space-x-2 mb-2 relative group cursor-pointer"
+            className="text-black flex items-center space-x-2 mb-2 relative group cursor-pointer"
             onMouseEnter={() => setHoveredUser(user.userId)}
             onMouseLeave={() => setHoveredUser(null)}
           >

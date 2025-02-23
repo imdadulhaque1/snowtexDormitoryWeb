@@ -9,7 +9,7 @@ import UpdateReservationRoomCard from "@/app/_components/card/UpdateReservationR
 import axios from "axios";
 import AppURL from "@/app/_restApi/AppURL";
 import toast from "react-hot-toast";
-import { IoClose, IoSearch } from "react-icons/io5";
+import { IoClose } from "react-icons/io5";
 import { IoIosAddCircle } from "react-icons/io";
 import { PiMinusCircleFill } from "react-icons/pi";
 import VerticalView from "@/app/_components/comView/VerticalView";
@@ -236,7 +236,7 @@ const RoomReservationUpdatePage: FC<Props> = (props) => {
     <Suspense fallback={<div>Loading...</div>}>
       <div
         className={`flex flex-col ${
-          getDrawerStatus ? "pl-[265]" : "pl-0"
+          getDrawerStatus ? "pl-[265px]" : "pl-0"
         } max-h-screen  justify-center `}
       >
         <div className="overflow-y-auto pb-28">
@@ -315,7 +315,7 @@ const RoomReservationUpdatePage: FC<Props> = (props) => {
                   </div>
                   <div className="flex flex-col justify-end items-end mb-4">
                     <div className="flex p-3  flex-col justify-end items-end">
-                      <p className="font-workSans text-xl font-medium">
+                      <p className="text-black font-workSans text-xl font-medium">
                         Price Calculations
                       </p>
                       <VerticalView
@@ -369,7 +369,7 @@ const RoomReservationUpdatePage: FC<Props> = (props) => {
                     hasSearch={false}
                   />
                   <div className="w-[32%] border-x-2 border-slate-50 ">
-                    <p className="text-center font-workSans text-md py-1">
+                    <p className="text-black text-center font-workSans text-md py-1">
                       Room Wise Person
                     </p>
                     <div className="flex items-center w-full text-sm border-t-2">
@@ -546,7 +546,7 @@ const RoomReservationUpdatePage: FC<Props> = (props) => {
                           hasSearch={false}
                         />
                         <div className="w-[32%] border-x-2 border-slate-50 ">
-                          <p className="text-center font-workSans text-md py-1">
+                          <p className="text-black text-center font-workSans text-md py-1">
                             Room Wise Person
                           </p>
                           <div className="flex items-center w-full text-sm border-t-2">
@@ -879,6 +879,25 @@ const RoomReservationUpdatePage: FC<Props> = (props) => {
                   freeItems={fetchData?.updatedRoom?.freeItems}
                   token={decodeToken?.token}
                   userId={decodeToken?.userId}
+                  onPassItems={async (res: any) => {
+                    if (res?.paidItems) {
+                      const paidItems = await (res?.paidItems &&
+                        res?.paidItems.map((item: any) => ({
+                          itemId: item.itemId,
+                          name: item.name,
+                          price: item.price,
+                          actualPrice: item.actualPrice,
+                          paidOrFree: item.paidOrFree,
+                          itemQty: item.itemQty,
+                          remarks: item.remarks,
+                        })));
+                      console.log(
+                        "Paid Items: ",
+                        JSON.stringify(paidItems, null, 2)
+                      );
+                    }
+                    console.log("Response: ", JSON.stringify(res, null, 2));
+                  }}
                 />
               </div>
             </>

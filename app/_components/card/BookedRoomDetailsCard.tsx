@@ -100,7 +100,7 @@ const BookedRoomDetailsCard: FC<Props> = ({
           </div>
           <div className="flex flex-col justify-end items-end mb-4">
             <div className="flex p-3  flex-col justify-end items-end">
-              <p className="font-workSans text-xl font-medium">
+              <p className="text-black font-workSans text-xl font-medium">
                 Price Calculations
               </p>
               <VerticalView
@@ -164,7 +164,7 @@ const BookedRoomDetailsCard: FC<Props> = ({
             hasSearch={false}
           />
           <div className="w-[32%] border-x-2 border-slate-50 ">
-            <p className="text-center font-workSans text-md py-1">
+            <p className="text-black text-center font-workSans text-md py-1">
               Room Wise Person
             </p>
             <div className="flex items-center w-full text-sm border-t-2">
@@ -267,7 +267,7 @@ const BookedRoomDetailsCard: FC<Props> = ({
 
         <div className="flex w-full  justify-between items-start mt-4">
           <div className="flex flex-col items-center w-[49.5%] rounded-lg bg-white shadow-lg p-3 mr-3 border-2 border-slate-300">
-            <p className="font-workSans text-md text-center font-medium">
+            <p className="text-black font-workSans text-md text-center font-medium">
               Paid items
             </p>
             <div className="flex w-full items-center rounded-t-lg bg-slate-200 mt-2">
@@ -338,7 +338,7 @@ const BookedRoomDetailsCard: FC<Props> = ({
             )} */}
           </div>
           <div className="flex flex-col items-center w-[49.5%] rounded-lg bg-white shadow-lg p-3 border-2 border-slate-300">
-            <p className="font-workSans text-md text-center font-medium">
+            <p className="text-black font-workSans text-md text-center font-medium">
               Free items
             </p>
             <div className="flex w-full items-center rounded-t-lg bg-slate-200 mt-2">

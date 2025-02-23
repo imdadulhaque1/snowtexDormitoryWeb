@@ -801,7 +801,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
     <Suspense fallback={<div>Loading...</div>}>
       <div
         className={` w-screen h-screen items-center ${
-          getDrawerStatus ? "pl-[265]" : "pl-0"
+          getDrawerStatus ? "pl-[265px]" : "pl-0"
         } max-h-screen justify-center pr-6`}
       >
         <div
@@ -860,7 +860,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                 <div
                   className={`w-[100%] min-h-[55vh] bg-white p-4  mx-3 rounded-lg shadow-lg`} // below table override this height h-75p as mentioned attached screenshot. solved it.
                 >
-                  <p className=" font-workSans text-center mb-2 text-lg font-semibold truncate">
+                  <p className=" text-black font-workSans text-center mb-2 text-lg font-semibold truncate">
                     Room Common features
                   </p>
                   <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
@@ -870,18 +870,18 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                       </p>
                     </div> */}
                     <div className=" flex  w-1/4 items-center justify-center border-slate-50 border-r-2">
-                      <p className="text-md font-workSans font-medium text-center">
+                      <p className="text-black text-md font-workSans font-medium text-center">
                         Name
                       </p>
                     </div>
                     <div className="flex w-2/4 items-center justify-center border-slate-50 border-r-2">
-                      <p className="text-md font-workSans font-medium text-center">
+                      <p className="text-black text-md font-workSans font-medium text-center">
                         Remarks
                       </p>
                     </div>
 
                     <div className="flex  w-1/5  justify-end items-center ">
-                      <p className="text-md font-workSans font-medium text-center">
+                      <p className="text-black text-md font-workSans font-medium text-center">
                         Actions
                       </p>
                     </div>
@@ -906,12 +906,12 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                                 </p>
                               </div> */}
                               <div className=" flex  w-1/4 items-center justify-center border-slate-300 border-r-2">
-                                <p className="text-sm font-workSans text-center break-words max-w-full ">
+                                <p className="text-black text-sm font-workSans text-center break-words max-w-full ">
                                   {features?.name}
                                 </p>
                               </div>
                               <div className="flex w-2/4 items-center justify-center border-slate-300 border-r-2 px-2">
-                                <p className="text-sm font-workSans text-center  max-w-full truncate">
+                                <p className="text-black text-sm font-workSans text-center  max-w-full truncate">
                                   {features?.remarks}
                                 </p>
                               </div>
@@ -1039,7 +1039,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                 <div
                   className={`w-[100%] mx-3 min-h-[55vh] bg-white p-4 rounded-lg shadow-lg`}
                 >
-                  <p className=" font-workSans text-center mb-2 text-lg font-semibold truncate">
+                  <p className="text-black  font-workSans text-center mb-2 text-lg font-semibold truncate">
                     Available Furnitures
                   </p>
                   <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
@@ -1049,18 +1049,18 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                       </p>
                     </div> */}
                     <div className=" flex  w-1/4 items-center justify-center border-slate-50 border-r-2">
-                      <p className="text-md font-workSans font-medium text-center">
+                      <p className="text-black text-md font-workSans font-medium text-center">
                         Name
                       </p>
                     </div>
                     <div className="flex w-2/4 items-center justify-center border-slate-50 border-r-2">
-                      <p className="text-md font-workSans font-medium text-center">
+                      <p className="text-black text-md font-workSans font-medium text-center">
                         Remarks
                       </p>
                     </div>
 
                     <div className="flex  w-1/5  justify-end items-center">
-                      <p className="text-md font-workSans font-medium text-center">
+                      <p className="text-black text-md font-workSans font-medium text-center">
                         Actions
                       </p>
                     </div>
@@ -1086,12 +1086,12 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                                 </p>
                               </div> */}
                               <div className=" flex  w-1/4 items-center justify-center border-slate-300 border-r-2">
-                                <p className="text-sm font-workSans text-center break-words max-w-full">
+                                <p className="text-black text-sm font-workSans text-center break-words max-w-full">
                                   {furniture?.name}
                                 </p>
                               </div>
                               <div className="flex w-2/4 items-center justify-center border-slate-300 border-r-2">
-                                <p className="text-sm font-workSans text-center  max-w-full truncate px-1">
+                                <p className="text-black text-sm font-workSans text-center  max-w-full truncate px-1">
                                   {furniture?.remarks}
                                 </p>
                               </div>
@@ -1223,7 +1223,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
               <div
                 className={`w-full min-h-[55vh] bg-white p-4 mx-3 rounded-lg shadow-lg`}
               >
-                <p className=" font-workSans text-center mb-2 text-lg font-semibold truncate">
+                <p className=" text-black font-workSans text-center mb-2 text-lg font-semibold truncate">
                   Bed Specifications
                 </p>
                 <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
@@ -1265,17 +1265,17 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                             } border-slate-300 py-2 px-2  bg-slate-100`}
                           >
                             {/* <div className="flex w-1/12 items-center  justify-center border-slate-300 border-r-2">
-                          <p className="text-sm font-workSans text-center">
+                          <p className="text-sm text-black font-workSans text-center">
                             {bed?.bedId}
                           </p>
                         </div> */}
                             <div className=" flex  w-1/4 items-center justify-center border-slate-300 border-r-2">
-                              <p className="text-sm font-workSans text-center break-words max-w-full">
+                              <p className="text-sm text-black font-workSans text-center break-words max-w-full">
                                 {bed?.name}
                               </p>
                             </div>
                             <div className="flex w-2/4 items-center justify-center border-slate-300 border-r-2">
-                              <p className="text-sm font-workSans text-center  max-w-full truncate px-1">
+                              <p className="text-sm text-black font-workSans text-center  max-w-full truncate px-1">
                                 {bed?.remarks}
                               </p>
                             </div>
@@ -1403,7 +1403,7 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                 <div
                   className={`w-[100%] min-h-[55vh] bg-white p-4  mx-3 rounded-lg shadow-lg`}
                 >
-                  <p className=" font-workSans text-center mb-2 text-lg font-semibold truncate">
+                  <p className="text-black  font-workSans text-center mb-2 text-lg font-semibold truncate">
                     Bathroom Specifications
                   </p>
                   <div className="flex w-full items-center border-2 border-slate-300 py-2 px-2 rounded-t-lg bg-slate-300">
@@ -1413,18 +1413,18 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                       </p>
                     </div> */}
                     <div className=" flex  w-1/4 items-center justify-center border-slate-50 border-r-2">
-                      <p className="text-md font-workSans font-medium text-center">
+                      <p className="text-black text-md font-workSans font-medium text-center">
                         Name
                       </p>
                     </div>
                     <div className="flex w-2/4 items-center justify-center border-slate-50 border-r-2">
-                      <p className="text-md font-workSans font-medium text-center">
+                      <p className="text-black text-md font-workSans font-medium text-center">
                         Remarks
                       </p>
                     </div>
 
                     <div className="flex  w-1/5  justify-end items-center">
-                      <p className="text-md font-workSans font-medium text-center">
+                      <p className="text-black text-md font-workSans font-medium text-center">
                         Actions
                       </p>
                     </div>
@@ -1452,12 +1452,12 @@ const RoomGoodsEntriesPage: FC<Props> = (props) => {
                                 </p>
                               </div> */}
                               <div className=" flex  w-1/4 items-center justify-center border-slate-300 border-r-2">
-                                <p className="text-sm font-workSans text-center break-words max-w-full">
+                                <p className="text-black text-sm font-workSans text-center break-words max-w-full">
                                   {bathroom?.name}
                                 </p>
                               </div>
                               <div className="flex w-2/4 items-center justify-center border-slate-300 border-r-2">
-                                <p className="text-sm font-workSans text-center  max-w-full truncate px-1">
+                                <p className="text-black text-sm font-workSans text-center  max-w-full truncate px-1">
                                   {bathroom?.remarks}
                                 </p>
                               </div>

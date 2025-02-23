@@ -5,7 +5,7 @@ export const modalStyles = {
     "bg-white rounded-lg shadow-lg p-6 w-100p max-w-5xl max-h-[92%] overflow-auto my-5 mx-3",
   bookedRoomcontainer:
     "bg-white rounded-lg shadow-lg p-6 w-100p max-h-[92%] overflow-auto my-5 mx-3",
-  title: "text-lg font-workSans font-semibold uppercase text-center",
+  title: "text-black text-lg font-workSans font-semibold uppercase text-center",
   detailsLabel: "font-workSans text-gray-600 text-md",
   detailsTxt: "font-workSans text-black text-md",
   buttonStyle:

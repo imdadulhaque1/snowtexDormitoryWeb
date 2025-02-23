@@ -31,7 +31,7 @@ const TableHeader: FC<TableHeaderProps> = ({
     <div
       className={`flex flex-col  items-center justify-center  ${containerClassName}`}
     >
-      <p className="text-md font-workSans font-medium text-center my-1">
+      <p className="text-black text-md font-workSans font-medium text-center my-1">
         {headerText}
       </p>
       {hasSearch && (

@@ -254,7 +254,7 @@ const RoomCategoryPage: FC<Props> = (props) => {
     <Suspense fallback={<div>Loading...</div>}>
       <div
         className={`flex ${
-          getDrawerStatus ? "pl-[265]" : "pl-0"
+          getDrawerStatus ? "pl-[265px]" : "pl-0"
         } max-h-screen justify-center overflow-auto pb-52`}
       >
         <div className="flex flex-col xl:flex-row w-full h-full">
@@ -390,33 +390,33 @@ const RoomCategoryPage: FC<Props> = (props) => {
             {/* py-2 px-2 */}
             <div className="flex w-full items-center border-2 border-slate-300  rounded-t-lg bg-slate-300">
               <div className="flex w-1/12 items-center  justify-center border-slate-50 border-r-2">
-                <p className="text-md font-workSans font-medium text-center py-2 px-2 ">
+                <p className="text-black text-md font-workSans font-medium text-center py-2 px-2 ">
                   SL
                 </p>
               </div>
               <div className=" flex  w-1/4 items-center justify-center border-slate-50 border-r-2">
-                <p className="text-md font-workSans font-medium text-center py-2 px-2">
+                <p className="text-black text-md font-workSans font-medium text-center py-2 px-2">
                   Name
                 </p>
               </div>
               <div className=" flex  w-1/6 items-center justify-center border-slate-50 border-r-2">
-                <p className="text-md font-workSans font-medium text-center py-2 px-2">
+                <p className="text-black text-md font-workSans font-medium text-center py-2 px-2">
                   No of person
                 </p>
               </div>
               <div className=" flex  w-1/6 items-center justify-center border-slate-50 border-r-2">
-                <p className="text-md font-workSans font-medium text-center py-2 px-2">
+                <p className="text-black text-md font-workSans font-medium text-center py-2 px-2">
                   Room Price
                 </p>
               </div>
               <div className="flex w-2/4 items-center justify-center border-slate-50 border-r-2">
-                <p className="text-md font-workSans font-medium text-center py-2 px-2">
+                <p className="text-black text-md font-workSans font-medium text-center py-2 px-2">
                   Remarks
                 </p>
               </div>
 
               <div className="flex  w-1/5  justify-center items-center">
-                <p className="text-md font-workSans font-medium text-center py-2 px-2">
+                <p className="text-black text-md font-workSans font-medium text-center py-2 px-2">
                   Actions
                 </p>
               </div>
@@ -437,29 +437,29 @@ const RoomCategoryPage: FC<Props> = (props) => {
                       } border-slate-300   bg-slate-100`}
                     >
                       <div className="flex w-1/12 items-center  justify-center min-h-11">
-                        <p className="text-md font-workSans text-center">
+                        <p className="text-black text-sm font-workSans text-center">
                           {categoriesInfo?.categoryData?.length - rcIndex}
                         </p>
                       </div>
                       <div className=" flex  w-1/4 items-center justify-center border-slate-300 border-l-2 min-h-11">
-                        <p className="text-md font-workSans text-center break-words max-w-full">
+                        <p className="text-black text-sm font-workSans text-center break-words max-w-full">
                           {cItem?.name}
                         </p>
                       </div>
                       <div className=" flex  w-1/6 items-center justify-center border-slate-300 border-l-2 min-h-11">
-                        <p className="text-md font-workSans text-center break-words max-w-full">
+                        <p className="text-black text-sm font-workSans text-center break-words max-w-full">
                           {cItem?.noOfPerson}
                         </p>
                       </div>
                       <div className=" flex  w-1/6 items-center justify-center border-slate-300 border-l-2 min-h-11">
-                        <p className="text-md font-workSans text-center break-words max-w-full">
+                        <p className="text-black text-sm font-workSans text-center break-words max-w-full">
                           {cItem?.categoryBasedPrice
                             ? cItem?.categoryBasedPrice
                             : "0"}
                         </p>
                       </div>
                       <div className="flex w-2/4 items-center justify-center border-slate-300 border-x-2 min-h-11">
-                        <p className="text-md font-workSans text-center break-words max-w-full">
+                        <p className="text-black text-sm font-workSans text-center break-words max-w-full">
                           {cItem?.remarks}
                         </p>
                       </div>
@@ -521,7 +521,7 @@ const RoomCategoryPage: FC<Props> = (props) => {
               )
             ) : (
               <div>
-                <h3 className="text-center font-workSans text-md mt-4 text-red-500">
+                <h3 className="text-center font-workSans text-sm mt-4 text-red-500">
                   Room categories not found !
                 </h3>
               </div>

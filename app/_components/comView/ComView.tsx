@@ -10,7 +10,7 @@ const ComView: FC<ComViewProps> = ({ value, className }) => {
     <div
       className={`flex items-center justify-center border-slate-300 ${className}`}
     >
-      <p className="text-sm font-workSans text-center break-words max-w-full">
+      <p className="text-black text-sm font-workSans text-center break-words max-w-full">
         {value}
       </p>
     </div>

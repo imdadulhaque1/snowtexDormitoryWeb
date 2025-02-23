@@ -50,7 +50,7 @@ const RoomCheckoutPage: FC<Props> = (props) => {
     <Suspense fallback={<div>Loading...</div>}>
       <div
         className={`flex flex-col ${
-          getDrawerStatus ? "pl-[265]" : "pl-0"
+          getDrawerStatus ? "pl-[265px]" : "pl-0"
         } max-h-screen  justify-center `}
       >
         <p className="text-center font-workSans ">Room Check-out</p>

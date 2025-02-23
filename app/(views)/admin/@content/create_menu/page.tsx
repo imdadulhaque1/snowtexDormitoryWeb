@@ -194,7 +194,7 @@ const CreateMenuPage: FC<Props> = (props) => {
   return (
     <div
       className={`flex ${
-        getDrawerStatus ? "pl-[265]" : "pl-0"
+        getDrawerStatus ? "pl-[265px]" : "pl-0"
       }  items-center  `}
     >
       <div className="flex  w-[80%] flex-col bg-white justify-center gap-y-4 border border-primary80 rounded-2xl p-5">

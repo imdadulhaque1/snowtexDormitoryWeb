@@ -519,7 +519,7 @@ const RoomManagement: FC<Props> = (props) => {
     <Suspense fallback={<div>Loading...</div>}>
       <div
         className={`flex  ${"w-[100%]"} justify-center ${
-          getDrawerStatus ? "pl-[265]" : "pl-0"
+          getDrawerStatus ? "pl-[265px]" : "pl-0"
         } max-h-screen justify-center overflow-auto pb-52`}
       >
         <div className={`flex flex-col xl:flex-row w-full h-full`}>
@@ -873,32 +873,32 @@ const RoomManagement: FC<Props> = (props) => {
                       </div>
 
                       <div className="flex w-1/5 items-center justify-center border-slate-300 border-x-2">
-                        <p className="text-md font-workSans text-center break-words max-w-full">
+                        <p className="text-black text-md font-workSans text-center break-words max-w-full">
                           {room?.roomName}
                         </p>
                       </div>
                       <div className="flex w-1/4 items-center justify-center border-slate-300 border-r-2">
-                        <p className="text-md font-workSans text-center break-words max-w-full">
+                        <p className="text-black text-md font-workSans text-center break-words max-w-full">
                           {room?.roomCategoryName}
                         </p>
                       </div>
                       <div className="flex w-1/4 items-center justify-center border-slate-300">
-                        <p className="text-md font-workSans text-center break-words max-w-full">
+                        <p className="text-black text-md font-workSans text-center break-words max-w-full">
                           {room?.remarks}
                         </p>
                       </div>
                       <div className="flex w-1/4 items-center justify-center border-slate-300 border-x-2">
-                        <p className="text-md font-workSans text-center break-words max-w-full">
+                        <p className="text-black text-md font-workSans text-center break-words max-w-full">
                           {room?.roomDescription}
                         </p>
                       </div>
                       <div className="flex w-1/5 justify-center items-center border-slate-300 border-r-2">
-                        <p className="text-md font-workSans text-center break-words max-w-full">
+                        <p className="text-black text-md font-workSans text-center break-words max-w-full">
                           {room?.floorName}
                         </p>
                       </div>
                       <div className="flex w-1/5 justify-center items-center border-slate-300 border-r-2 ">
-                        <p className="text-md font-workSans text-center break-words max-w-full">
+                        <p className="text-black text-md font-workSans text-center break-words max-w-full">
                           {room?.buildingName}
                         </p>
                       </div>

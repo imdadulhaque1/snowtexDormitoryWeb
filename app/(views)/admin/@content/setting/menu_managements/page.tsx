@@ -25,16 +25,6 @@ const MenuManagements: FC<Props> = (props) => {
   const [menuItem, setMenuItem] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState<any>(null);
-
-  // const [retrieveData, setRetrieeveData] = useState({
-  //   token: null,
-  //   roles: [],
-  //   menus: [],
-  //   users: [],
-  //   roleBasedMenu: [],
-  //   roleBasedUser: [],
-  // });
-
   const [decodeToken, setDecodeToken] = useState<tokenInterface>({
     userId: "",
     name: "",
@@ -91,8 +81,6 @@ const MenuManagements: FC<Props> = (props) => {
   };
 
   const menuUpdateFunc = (menu: any) => {
-    console.log("Updated Menu: ", JSON.stringify(menu, null, 2));
-
     setSelectedMenu(menu); // Set selected menu data
     setIsModalOpen(true); // Open modal
   };
@@ -162,7 +150,7 @@ const MenuManagements: FC<Props> = (props) => {
   return (
     <div
       className={`pb-5 ${
-        getDrawerStatus ? "pl-[265]" : "pl-0"
+        getDrawerStatus ? "pl-[265px]" : "pl-0"
       }  w-screen h-screen `}
     >
       <div className="flex overflow-auto overflow-y-auto  max-w-[100%]  h-[92%] pr-10  mb-96">
@@ -181,7 +169,7 @@ const MenuManagements: FC<Props> = (props) => {
               >
                 {parentMenu?.subItems?.length > 0 ? (
                   <div
-                    className={`flex flex-col items-center w-[300]  bg-slate-400 rounded-md`}
+                    className={`flex flex-col items-center w-[300px]  bg-slate-400 rounded-md`}
                   >
                     <div className="flex w-full items-center justify-evenly bg-slate-400 py-2 rounded-t-md">
                       <p className="font-workSans text-xl font-medium text-black">

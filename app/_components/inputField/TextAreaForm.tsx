@@ -40,7 +40,9 @@ const TextAreaForm: React.FC<Props> = ({
         {haveSecondLabel && (
           <p
             onClick={secondLabelFunc}
-            className={`cursor-pointer font-workSans  ${dynamicClass || ""}`}
+            className={`text-black cursor-pointer font-workSans  ${
+              dynamicClass || ""
+            }`}
           >
             {secondLabelTxt}
           </p>

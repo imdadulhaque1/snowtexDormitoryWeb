@@ -102,17 +102,6 @@ const BookedRoomTable: FC<Props> = ({ className, bookedRoom }) => {
                       size={25}
                       className="cursor-pointer mr-2 text-primary50 hover:text-primary40"
                       onClick={async () => {
-                        // const convertedData = await {
-                        //   ...bRoom,
-                        //   roomInfo:
-                        //     bRoom.roomInfo && bRoom.roomInfo?.length > 0
-                        //       ? bRoom.roomInfo.map((room) => ({
-                        //           ...room.roomInfo,
-                        //           roomWisePerson: room.roomWisePerson,
-                        //         }))
-                        //       : [],
-                        // };
-
                         await setRoom({
                           isDetailsVisible: true,
                           selectedBookedRoom: bRoom,
